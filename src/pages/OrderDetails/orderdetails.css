@@ -1,0 +1,86 @@
+.orderDetailsMain{
+    background-color: #f8f8f8;
+    padding-top: 20px;
+    /* height: 100vh; */
+    /* padding-bottom: 20px; */
+}
+.orderDetailActionButtons{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.InquireOrderButton{
+    /* width: 2px; */
+  /* height: 40px; */
+  padding: 13px;
+  border: none;
+  margin-right: 10px;
+  background-color: #f8f8f8;
+  text-align: center;
+}
+.cancelShipmentButton{
+  background-color: #f8f8f8;
+    width: 184px;
+  height: 40px;
+  padding: 13px 24px 11px;
+  border-radius: 66px;
+  border: solid 1px #ff1919;
+  color: #ff1919;
+}
+.orderDetailStatusSection{
+  min-height: 90px;
+  margin-top: 49px !important;
+  padding: 26px 32px 26px 32px;
+  border-radius: 6px;
+  box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.08);
+  border: solid 1px #ededed;
+  background-color: #fff;
+}
+
+.greyFont{
+    opacity: 0.5;
+}
+.orderDetailsDeliveryDurationSection{
+  min-height: 128px;
+  padding: 30px 30px;
+  border-radius: 6px;
+  margin-top: 49px !important;
+  box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.08);
+  border: solid 1px #ededed;
+  background-color: #fff;
+}
+.flexRight{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.flexLeft{
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.orderDetailOrderdItems{
+    /* margin-top: 49px !important; */
+}
+.OrderItemSection{
+  padding: 28px 30.5px 26px 30px;
+  border-radius: 6px;
+  /* box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.08); */
+  /* border: solid 1px #ededed; */
+  background-color: #fff;
+}
+.OrderItemSectionRow{
+    min-height: 40px;
+}
+.orderItemSectionHeader{
+    margin-bottom: 10px !important;
+}
+.OrderItemSectionPrice{
+    display: flex;
+    justify-content: end;
+    align-items: flex-end;
+    flex-direction: column !important;
+    margin-top: 5px !important;
+}

@@ -1,0 +1,9 @@
+.shippingAddressMain {
+  min-height: 80px;
+  padding: 22px 18px 22px 20px;
+  border-radius: 6px;
+  box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.08);
+  border: solid 2px #e46e39;
+  background-color: #fff;
+  cursor: pointer;
+}

@@ -1,0 +1,21 @@
+/* VerticalCarousel.css */
+.vertical-carousel-container {
+    display: grid;
+    grid-template-columns: 50% 50%; /* Two equal-width columns */
+    grid-auto-rows: minmax(0, 1fr); /* Allow rows to grow dynamically */
+    height: 400px; /* Set the desired height of the carousel container */
+  }
+  
+  .slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f1f1; /* Set a background color for the slides */
+    color: #000; /* Set the color of the slide content */
+  }
+  
+  .slide:nth-child(3),
+  .slide:nth-child(4) {
+    grid-column-start: 2; /* Start the second row's column at the second column position */
+  }
+  

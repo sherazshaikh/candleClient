@@ -1,0 +1,15 @@
+.submitButton{
+    min-width: 108px;
+    min-height: 42px;
+    border-radius: 46px;
+    border: 2px solid #e46e39;
+    margin-top: 35px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    background-image: linear-gradient(106deg, #ff7a3e 1%, #e46e39 94%);
+}
+.submitButton:hover{
+    color: #e46e39;
+    background: white;
+}

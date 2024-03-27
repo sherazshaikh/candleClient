@@ -1,0 +1,36 @@
+.DeliveryDurationMain{
+    min-height: 80px;
+    padding: 23px 12px 22px;
+    border-radius: 6px;
+    box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.08);
+    border: solid 2px grey;
+    background-color: #fff;
+    /* flex-direction: column; */
+    text-align: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.selectedBorder{
+    border: solid 2px #e46e39 !important;
+}
+
+@media only screen and (max-width: 600px) {
+    .DeliveryDurationMain{
+        height: 30px !important;
+        padding: 0px;
+        border: none;
+    }    
+    .shippingAddressMain {
+        padding: 0px !important;
+        height: 30px;
+        border: none;
+
+    }
+    .paymentAddressMain{
+        padding: 0px !important;
+        height: 30px;
+        border: none;
+    }
+
+}

@@ -1,0 +1,72 @@
+.navbarMain {
+    height: 76px;
+    position: absolute;
+    top: 0px;
+}
+
+.navLogo {
+    background-image: url("../../assets/Group\ 151.png");
+    background-repeat: no-repeat;
+    /* background-size: 60% 60%; */
+    background-position: center;
+}
+
+.navbarButton {
+    width: 70px;
+    height: 100%;
+    text-align: right;
+    height: inherit;
+    font-family: Axiforma;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #1c1c1c;
+    cursor: pointer;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.navbarButton:hover {
+    color: #e46e39;
+}
+
+.navbarSignin {
+    min-width: 50px;
+    /* height: 15px; */
+    padding: 5px 20px;
+    border-radius: 7px;
+    border: solid 1px #e46e39;
+    cursor: pointer;
+    text-align: center;
+}
+
+.navbarSigninMobile{
+    width: 100%;
+    height: 35px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 5px;
+    border-radius: 7px;
+    border: solid 1px #e46e39;
+    color: #e46e39;
+    cursor: pointer;
+    text-align: center;
+}
+
+.navbarSignin:hover {
+    background-color: #e46e39;
+    color: white;
+}
+
+.MobileMenuButtons{
+    border-bottom: 1px solid grey;
+    padding: 10px;
+}

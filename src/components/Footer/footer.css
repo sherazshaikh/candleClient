@@ -1,0 +1,17 @@
+.footerSectionMain{
+    min-height:250px !important ;
+}
+.footerSectionEnd{
+    min-height: 50px;
+    border-top: 1px solid #cecece;
+    display: flex;
+    align-items: center;
+    opacity: 0.5;
+}
+
+.footerMenuButton{
+    color: #161715;
+    opacity: 0.5;
+    cursor: pointer;
+}
+

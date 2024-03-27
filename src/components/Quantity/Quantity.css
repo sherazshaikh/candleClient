@@ -1,0 +1,87 @@
+/* Variables */
+
+/* Quantity Input Styles */
+.quantity-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); */
+  border-radius: 3px;
+  width: 80%;
+}
+
+@media only screen and (max-width: 600px) {
+  .quantity-input {
+    width: 90% !important;
+    border: none;
+    box-shadow: 0 3px 13px 0 rgba(0, 0, 0, 0.08);
+  }
+  .quantity-input__modifier {
+    width: 30% !important;
+    background: white !important;
+    color: black !important;
+    font-weight: bold;
+  }
+  .quantity-input__screen {
+  background: white !important;
+  height: 40px !important;
+  }
+}
+
+.quantity-input:focus {
+  background: red;
+}
+
+.quantity-input__modifier,
+.quantity-input__screen {
+  user-select: none;
+  outline: none;
+}
+
+.quantity-input__modifier {
+  /* padding: 0.5rem 0.7rem; */
+  height: 40px;
+  width: 70%;
+  font-size: 1rem;
+  background: #f3f3f3;
+  color: #888;
+  border: 0 solid #dbdbdb;
+  text-align: center;
+  /* text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6); */
+  cursor: pointer;
+}
+
+.quantity-input__modifier:hover {
+  background: darken(#f3f3f3, 10%);
+  color: darken(#888, 20%);
+}
+
+.quantity-input__modifier--left {
+  border-radius: 3px 0 0 3px;
+}
+
+.quantity-input__modifier--right {
+  border-radius: 0 3px 3px 0;
+}
+
+.quantity-input__screen {
+  width: 80% !important;
+  /* padding: 0.1rem; */
+  font-size: 1rem;
+  border: 0;
+  /* border-top: 0 solid #dbdbdb; */
+  /* border-bottom: 0 solid #dbdbdb; */
+  text-align: center;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  /* Firefox */
+}

@@ -1,0 +1,21 @@
+{
+    "lottypecode": {
+        "label": "VISCOSE 3000 YARD",
+        "code": "001",
+        "HsCode": "5401"
+    },
+    "shadecode": {
+        "label": "03544",
+        "code": "3544"
+    },
+    "qty": 12,
+    "yardagelist": [
+        "3000"
+    ],
+    "shadecodelist": [
+        {
+            "shadeCode": "03918",
+            "shadeDesc": "3918"
+        }
+    ]
+}

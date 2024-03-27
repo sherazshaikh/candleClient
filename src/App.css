@@ -1,0 +1,24 @@
+@font-face {
+  font-family: 'Axiforma';
+  src: url('./assets/fonts/Axiforma-Regular.ttf');
+  /* Add additional font formats and styles as needed */
+}
+
+
+.flex{
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+button{
+  cursor: pointer;
+}
+
+body {
+  user-select: none; /* Standard syntax */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  -webkit-user-select: none; /* Safari */
+}
+

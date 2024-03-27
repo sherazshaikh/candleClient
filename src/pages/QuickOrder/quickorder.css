@@ -1,0 +1,216 @@
+.quickOrderLeftSection {
+    height: 100vh;
+    /* justify-content: center; */
+    padding: 45px 0px 0px 0px;
+    background-image: linear-gradient(to bottom, #ff7a3e, #e46e39);
+    text-align: center;
+}
+
+.quickOrderTab {
+    height: 70vh;
+    display: flex;
+    flex-direction: column !important;
+}
+
+.quickOrderOptions {
+    border-left: 3px solid white;
+    height: 110px;
+    margin-left: 2px !important;
+    color: white;
+    margin-bottom: 10px !important;
+}
+
+.quickOrderOptionsCount {
+    height: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.quickOrderOptionsContent {
+    height: 110px;
+    justify-content: center;
+    align-items: flex-start;
+    display: flex;
+    text-align: left;
+    flex-direction: column !important;
+}
+
+.opacity5 {
+    opacity: 0.5 !important;
+    border: none !important;
+}
+
+.rightContent {
+    height: 171px;
+    /* padding: 37px 49.6px 28px 50px; */
+    background-color: #f4f4f4;
+}
+
+.addItemSection {
+    max-height: calc(100vh - 171px - 110px - 48px);
+    padding: 15px 0px;
+    display: flex !important;
+    align-content: flex-start;
+}
+
+.addItemRowSection {
+    height: calc(100vh - 171px - 110px - 48px - 60px);
+    overflow-y: scroll;
+    display: block !important;
+    padding-top: 10px;
+}
+
+.addItemRowSectionMobile{
+    height: calc(100vh - 45px - 78px - 53px - 30px);
+    overflow-y: scroll;
+    display: block !important;
+    padding-top: 30px;
+    background-color: #f8f8f8;
+}
+
+.quickOrderSectionMobile {
+    height: 100vh;
+    border: "1px solid red";
+}
+
+.addItemRowSection::-webkit-scrollbar-track {
+    background: none !important;
+    /* Hide the scrollbar track */
+}
+
+.addItemRowSection::-webkit-scrollbar {
+    width: 10px !important;
+    padding: 2px !important;
+}
+
+.addItemRowSection::-webkit-scrollbar-thumb {
+    background-color: #f4f4f4;
+    /* Scrollbar button color */
+    border-radius: 6px;
+    /* Adjust as needed to make it round */
+}
+
+.custom-scrollbar::-webkit-scrollbar-button {
+    display: block;
+    /* Hide the scrollbar buttons */
+}
+
+.cartScrollSection {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.cartProductMobile{
+    height: calc(100vh - 45px - 78px - 55px - 20px);
+    align-content: flex-start;
+    background-color: #f4f4f4;
+    overflow-y: scroll;
+}
+
+
+.cartScrollSection::-webkit-scrollbar-track {
+    background: none !important;
+    /* Hide the scrollbar track */
+}
+
+.cartScrollSection::-webkit-scrollbar {
+    width: 10px !important;
+}
+
+.cartScrollSection::-webkit-scrollbar-thumb {
+    background-color: #b9b8b8;
+    /* Scrollbar button color */
+    border-radius: 6px;
+    /* Adjust as needed to make it round */
+}
+
+.quickOrderPriceColumn {
+    display: flex;
+    width: 100% !important;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.addAnItemButton {
+    width: 180px;
+    height: 48px;
+    margin: 10px 14px 10px 0px;
+    padding: 11px 27px 11px 28px;
+    border-radius: 6px;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    background-color: #e46e39;
+    color: white;
+    border: 1px solid #e46e39;
+    font-size: 16px;
+}
+.addAnItemButtonMobile {
+    width: 90%;
+    height: 48px;
+    padding: 11px 27px 11px 28px;
+    margin-bottom: 5px;
+    border-radius: 30px;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    background-color: #e46e39;
+    color: white;
+    border: 1px solid #e46e39;
+    font-size: 16px;
+}
+
+.quickOrderBottomSection {
+    height: 80px;
+    border-top: 2px solid lightgrey;
+}
+
+.quickOrderBottomSection .nextButton {
+    width: 52px;
+    color: white;
+    height: 52px;
+    padding: 19px 18px 19.7px 18px;
+    box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.08);
+    background-color: #e46e39;
+    border: 1px solid #e46e39;
+    border-radius: 50%;
+}
+
+.quickOrderBottomSectionMobile {
+    height: 60px;
+    border-top: 2px solid lightgrey;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
+.quickOrderBottomSectionMobile .nextButtonMobile {
+    width: 12px;
+    color: white;
+    height: 12px;
+    padding: 19px 18px 19.7px 18px;
+    box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.08);
+    background-color: #e46e39;
+    border: 1px solid #e46e39;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.quickOrderBottomSection .discountImage {
+    background-image: url("../../assets/Group\ 529.webp");
+    background-repeat: no-repeat;
+    background-position: left;
+    background-size: auto;
+}
+
+@media only screen and (max-width: 900px) {
+
+    /* .quickOrderPriceColumn h6{
+     margin: 0px !important;
+     margin-block: 0px !important;
+    } */
+
+}
+
+.quickOrderCardMobile{
+    border-bottom: 1px solid grey;
+    margin-top: 10px !important;
+    padding-bottom: 5px;
+}

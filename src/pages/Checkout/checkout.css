@@ -1,0 +1,76 @@
+.checkoutLogo {
+    background-image: url("../../assets/Group\ 151.png");
+    background-repeat: no-repeat;
+    height: 100px;
+    background-position: left;
+    cursor: pointer;
+}
+
+.checkoutMain {
+    max-height: 100vh;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.checkoutMain::-webkit-scrollbar {
+    display: none;
+}
+
+.checkoutButton {
+    min-width: 18px;
+    height: 46px;
+    margin: 50px 10px 53px 0;
+    padding: 15px 22px 15px 29px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.08);
+    background-color: #e46e39;
+}
+.checkoutButtonBack {
+    min-width: 10px;
+    height: 46px;
+    margin: 50px 10px 53px 0;
+    padding: 15px 22px 15px 10px;
+    border-radius: 6px;
+    border: 1px solid gray;
+    color: black;
+    /* box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.08); */
+    background-color: #f8f8f8;
+}
+
+.cartMain {
+    background: #f8f8f8;
+    display: flex;
+    justify-content: center;
+}
+
+.cartMainMobile {
+    display: flex;
+    justify-content: center;
+    height: calc(100vh - 78px - 60px);
+    overflow-y: scroll;
+}
+
+.yourcartmain2{
+    height: 100px;
+    margin-top: 60px !important;
+}
+
+.yourcartmain2Mobile{
+    margin-top: 20px !important;
+    display: flex;
+    align-content: flex-start;
+}
+
+.yourCartRow{
+    border-bottom: 1px solid grey;
+    padding-bottom: 20px;
+    margin-top: 10px;
+}
+
+.checkoutPageCheckoutButtons{
+    display: flex !important;
+    flex-direction: row  !important;
+}
