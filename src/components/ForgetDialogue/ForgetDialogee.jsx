@@ -42,7 +42,7 @@ export default function ForgetDialogee() {
   }
 
   const handleClose = () => {
-    if(cnic?.length !== 15){
+    if(cnic?.length !== 13){
       setSeverty("error");
       setMessage("CNIC length must be 13 digits!");
       console.log("length,", cnic?.length)
@@ -86,21 +86,9 @@ export default function ForgetDialogee() {
   };
 
   const handleCNICChange = (event) => {
-    const numericCNIC = event.replace(/\D/g, '');
 
-    // Apply CNIC mask
-    let maskedCNIC = '';
-    if (numericCNIC.length <= 5) {
-      maskedCNIC = numericCNIC.slice(0, 5);
-    } else if (numericCNIC.length <= 12) {
-      maskedCNIC = numericCNIC.slice(0, 5) + '-' + numericCNIC.slice(5, 12);
-    } else {
-      maskedCNIC = numericCNIC.slice(0, 5) + '-' + numericCNIC.slice(5, 12) + '-' + numericCNIC.slice(12, 13);
-    }
-
-
-    // const value = event.replace(/\D/g, '').slice(0, 13); // Keep only digits and limit length
-    setCNIC(maskedCNIC); // Apply the mask
+    const value = event.replace(/\D/g, '').slice(0, 13); // Keep only digits and limit length
+    setCNIC(value); // Apply the mask
   };
 
   const handleClosePopup = () => {

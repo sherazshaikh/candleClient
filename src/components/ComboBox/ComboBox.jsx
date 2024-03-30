@@ -30,7 +30,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
       let abcd = options.filter((option) => {
         if ((option.productDesc.toLowerCase()).includes(infoLabel.toLowerCase())) {
           return option
-
+  
         }
       })
       abcd = abcd.map((option) => {
@@ -140,6 +140,7 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
         return { label: option.shadeCode, value: option.shadeDesc, key: ind }
       })
       setDdOption(abcd)
+      // setTimeout(()=> abcd?.length === 0 && setInfoLabel(""), 1100)
     } 
 
   }, [infoLabel])
@@ -168,8 +169,8 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
 
 
   const updateProduct = (value, e) => {
-    let newArray = [...rows];
-    console.log("shade change :", infoLabel, 'row', rows, 'shade', rows[index]['ShadeCode']['label'])
+    let newArray = [...rows];    
+    setInfoLabel(e ? e.label : '' )
     newArray[index] = { ...rows[index], ShadeCode: value ? e : { label: "", HsCode: "", value: "" } }
     dispatch(updateCart(newArray));
   }
