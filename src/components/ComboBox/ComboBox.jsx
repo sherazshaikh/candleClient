@@ -139,6 +139,7 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
       abcd = abcd.map((option, ind) => {
         return { label: option.shadeCode, value: option.shadeDesc, key: ind }
       })
+   
       setDdOption(abcd)
     } 
 
@@ -169,7 +170,7 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
 
   const updateProduct = (value, e) => {
     let newArray = [...rows];
-    console.log("shade change :", infoLabel, 'row', rows, 'shade', rows[index]['ShadeCode']['label'])
+    setInfoLabel(e ? e.label : '')
     newArray[index] = { ...rows[index], ShadeCode: value ? e : { label: "", HsCode: "", value: "" } }
     dispatch(updateCart(newArray));
   }

@@ -69,7 +69,7 @@ const QuickOrder = () => {
                 isPreviousRowFilled =  false
             }
         })
-       if(isPreviousRowFilled){
+       if(isPreviousRowFilled ){
         let newCart = [...cart, {
             "LottypeCode": cart[cart.length - 1]["LottypeCode"],
             "shade": cart[cart.length - 1]["shade"],
@@ -84,8 +84,9 @@ const QuickOrder = () => {
         dispatch(updateCart(newCart))
         debouncedApiCall()
        }else {
+         setMessage('Please Fill Row Data')
         setSeverty('error')
-        setMessage('Please Fill Row Data')
+        
         setShowPopup(true)
        }
     }
@@ -148,6 +149,7 @@ const QuickOrder = () => {
           
             dispatch(updateCart(newRows))
             debouncedApiCall()
+            apiCallFunction()
         } else {
             let newRows = [{
                 "LottypeCode": { label: "", value: "", HsCode: "" },
@@ -161,6 +163,8 @@ const QuickOrder = () => {
             }]
             dispatch(updateCart(newRows));
             debouncedApiCall()
+            apiCallFunction()
+
         }
     }
 
