@@ -170,13 +170,8 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
 
 
   const updateProduct = (value, e) => {
-<<<<<<< HEAD
     let newArray = [...rows];
     setInfoLabel(e ? e.label : '')
-=======
-    let newArray = [...rows];    
-    setInfoLabel(e ? e.label : '' )
->>>>>>> 9564b344e942f567e752efed9824d0356841bc02
     newArray[index] = { ...rows[index], ShadeCode: value ? e : { label: "", HsCode: "", value: "" } }
     dispatch(updateCart(newArray));
   }
