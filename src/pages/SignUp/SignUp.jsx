@@ -78,21 +78,8 @@ const SignUp = () => {
 
   const handleCNICChange = (event) => {
 
-    const numericCNIC = event.replace(/\D/g, '');
-
-    // Apply CNIC mask
-    let maskedCNIC = '';
-    if (numericCNIC.length <= 5) {
-      maskedCNIC = numericCNIC.slice(0, 5);
-    } else if (numericCNIC.length <= 12) {
-      maskedCNIC = numericCNIC.slice(0, 5) + '-' + numericCNIC.slice(5, 12);
-    } else {
-      maskedCNIC = numericCNIC.slice(0, 5) + '-' + numericCNIC.slice(5, 12) + '-' + numericCNIC.slice(12, 13);
-    }
-
-
-    // const value = event.replace(/^[0-9]{5}-[0-9]{7}-[0-9]$/).slice(0, 14); // Keep only digits and limit length
-    setUserInfo({ ...userInfo, Cnic: maskedCNIC }); // Apply the mask
+    const value = event.replace(/^[0-9]{5}-[0-9]{7}-[0-9]$/).slice(0,13); // Keep only digits and limit length
+    setUserInfo({ ...userInfo, Cnic: value }); // Apply the mask
   };
 
   const handleNTNChange = (event) => {
@@ -138,7 +125,7 @@ const SignUp = () => {
         setMessage("Please enter a valid email address!");
         setShowPopup(true);
         setLoadingState(false)
-      } else if (userInfo.Cnic.length != 15 && userInfo.Cnic.length > 0) {
+      } else if (userInfo.Cnic.length != 13 && userInfo.Cnic.length > 0) {
         setSeverty("error");
         setMessage("CNIC length must be 13 digits!");
         setShowPopup(true);
