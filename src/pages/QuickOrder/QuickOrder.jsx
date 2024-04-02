@@ -73,9 +73,9 @@ const QuickOrder = () => {
 	])
 	const [products, setProducts] = useState([])
 
-    useEffect(()=> {
-        console.log("mobileItem", mobileItem)
-    },[mobileItem])
+	useEffect(() => {
+		console.log('mobileItem', mobileItem)
+	}, [mobileItem])
 
 	const addNewColumn = async () => {
 		console.log('cart', cart)
@@ -112,7 +112,7 @@ const QuickOrder = () => {
 
 	const addNewColumnMobile = () => {
 		let isPreviousRowFilled = true
-        console.log("mb", isPreviousRowFilled)
+		console.log('cart', cart)
 		cart?.length > 0 &&
 			cart.map((itm) => {
 				if (!itm?.LottypeCode?.label || !itm?.ShadeCode?.label || !itm.selectedYardage.label) {
@@ -273,6 +273,11 @@ const QuickOrder = () => {
 	const apiCallFunction1 = () => {}
 
 	const debouncedApiCall = _.debounce(apiCallFunction1, 3000)
+
+
+	function validateShadeCode(code, index){
+		console.log('shade index', code, index)
+	}
 
 	return !orderSuccess ? (
 		<>

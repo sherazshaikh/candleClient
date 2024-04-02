@@ -93,6 +93,8 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
       newArray[index] = { ...rows[index], LottypeCode: { label: "", HsCode: "", value: "" }, ShadeCode: { label: "", HsCode: "", value: "" }, selectedYardage: { label: "", HsCode: "", value: "" }, shade: [] }
       dispatch(updateCart(newArray));
     }
+
+    // validateShadeCode(value, index)
   }
 
 
@@ -136,10 +138,13 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
           return option
         }
       })
-      abcd = abcd.map((option, ind) => {
-        return { label: option.shadeCode, value: option.shadeDesc, key: ind }
-      })
-   
+      if(abcd.length === 0){
+        abcd = []
+      }else{
+        abcd = abcd.map((option, ind) => {
+          return { label: option.shadeCode, value: option.shadeDesc, key: ind }
+        })
+      }
       setDdOption(abcd)
       // setTimeout(()=> abcd?.length === 0 && setInfoLabel(""), 1100)
     } 
@@ -172,7 +177,14 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
   const updateProduct = (value, e) => {
     let newArray = [...rows];
     setInfoLabel(e ? e.label : '')
-    newArray[index] = { ...rows[index], ShadeCode: value ? e : { label: "", HsCode: "", value: "" } }
+    // const validShadeCode = rows[index].shade.some(shade => shade.shadeCode === infoLabel)
+    // console.log("validShadeCode", validShadeCode, rows)
+    // if(validShadeCode){
+      newArray[index] = { ...rows[index], ShadeCode: value ? e : { label: "", HsCode: "", value: "" } }
+    // }else {
+    //   newArray[index] = { ...rows[index], ShadeCode: { label: "", HsCode: "", value: "" } }
+    // }
+    
     dispatch(updateCart(newArray));
   }
 
