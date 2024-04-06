@@ -86,15 +86,15 @@ const QuickOrder = () => {
 					isPreviousRowFilled = false
 				}
 			})
-		if (isPreviousRowFilled) {
+		if (cart?.length  === 0 || isPreviousRowFilled) {
 			let newCart = [
 				...cart,
 				{
-					LottypeCode: cart[cart.length - 1]['LottypeCode'],
-					shade: cart[cart.length - 1]['shade'],
+					LottypeCode: { label: '', value: '', HsCode: '' },
+					shade: [],
 					ShadeCode: { label: '', value: '', HsCode: '' },
 					yardage: [],
-					selectedYardage: cart[cart.length - 1]['selectedYardage'],
+					selectedYardage: [],
 					OrderQty: 12,
 					price: '0',
 					uuid: v4(),
@@ -120,15 +120,15 @@ const QuickOrder = () => {
 				}
 			})
 
-		if (isPreviousRowFilled) {
+		if (cart?.length === 0 || isPreviousRowFilled) {
 			let newCart = [
 				...cart,
 				{
-					LottypeCode: cart[cart.length - 1]['LottypeCode'],
-					shade: cart[cart.length - 1]['shade'],
+					LottypeCode: { label: '', value: '', HsCode: '' },
+					shade: [],
 					ShadeCode: { label: '', value: '', HsCode: '' },
 					yardage: [],
-					selectedYardage: cart[cart.length - 1]['selectedYardage'],
+					selectedYardage: [],
 					OrderQty: 12,
 					price: '0',
 					uuid: v4(),
@@ -174,33 +174,37 @@ const QuickOrder = () => {
 	}
 
 	const deleteExistingRow = (index1) => {
-		if (cart.length > 1) {
+
+		if (cart.length > 0) {
 			let newRows = cart.filter((i, index) => {
-				if (index1 !== index) {
+				if (index !== index1) {
 					return i
 				}
 			})
 
+			console.log("index", index1, newRows)
+
 			dispatch(updateCart(newRows))
 			debouncedApiCall()
-			apiCallFunction()
-		} else {
-			let newRows = [
-				{
-					LottypeCode: { label: '', value: '', HsCode: '' },
-					shade: [],
-					ShadeCode: { label: '', value: '', HsCode: '' },
-					yardage: [],
-					selectedYardage: { label: '', value: '', HsCode: '' },
-					OrderQty: 12,
-					price: 0,
-					uuid: v4(),
-				},
-			]
-			dispatch(updateCart(newRows))
-			debouncedApiCall()
-			apiCallFunction()
-		}
+			apiCallFunction(newRows)
+		} 
+		// else {
+		// 	let newRows = [
+		// 		{
+		// 			LottypeCode: { label: '', value: '', HsCode: '' },
+		// 			shade: [],
+		// 			ShadeCode: { label: '', value: '', HsCode: '' },
+		// 			yardage: [],
+		// 			selectedYardage: { label: '', value: '', HsCode: '' },
+		// 			OrderQty: 12,
+		// 			price: 0,
+		// 			uuid: v4(),
+		// 		},
+		// 	]
+		// 	dispatch(updateCart(newRows))
+		// 	debouncedApiCall()
+		// 	apiCallFunction(index1)
+		// }
 	}
 
 	function validateOrder() {
@@ -240,18 +244,32 @@ const QuickOrder = () => {
 		}
 	}
 
-	const apiCallFunction = async () => {
-		console.log('debounce')
-		let finalCart = []
-		for (const orderDetail of cart) {
-			finalCart.push({
-				lottypecode: Object.values(orderDetail.LottypeCode).join('BTWOBJ'),
-				shadecode: Object.values(orderDetail.ShadeCode).join('BTWOBJ'),
-				qty: orderDetail.OrderQty,
-				yardage: Object.values(orderDetail.selectedYardage).join('BTWOBJ'),
-				yardagelist: orderDetail.yardage.join('BTWOBJ'),
-				shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`).join('OBJEND'),
-			})
+	const apiCallFunction = async (newRows) => {
+		
+	let finalCart = []
+	console.log("newRows", newRows)
+		if(newRows){
+			for (const orderDetail of newRows) {
+				finalCart.push({
+					lottypecode: Object.values(orderDetail.LottypeCode).join('BTWOBJ'),
+					shadecode: Object.values(orderDetail.ShadeCode).join('BTWOBJ'),
+					qty: orderDetail.OrderQty,
+					yardage: Object.values(orderDetail.selectedYardage).join('BTWOBJ'),
+					yardagelist: orderDetail.yardage.join('BTWOBJ'),
+					shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`).join('OBJEND'),
+				})
+			}
+		}else{
+			for (const orderDetail of cart) {
+				finalCart.push({
+					lottypecode: Object.values(orderDetail.LottypeCode).join('BTWOBJ'),
+					shadecode: Object.values(orderDetail.ShadeCode).join('BTWOBJ'),
+					qty: orderDetail.OrderQty,
+					yardage: Object.values(orderDetail.selectedYardage).join('BTWOBJ'),
+					yardagelist: orderDetail.yardage.join('BTWOBJ'),
+					shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`).join('OBJEND'),
+				})
+			}
 		}
 		console.log(finalCart)
 		await executeApi(baseURL + variables.updateCart.url, finalCart, variables.updateCart.method, token, dispatch)
