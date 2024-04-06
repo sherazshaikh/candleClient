@@ -78,7 +78,7 @@ const SignUp = () => {
 
   const handleCNICChange = (event) => {
 
-    const value = event.replace(/^[0-9]{5}-[0-9]{7}-[0-9]$/).slice(0,13); // Keep only digits and limit length
+    const value = event.replace(/\D/g, '').slice(0, 13) // Keep only digits and limit length
     setUserInfo({ ...userInfo, Cnic: value }); // Apply the mask
   };
 
@@ -199,15 +199,16 @@ const SignUp = () => {
                   <Typography variant='h4' >
                     Let’s begin our partnership. Signup!
                   </Typography>
+                  <form>
                   <Grid item container md={12} sm={12} xs={12} columnSpacing={1} >
                     <Grid item md={5} sm={5.5} xs={10} >
-                      <Input value={userInfo.FirstName} setValue={handleFirstName} type="text" placeholder="First Name" />
+                      <Input value={userInfo.FirstName} autocomplete="off" setValue={handleFirstName} type="text" placeholder="First Name" />
                     </Grid>
                     <Grid item md={5} sm={5.5} xs={10} >
-                      <Input value={userInfo.LastName} setValue={handleLastName} type="text" placeholder="Last Name" />
+                      <Input value={userInfo.LastName} autocomplete="off" setValue={handleLastName} type="text" placeholder="Last Name" />
                     </Grid>
                     <Grid item md={5} sm={5.5} xs={10} >
-                      <Input value={userInfo.CompanyName} type="text" setValue={(e) => setUserInfo({ ...userInfo, CompanyName: e })} placeholder="Company Name" />
+                      <Input value={userInfo.CompanyName} autocomplete="off" type="text" setValue={(e) => setUserInfo({ ...userInfo, CompanyName: e })} placeholder="Company Name" />
                     </Grid>
                     <Grid item md={5} sm={5.5} xs={10} sx={{ marginTop: { xs: "5px" }, marginBottom: { xs: "5px" } }} className="flex"  >
                       {/* <Input value={userInfo.PhoneNumber} setValue={(e) => setUserInfo({ ...userInfo, PhoneNumber: e })} type="number" placeholder="Phone No" /> */}
@@ -227,22 +228,22 @@ const SignUp = () => {
                       />
                     </Grid>
                     <Grid item md={5} sm={5.5} xs={10} >
-                      <Input value={userInfo.UserEmail} type="email" setValue={(e) => setUserInfo({ ...userInfo, UserEmail: e })} placeholder="Email Address" />
+                      <Input autocompletetype="email" autocomplete='on' value={userInfo.UserEmail} type="email" setValue={(e) => setUserInfo({ ...userInfo, UserEmail: e })} placeholder="Email Address" />
                     </Grid>
                     <Grid item md={5} sm={5.5} xs={10} >
-                      <Input value={userInfo.NoOfMachines} setValue={(e) => setUserInfo({ ...userInfo, NoOfMachines: e })} type="number" placeholder="No of Machines" />
+                      <Input value={userInfo.NoOfMachines} autocomplete="off" setValue={(e) => setUserInfo({ ...userInfo, NoOfMachines: e })} type="number" placeholder="No of Machines" />
                     </Grid>
                     <Grid item md={5} sm={5.5} xs={10} >
-                      <Input value={userInfo.Address} setValue={(e) => setUserInfo({ ...userInfo, Address: e })} type="text" placeholder="Address" />
+                      <Input value={userInfo.Address} autocomplete="off" setValue={(e) => setUserInfo({ ...userInfo, Address: e })} type="text" placeholder="Address" />
                     </Grid>
                     <Grid item md={5} sm={5.5} xs={10} >
-                      <Input value={userInfo.Cnic} setValue={handleCNICChange} type="text" placeholder="CNIC#" />
+                      <Input value={userInfo.Cnic} setValue={handleCNICChange} autocomplete="off"  placeholder="CNIC#" />
                     </Grid>
                     <Grid item md={5} sm={5.5} xs={10} >
-                      <Input value={userInfo.Ntn} type="text" setValue={handleNTNChange} placeholder="NTN" />
+                      <Input value={userInfo.Ntn}  setValue={handleNTNChange} autocomplete="off" placeholder="NTN" />
                     </Grid>
                     <Grid item md={5} sm={5.5} xs={10} >
-                      <Input type="text" value={userInfo.Strn} setValue={handleSSNChange} placeholder="STRN" />
+                      <Input  value={userInfo.Strn} setValue={handleSSNChange} autocomplete="off" placeholder="STRN" />
                     </Grid>
                     <Grid item md={9.5} sm={10.4} xs={9} >
                       <Input value={userInfo.UserPassword} type="password" className='width100' setValue={(e) => setUserInfo({ ...userInfo, UserPassword: e })} placeholder="Password" />
@@ -251,6 +252,7 @@ const SignUp = () => {
                       <Button buttonName={"SignUp"} loadingState={loadingState} onClick={completeSignup} />
                     </Grid>
                   </Grid>
+                  </form>
                 </Grid>
                 <Grid item xs={12} className='signUpSectionExisted'  >
                   <Typography variant='body1'>I already have an account! <b onClick={() => navigate("/signin")} style={{ textDecoration: "underline", cursor: "pointer" }} >Sign in</b></Typography>
