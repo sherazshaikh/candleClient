@@ -61,7 +61,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
         setShowPopup(false);
     };
     const deleteExistingRow = (index1) => {
-        if (rows.length > 1) {
+        if (rows.length > 0) {
 
             let newRows = rows.filter((i) => {
                 if (index1 !== i.uuid) {
@@ -70,20 +70,21 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
             })
             console.log(newRows);
             dispatch(updateCart(newRows))
-        } else {
-            let newRows = [{
-                "LottypeCode": { label: "", value: "", HsCode: "" },
-                "shade": [],
-                "ShadeCode": { label: "", value: "", HsCode: "" },
-                "yardage": [],
-                "selectedYardage": { label: "", value: "", HsCode: "" },
-                "OrderQty": 12,
-                "price": 0,
-                "uuid": v4()
-            }]
-            dispatch(updateCart(newRows));
-            debouncedApiCall()
-        }
+        } 
+        // else {
+        //     let newRows = [{
+        //         "LottypeCode": { label: "", value: "", HsCode: "" },
+        //         "shade": [],
+        //         "ShadeCode": { label: "", value: "", HsCode: "" },
+        //         "yardage": [],
+        //         "selectedYardage": { label: "", value: "", HsCode: "" },
+        //         "OrderQty": 12,
+        //         "price": 0,
+        //         "uuid": v4()
+        //     }]
+        //     dispatch(updateCart(newRows));
+        //     debouncedApiCall()
+        // }
     }
 
     function validateOrder(order) {
