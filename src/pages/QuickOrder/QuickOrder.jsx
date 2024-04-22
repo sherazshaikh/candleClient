@@ -2,7 +2,7 @@ import { Grid, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import './quickorder.css'
 import ComboBox, { ShadeBox, YardageBox } from '../../components/ComboBox/ComboBox'
-import { Delete } from '@mui/icons-material'
+import { CoPresentOutlined, Delete } from '@mui/icons-material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Quantity from '../../components/Quantity/Quantity'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
@@ -39,7 +39,7 @@ const QuickOrder = () => {
 	const [mobileItem, setMobileItem] = useState('NS')
 	const count = useSelector((state) =>
 		state.cart.filter((item) => {
-			if (!item.LottypeCode.label || !item.ShadeCode.label || !item.selectedYardage.label) {
+			if (!item.LottypeCode?.label || !item.ShadeCode?.label || !item.selectedYardage?.label) {
 			} else {
 				return item
 			}
@@ -47,7 +47,7 @@ const QuickOrder = () => {
 	)
 	const mobileItems = useSelector((state) =>
 		state.cart.filter((item) => {
-			if (item.LottypeCode.label || item.ShadeCode.label || item.selectedYardage.label) {
+			if (item.LottypeCode?.label || item.ShadeCode?.label || item.selectedYardage?.label) {
 				return item
 			} else {
 			}
@@ -60,9 +60,10 @@ const QuickOrder = () => {
 	const [message, setMessage] = useState('Please fill atleat one order field to place an order!')
 	const [shopes, setShopes] = useState([])
 	const [orderSuccess, setOrderSuccess] = useState(false)
+	const [newCart, setNewCart] = useState([])
 	const [rows, setRows] = useState([
 		{
-			LottypeCode: '',
+			LottypeCode: "",
 			shade: [],
 			ShadeCode: '',
 			yardage: [],
@@ -73,9 +74,7 @@ const QuickOrder = () => {
 	])
 	const [products, setProducts] = useState([])
 
-	useEffect(() => {
-		console.log('mobileItem', mobileItem)
-	}, [mobileItem])
+
 
 	const addNewColumn = async () => {
 		console.log('cart', cart)
@@ -86,16 +85,17 @@ const QuickOrder = () => {
 					isPreviousRowFilled = false
 				}
 			})
-		if (cart?.length  === 0 || isPreviousRowFilled) {
+		if (cart?.length === 0 || isPreviousRowFilled) {
+			//  getShades(cart[cart.length - 1]["LottypeCode"]?.value)
 			let newCart = [
 				...cart,
 				{
-					LottypeCode: { label: '', value: '', HsCode: '' },
-					shade: [],
+					LottypeCode: cart?.length === 0 ? "" : cart[cart.length - 1]["LottypeCode"],
+					shade: cart?.length === 0 ? [] : cart[cart.length - 1]["shade"],
 					ShadeCode: { label: '', value: '', HsCode: '' },
 					yardage: [],
-					selectedYardage: [],
-					OrderQty: 12,
+					selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]["selectedYardage"],
+					OrderQty: cart?.length === 0 ? 0 : cart[cart.length - 1]["OrderQty"],
 					price: '0',
 					uuid: v4(),
 				},
@@ -108,6 +108,24 @@ const QuickOrder = () => {
 			setMessage('Please Fill Row Data')
 			setShowPopup(true)
 		}
+	}
+
+	function getShades() {
+		let array = [...newCart]
+		array?.map((itm) => {
+			let value = itm?.LottypeCode?.value
+
+			executeApi(baseURL + variables.shades.url + `?productCode=${value}`, {}, variables.shades.method, token, dispatch)
+				.then(data => {
+					itm.shade = data.data
+
+				})
+				.catch(error => console.log(error))
+
+		})
+
+		dispatch(updateCart(array))
+
 	}
 
 	const addNewColumnMobile = () => {
@@ -124,16 +142,18 @@ const QuickOrder = () => {
 			let newCart = [
 				...cart,
 				{
-					LottypeCode: { label: '', value: '', HsCode: '' },
-					shade: [],
+					LottypeCode: cart?.length === 0 ? '' : cart[cart.length - 1]["LottypeCode"],
+					shade: cart?.length === 0 ? [] : cart[cart.length - 1]["shade"],
 					ShadeCode: { label: '', value: '', HsCode: '' },
 					yardage: [],
-					selectedYardage: [],
+					selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]["selectedYardage"],
 					OrderQty: 12,
 					price: '0',
 					uuid: v4(),
 				},
 			]
+			apiCallFunction()
+
 			dispatch(updateCart(newCart))
 			debouncedApiCall()
 			setMobileItem(newCart.length - 1)
@@ -142,6 +162,7 @@ const QuickOrder = () => {
 			setMessage('Please Fill Row Data')
 			setShowPopup(true)
 		}
+
 	}
 
 	const handleClosePopup = () => {
@@ -150,14 +171,17 @@ const QuickOrder = () => {
 
 	useEffect(() => {
 		executeInitial()
+		executeInitails()
+
 	}, [])
 
 	const executeInitial = async () => {
 		executeApi(baseURL + variables.product.url, {}, variables.product.method, token, dispatch)
-			.then((data) => {
+			.then((data,) => {
 				// setProducts(data.data)
 				var UO = []
 				const uniqueIds = data.data.reduce((acc, obj) => {
+					console.log('acc, obj', acc, obj)
 					if (!acc.includes(obj.productCode)) {
 						acc.push(obj.productCode)
 						UO.push(obj)
@@ -167,10 +191,17 @@ const QuickOrder = () => {
 				setProducts(UO)
 			})
 			.catch((error) => console.log(error.message))
+			console.log('all Product', products)
 
 		executeApi(baseURL + variables.Shopes.url, {}, variables.Shopes.method, token, dispatch)
 			.then((data) => setShopes(data.data))
 			.catch((error) => console.log(error.message))
+
+
+
+
+		//
+
 	}
 
 	const deleteExistingRow = (index1) => {
@@ -187,7 +218,7 @@ const QuickOrder = () => {
 			dispatch(updateCart(newRows))
 			debouncedApiCall()
 			apiCallFunction(newRows)
-		} 
+		}
 		// else {
 		// 	let newRows = [
 		// 		{
@@ -245,10 +276,9 @@ const QuickOrder = () => {
 	}
 
 	const apiCallFunction = async (newRows) => {
-		
-	let finalCart = []
-	console.log("newRows", newRows)
-		if(newRows){
+
+		let finalCart = []
+		if (newRows) {
 			for (const orderDetail of newRows) {
 				finalCart.push({
 					lottypecode: Object.values(orderDetail.LottypeCode).join('BTWOBJ'),
@@ -259,7 +289,7 @@ const QuickOrder = () => {
 					shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`).join('OBJEND'),
 				})
 			}
-		}else{
+		} else {
 			for (const orderDetail of cart) {
 				finalCart.push({
 					lottypecode: Object.values(orderDetail.LottypeCode).join('BTWOBJ'),
@@ -277,24 +307,115 @@ const QuickOrder = () => {
 			.catch((err) => console.log(err))
 	}
 
-	useEffect(() => {
-		// const updateCartApiCall = setTimeout(() => {
-		//     apiCallFunction();
-		// }, 3000)
-		// return () => clearTimeout(updateCartApiCall)
-	}, [cart])
+	// useEffect(() => {
+
+	// }, [])
 
 	function handleOrderSuccess(isOrderSuccess) {
 		setOrderSuccess(isOrderSuccess)
 	}
 
-	const apiCallFunction1 = () => {}
+	function updatProductFromMobile() {
+		setMobileItem('NS')
+		apiCallFunction()
+	}
+
+	const apiCallFunction1 = () => { }
 
 	const debouncedApiCall = _.debounce(apiCallFunction1, 3000)
 
 
-	function validateShadeCode(code, index){
+	function validateShadeCode(code, index) {
 		console.log('shade index', code, index)
+	}
+
+	useEffect(() => {
+		setProducts(products)
+	}, [mobileItem])
+
+	const executeInitails = async () => {
+		// console.log("user", user)
+		// if (user) { 
+		executeApi(baseURL + variables.getCart.url, {}, variables.getCart.method, token, dispatch)
+			.then((data) => {
+				if (data.data != null) {
+
+
+					var finalObject = data.data.map((item) => {
+						let jsonData = item;
+
+						let dataArray = jsonData.shadecodelist.split('OBJEND');
+						dataArray.pop();
+						// Map the array elements back into objects
+						let parsedArray = dataArray.map(item => {
+							let [shadeCode, shadeDesc] = item.split('BTWOBJ');
+							return { shadeCode, shadeDesc };
+						});
+
+						return {
+							"LottypeCode": { label: jsonData.lottypecode.split("BTWOBJ")[0], value: jsonData.lottypecode.split("BTWOBJ")[1], HsCode: jsonData.lottypecode.split("BTWOBJ")[2] },
+							"shade": parsedArray,
+							"ShadeCode": { label: jsonData.shadecode.split("BTWOBJ")[0], value: jsonData.shadecode.split("BTWOBJ")[1] },
+							"yardage": jsonData.yardagelist.split("BTWOBJ"),
+							"selectedYardage": { label: jsonData.yardage.split("BTWOBJ")[0], value: jsonData.yardage.split("BTWOBJ")[1], HsCode: jsonData.yardage.split("BTWOBJ")[2] },
+							"OrderQty": jsonData.qty,
+							"price": 0,
+							"uuid": v4()
+						}
+					});
+					console.log('fdfdfdfddfdfdf', finalObject)
+					dispatch(updateCart(finalObject))
+					// console.log('carrrrrrrt', cart)
+
+
+
+
+					const newArray = [...finalObject];
+					console.log('asdsadasdasdasdasdasdasdasdsad', newArray)
+					let count = 0;
+
+					for (let i = 0; i < newArray.length; i++) {
+						executeApi(baseURL + variables.shades.url + `?productCode=${newArray[i].LottypeCode.value}`, {}, variables.shades.method, token, dispatch)
+							.then((data) => {
+								newArray[i] = newArray[i] ? { ...newArray[i], shade: data.data ? data.data : [] } : {};
+							})
+							.then(() => {
+								count += 1;
+								if (count === cart.length) {
+									dispatch(updateCart(newArray));
+								}
+							});
+					}
+
+
+
+
+				} else {
+					dispatch(updateCart(rows))
+				}
+
+
+				// finalObject.map((item, i) =>{
+				// 	let shade = []
+				// 	executeApi(baseURL + variables.shades.url + `?productCode=${item.LottypeCode.value}`, {}, variables.shades.method, token, dispatch)
+				// 	.then(data => shade =  data.data).then(()=>{
+				// 		finalObject[i] = {...item, shade:shade}
+				// 		console.log("finalObject", finalObject)
+				// 	})
+
+				// 	if(i === finalObject.length){
+				// 		dispatch(updateCart(finalObject))
+
+				// 		console.log('final obj', finalObject)
+				// 	}
+				// })
+
+
+			})
+			.catch((err) => {
+				console.log(err)
+			})
+		// }
 	}
 
 	return !orderSuccess ? (
@@ -579,7 +700,7 @@ const QuickOrder = () => {
 										item
 										md={7}
 										sm={3}
-										// className="discountImage"
+									// className="discountImage"
 									></Grid>
 									<Grid
 										item
@@ -666,49 +787,49 @@ const QuickOrder = () => {
 									overflowY: 'scroll',
 								}}>
 								{cart.map((item, index) => {
-									if (item.LottypeCode.value || item.ShadeCode.label || item.LottypeCode.HsCode || item.selectedYardage.label) {
-										return (
+									// if (item.LottypeCode.value || item.ShadeCode.label || item.LottypeCode.HsCode || item.selectedYardage.label) {
+									return (
+										<Grid
+											item
+											container
+											xs={11}
+											className="flex quickOrderCardMobile"
+											style={{ minHeight: '80px', paddingLeft: '10px' }}>
 											<Grid
 												item
-												container
-												xs={11}
-												className="flex quickOrderCardMobile"
-												style={{ minHeight: '80px', paddingLeft: '10px' }}>
-												<Grid
-													item
-													xs={8}
-													style={{ height: '90%' }}>
-													<Typography
-														variant="body1"
-														color="grey">
-														{item.LottypeCode.label}
-													</Typography>
-													<Typography variant="h4">{item.ShadeCode.label}</Typography>
-													{/* <Typography variant='body1' >{item.selectedYardage.label}</Typography> */}
-												</Grid>
-												<Grid
-													item
-													xs={4}
-													style={{ height: '90%', textAlign: 'right', paddingRight: '5px' }}>
-													<ModeEditIcon
-														onClick={() => setMobileItem(index)}
-														style={{ paddingRight: '5px' }}
-													/>
-													<Delete onClick={() => deleteExistingRow(index)} />
-													<Typography variant="h6">
-														{' '}
-														<Typography
-															style={{ color: 'grey', fontSize: '12px' }}
-															variant="p">
-															{' '}
-															Qty:
-														</Typography>{' '}
-														{item.OrderQty}
-													</Typography>
-												</Grid>
+												xs={8}
+												style={{ height: '90%' }}>
+												<Typography
+													variant="body1"
+													color="grey">
+													{item.LottypeCode?.label ?? 'No Item Detail Selected, Edit to Select'}
+												</Typography>
+												<Typography variant="h4">{item.ShadeCode?.label}</Typography>
+												{/* <Typography variant='body1' >{item.selectedYardage.label}</Typography> */}
 											</Grid>
-										)
-									}
+											<Grid
+												item
+												xs={4}
+												style={{ height: '90%', textAlign: 'right', paddingRight: '5px' }}>
+												<ModeEditIcon
+													onClick={() => setMobileItem(index)}
+													style={{ paddingRight: '5px' }}
+												/>
+												<Delete onClick={() => deleteExistingRow(index)} />
+												<Typography variant="h6">
+													{' '}
+													<Typography
+														style={{ color: 'grey', fontSize: '12px' }}
+														variant="p">
+														{' '}
+														Qty:
+													</Typography>{' '}
+													{item.OrderQty}
+												</Typography>
+											</Grid>
+										</Grid>
+									)
+									// }
 								})}
 								{mobileItems.length > 0 ? (
 									<></>
@@ -721,7 +842,7 @@ const QuickOrder = () => {
 										<Typography variant="h4">No Items in the list !</Typography>
 										<Typography
 											variant="body2"
-											color="grey">
+											color="grey"> 
 											Please tap “Add an items” button below to add first item in your list.
 										</Typography>
 										<br />
@@ -908,7 +1029,7 @@ const QuickOrder = () => {
 									xs={12}
 									className="flex">
 									<button
-										onClick={() => setMobileItem('NS')}
+										onClick={() => updatProductFromMobile()}
 										className="addAnItemButtonMobile flex"
 										style={{ textAlign: 'center' }}>
 										<Typography

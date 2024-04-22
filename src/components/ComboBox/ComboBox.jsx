@@ -2,14 +2,15 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import { executeApi } from '../../utils/WithAuth';
 import { variables } from '../../utils/config';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateCart } from '../../pages/redux/features/cart/cartslice';
 import { FormControl, InputLabel, MenuItem, Select, useMediaQuery } from '@mui/material';
 import '../Input/input.css'
 import { AutoComplete, Input } from 'antd';
 
-export default function ComboBox({ debouncedApiCall, label, index, rows, setRows, options = [], baseURL, token }) {
 
+export default function ComboBox({ debouncedApiCall, label, index, rows, setRows, options = [], baseURL, token }) {
+ 
   const dispatch = useDispatch();
   const [infoLabel, setInfoLabel] = React.useState(rows[index]['LottypeCode']['label'])
   const isMobile = useMediaQuery('(max-width: 600px)')
@@ -17,27 +18,26 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
   const [ddOption, setDdOption] = React.useState([{ label: "loading...", value: "loading..." }]);
 
   React.useEffect(() => {
-    console.log(infoLabel);
-    if (infoLabel == "") {
+     
+    if (!infoLabel) {
       updateProduct()
       let abcd = options.map((option) => {
         return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty }
       })
       setDdOption(abcd)
-      console.log(abcd, "abcdefg");
 
     } else {
-      let abcd = options.filter((option) => {
-        if ((option.productDesc.toLowerCase()).includes(infoLabel.toLowerCase())) {
-          return option
+      let abcd = [...options]
+      // let abcd = options.filter((option) => { 
+      //   if ((option.productDesc?.toLowerCase()).includes(infoLabel?.toLowerCase())) {
+      //     return option
   
-        }
-      })
+      //   }
+      // })
       abcd = abcd.map((option) => {
         return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty }
       })
       setDdOption(abcd)
-      console.log(abcd, "abcdefg");
 
     }
     setOpen(true)
@@ -45,15 +45,15 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
   }, [infoLabel])
 
   React.useEffect(() => {
-    console.log(infoLabel);
     if (infoLabel == "") {
       let abcd = options.map((option) => {
         return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty }
       })
       setDdOption(abcd)
     } else {
+      // let abcd = []
       let abcd = options.filter((option) => {
-        if ((option.productDesc.toLowerCase()).includes(infoLabel.toLowerCase())) {
+        if ((option.productDesc?.toLowerCase()).includes(infoLabel?.toLowerCase())) {
           return option
 
         }
@@ -61,6 +61,8 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
       abcd = abcd.map((option) => {
         return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty }
       })
+    console.log("OPTION", abcd)
+
       setDdOption(abcd)
     }
     setOpen(true)
@@ -70,14 +72,13 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 
   const updateProduct = (value, e) => {
     let newArray = [...rows];
-    console.log(e);
     if (value) {
       newArray[index] = { ...rows[index], LottypeCode: value ? e : { label: "", HsCode: "", value: "" }, selectedYardage: { label: e.yardage, value: e.yardage, HsCode: e.yardage }, OrderQty: e.boxQty };
       setInfoLabel(e.label)
       executeApi(baseURL + variables.shades.url + `?productCode=${e.value}`, {}, variables.shades.method, token, dispatch)
         .then(data => {
-          console.log(data);
           newArray[index] = { ...newArray[index], shade: data.data ? data.data : [] }
+          console.log('SHaddddddddd', newArray)
         })
         .then(() => {
           // executeApi(baseURL + variables.yardage.url + `?productCode=${e.value}`, {}, variables.yardage.method, token, dispatch)
@@ -90,9 +91,11 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
         .catch(error => console.log(error))
     } else {
       setInfoLabel("")
-      newArray[index] = { ...rows[index], LottypeCode: { label: "", HsCode: "", value: "" }, ShadeCode: { label: "", HsCode: "", value: "" }, selectedYardage: { label: "", HsCode: "", value: "" }, shade: [] }
+      // rows[index].OrderQty = 0
+      newArray[index] = { ...rows[index], OrderQty:0, LottypeCode: { label: "", HsCode: "", value: "" }, ShadeCode: { label: "", HsCode: "", value: "" }, selectedYardage: { label: "", HsCode: "", value: "" }, shade: [] }
       dispatch(updateCart(newArray));
     }
+    console.log("Product", newArray, value, e)
 
     // validateShadeCode(value, index)
   }
@@ -117,14 +120,20 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 
 export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [], baseURL, token }) {
 
+  // let {
+  //   cart,
+  
+  // } = useSelector((state) => state)
+
   const dispatch = useDispatch();
   const [infoLabel, setInfoLabel] = React.useState("")
   const isMobile = useMediaQuery('(max-width: 600px)')
   const [ddOption, setDdOption] = React.useState(options);
 
   React.useEffect(() => {
-    console.log(infoLabel);
-    if (infoLabel == "") {
+    console.log("infoLabel", options)
+
+    if (!infoLabel) {
       let newArray = [...rows];
       newArray[index] = { ...rows[index], ShadeCode: { label: "", HsCode: "", value: "" } }
       dispatch(updateCart(newArray));
@@ -133,11 +142,12 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
       })
       setDdOption(abcd)
     } else {
-      let abcd = options.filter((option) => {
-        if (option.shadeCode.includes(infoLabel.toString())) {
-          return option
-        }
-      })
+      let abcd = options
+      // let abcd = options.filter((option) => {
+      //   if (option.shadeCode?.includes(infoLabel.toString())) {
+      //     return option
+      //   }
+      // })
       if(abcd.length === 0){
         abcd = []
       }else{
@@ -151,27 +161,34 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
 
   }, [infoLabel])
 
+
   React.useEffect(() => {
-    console.log(infoLabel);
+    console.log("OPTION", options)
+
     if (!infoLabel) {
       let abcd = options.map((option, ind) => {
         return { label: option.shadeCode, value: option.shadeDesc, key: ind, }
       })
-      console.log(abcd);
+      console.log('abcd if', abcd)
       setDdOption(abcd)
     } else {
-      let abcd = options.filter((option) => {
-        if (option.shadeCode.includes(infoLabel.toString())) {
-          return option
-        }
-      })
+      let abcd = []
+      // let abcd = options.filter((option) => {
+      //   if (option.shadeCode.includes(infoLabel.toString())) {
+      //     return option
+      //   }else return option
+      // })
       abcd = abcd.map((option, ind) => {
         return { label: option.shadeCode, value: option.shadeDesc, key: ind, }
       })
+      
+      console.log('abcd else', abcd, options , rows[index])
+      
       setDdOption(abcd)
     }
 
   }, [options])
+
 
 
   const updateProduct = (value, e) => {
@@ -195,7 +212,7 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
         options={ddOption}
         placeholder="Select Shade"
         allowClear={true}
-        value={infoLabel ? infoLabel : rows[index]['ShadeCode']['label']}
+        value={rows[index]['ShadeCode']['label']}
         onSelect={(e, v) => updateProduct(e, v)}
         onSearch={(v) => setInfoLabel(v)}
         onClear={() => updateProduct()}
@@ -259,3 +276,4 @@ export function YardageBox({ debouncedApiCall, label, index, rows, setRows, opti
     </>
   );
 }
+

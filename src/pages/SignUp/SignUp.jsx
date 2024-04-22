@@ -108,7 +108,8 @@ const SignUp = () => {
     }
   };
 
-  const completeSignup = () => {
+  function completeSignup(e) {
+    e.preventDefault()
     console.log(userInfo);
     setLoadingState(true);
     if (!userInfo.UserEmail || !userInfo.Address || !userInfo.FirstName || !userInfo.LastName || !userInfo.PhoneNumber || !userInfo.UserEmail || !userInfo.PhoneNumber || !userInfo.CompanyName || !userInfo.UserPassword) {
@@ -199,7 +200,7 @@ const SignUp = () => {
                   <Typography variant='h4' >
                     Let’s begin our partnership. Signup!
                   </Typography>
-                  <form>
+                  <form onSubmit={completeSignup}>
                   <Grid item container md={12} sm={12} xs={12} columnSpacing={1} >
                     <Grid item md={5} sm={5.5} xs={10} >
                       <Input value={userInfo.FirstName} autocomplete="off" setValue={handleFirstName} type="text" placeholder="First Name" />
@@ -249,7 +250,7 @@ const SignUp = () => {
                       <Input value={userInfo.UserPassword} type="password" className='width100' setValue={(e) => setUserInfo({ ...userInfo, UserPassword: e })} placeholder="Password" />
                     </Grid>
                     <Grid item md={5} xs={5} >
-                      <Button buttonName={"SignUp"} loadingState={loadingState} onClick={completeSignup} />
+                      <Button type='submit' buttonName={"SignUp"} loadingState={loadingState} onClick={()=> null} />
                     </Grid>
                   </Grid>
                   </form>

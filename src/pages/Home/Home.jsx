@@ -22,6 +22,7 @@ const Home = () => {
 
 
   const executeInitails = () => {
+    console.log("user", user)
     if (user) {
       setOpen(true)
       executeApi(baseURL + variables.getCart.url, {}, variables.getCart.method, token, dispatch)
@@ -55,9 +56,9 @@ const Home = () => {
     }
   }
 
-  // useEffect(() => {
-  //   executeInitails();
-  // }, [user])
+  useEffect(() => {
+    executeInitails();
+  }, [])
 
 
   return (

@@ -100,12 +100,15 @@ export default function ResponsiveDialog() {
 
   React.useEffect(() => {
     if (token && user?.isAdmin) {
+      console.log('user', token, user.isAdmin)
       getAllNames();
     } else {
       setName([user?.userEmail])
       setPersonName([user?.userEmail])
 
     }
+    setCPass('')
+    setNewPass('')
   }, [])
 
   const handleChange = (event) => {

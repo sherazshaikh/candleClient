@@ -60,7 +60,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
     const handleClosePopup = () => {
         setShowPopup(false);
     };
-    const deleteExistingRow = (index1) => {
+    const deleteExistingRow = async (index1) => {
         if (rows.length > 0) {
 
             let newRows = rows.filter((i) => {
@@ -70,6 +70,23 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
             })
             console.log(newRows);
             dispatch(updateCart(newRows))
+            let finalCart = []
+            if (newRows.length > 0) {
+                for (const orderDetail of newRows) {
+                    finalCart.push({
+                        lottypecode: Object.values(orderDetail.LottypeCode).join('BTWOBJ'),
+                        shadecode: Object.values(orderDetail.ShadeCode).join('BTWOBJ'),
+                        qty: orderDetail.OrderQty,
+                        yardage: Object.values(orderDetail.selectedYardage).join('BTWOBJ'),
+                        yardagelist: orderDetail.yardage.join('BTWOBJ'),
+                        shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`).join('OBJEND'),
+                    })
+                }
+            } 
+
+            await executeApi(baseURL + variables.updateCart.url, finalCart, variables.updateCart.method, token, dispatch)
+			.then((data) => console.log(data))
+			.catch((err) => console.log(err))
         } 
         // else {
         //     let newRows = [{
@@ -141,6 +158,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
         formData.append('AttachmentUrl', "");
         executeApi(baseURL + variables.UploadPOAttachment.url + `?rowuid=${order.rowuid}&branchCode=${order.branchcode}`, formData, variables.UploadPOAttachment.method, token, dispatch)
             .then((result) => {
+                updateCartData()
                 setOrderSuccess(true);
                 // setAttachment(result.data.attachmentUrl);
                 // setUploadProgress(false);
@@ -202,10 +220,12 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
                         if (fileList.length > 0) {
                             uploadFile(data.data)
                         } else {
+                            updateCartData()
                             setLoadingState(false)
                             setShowPopup(true);
                             setOrderSuccess(true);
                         }
+
                     }
                 })
                 .catch((error) => {
@@ -215,6 +235,12 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
                     setLoadingState(false)
                 })
         }
+    }
+
+   async function updateCartData(){
+        await executeApi(baseURL + variables.updateCart.url, [], variables.updateCart.method, token, dispatch)
+			.then((data) => console.log(data))
+			.catch((err) => console.log(err))
     }
 
     return (

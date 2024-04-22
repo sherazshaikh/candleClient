@@ -35,7 +35,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   const count = useSelector((state) => state.cart.filter((item) => {
-    if (!item.LottypeCode.label || !item.ShadeCode.label || !item.selectedYardage.label) {
+    if (!item?.LottypeCode?.label || !item.ShadeCode.label || !item.selectedYardage.label) {
 
     } else {
       return item

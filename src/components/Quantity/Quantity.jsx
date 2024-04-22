@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import { updateCart } from '../../pages/redux/features/cart/cartslice';
 
 const Quantity = ({ rows, setRows, index, debouncedApiCall }) => {
-  console.log(rows[index]['OrderQty']);
   const [value, setValue] = useState(rows[index]['OrderQty']);
   const dispatch = useDispatch();
   const increment = () => {
