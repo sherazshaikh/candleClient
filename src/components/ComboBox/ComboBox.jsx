@@ -10,7 +10,7 @@ import { AutoComplete, Input } from 'antd';
 
 
 export default function ComboBox({ debouncedApiCall, label, index, rows, setRows, options = [], baseURL, token }) {
- 
+
   const dispatch = useDispatch();
   const [infoLabel, setInfoLabel] = React.useState(rows[index]['LottypeCode']['label'])
   const isMobile = useMediaQuery('(max-width: 600px)')
@@ -18,7 +18,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
   const [ddOption, setDdOption] = React.useState([{ label: "loading...", value: "loading..." }]);
 
   React.useEffect(() => {
-     
+
     if (!infoLabel) {
       updateProduct()
       let abcd = options.map((option) => {
@@ -27,13 +27,13 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
       setDdOption(abcd)
 
     } else {
-      let abcd = [...options]
-      // let abcd = options.filter((option) => { 
-      //   if ((option.productDesc?.toLowerCase()).includes(infoLabel?.toLowerCase())) {
-      //     return option
-  
-      //   }
-      // })
+      // let abcd = [...options]
+      let abcd = options.filter((option) => {
+        if ((option.productDesc?.toLowerCase()).includes(infoLabel?.toLowerCase())) {
+          return option
+
+        }
+      })
       abcd = abcd.map((option) => {
         return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty }
       })
@@ -61,7 +61,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
       abcd = abcd.map((option) => {
         return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty }
       })
-    console.log("OPTION", abcd)
+      console.log("OPTION", abcd)
 
       setDdOption(abcd)
     }
@@ -92,7 +92,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
     } else {
       setInfoLabel("")
       // rows[index].OrderQty = 0
-      newArray[index] = { ...rows[index], OrderQty:0, LottypeCode: { label: "", HsCode: "", value: "" }, ShadeCode: { label: "", HsCode: "", value: "" }, selectedYardage: { label: "", HsCode: "", value: "" }, shade: [] }
+      newArray[index] = { ...rows[index], OrderQty: 0, LottypeCode: { label: "", HsCode: "", value: "" }, ShadeCode: { label: "", HsCode: "", value: "" }, selectedYardage: { label: "", HsCode: "", value: "" }, shade: [] }
       dispatch(updateCart(newArray));
     }
     console.log("Product", newArray, value, e)
@@ -122,7 +122,7 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
 
   // let {
   //   cart,
-  
+
   // } = useSelector((state) => state)
 
   const dispatch = useDispatch();
@@ -138,26 +138,26 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
       newArray[index] = { ...rows[index], ShadeCode: { label: "", HsCode: "", value: "" } }
       dispatch(updateCart(newArray));
       let abcd = options.map((option, ind) => {
-        return { label: option.shadeCode, value: option.shadeDesc,  key: ind }
+        return { label: option.shadeCode, value: option.shadeDesc, key: ind }
       })
       setDdOption(abcd)
     } else {
-      let abcd = options
-      // let abcd = options.filter((option) => {
-      //   if (option.shadeCode?.includes(infoLabel.toString())) {
-      //     return option
-      //   }
-      // })
-      if(abcd.length === 0){
+      // let abcd = options
+      let abcd = options.filter((option) => {
+        if (option.shadeCode?.includes(infoLabel.toString())) {
+          return option
+        }
+      })
+      if (abcd.length === 0) {
         abcd = []
-      }else{
+      } else {
         abcd = abcd.map((option, ind) => {
           return { label: option.shadeCode, value: option.shadeDesc, key: ind }
         })
       }
       setDdOption(abcd)
       // setTimeout(()=> abcd?.length === 0 && setInfoLabel(""), 1100)
-    } 
+    }
 
   }, [infoLabel])
 
@@ -172,18 +172,18 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
       console.log('abcd if', abcd)
       setDdOption(abcd)
     } else {
-      let abcd = []
-      // let abcd = options.filter((option) => {
-      //   if (option.shadeCode.includes(infoLabel.toString())) {
-      //     return option
-      //   }else return option
-      // })
+      // let abcd = []
+      let abcd = options.filter((option) => {
+        if (option.shadeCode.includes(infoLabel.toString())) {
+          return option
+        } else return option
+      })
       abcd = abcd.map((option, ind) => {
         return { label: option.shadeCode, value: option.shadeDesc, key: ind, }
       })
-      
-      console.log('abcd else', abcd, options , rows[index])
-      
+
+      console.log('abcd else', abcd, options, rows[index])
+
       setDdOption(abcd)
     }
 
@@ -197,13 +197,20 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
     // const validShadeCode = rows[index].shade.some(shade => shade.shadeCode === infoLabel)
     // console.log("validShadeCode", validShadeCode, rows)
     // if(validShadeCode){
-      newArray[index] = { ...rows[index], ShadeCode: value ? e : { label: "", HsCode: "", value: "" } }
+    newArray[index] = { ...rows[index], ShadeCode: value ? e : { label: "", HsCode: "", value: "" } }
     // }else {
     //   newArray[index] = { ...rows[index], ShadeCode: { label: "", HsCode: "", value: "" } }
     // }
-    
+
     dispatch(updateCart(newArray));
   }
+
+
+  React.useEffect(() => {
+    if(!rows[index]['LottypeCode']['label']){
+      setInfoLabel('')
+    }
+  }, [rows[index]['LottypeCode']['label']])
 
 
   return (
@@ -212,7 +219,7 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
         options={ddOption}
         placeholder="Select Shade"
         allowClear={true}
-        value={rows[index]['ShadeCode']['label']}
+        value={infoLabel}
         onSelect={(e, v) => updateProduct(e, v)}
         onSearch={(v) => setInfoLabel(v)}
         onClear={() => updateProduct()}
