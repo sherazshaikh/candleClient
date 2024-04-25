@@ -63,7 +63,7 @@ const QuickOrder = () => {
 	const [newCart, setNewCart] = useState([])
 	const [rows, setRows] = useState([
 		{
-			LottypeCode: "",
+			LottypeCode: '',
 			shade: [],
 			ShadeCode: '',
 			yardage: [],
@@ -73,8 +73,6 @@ const QuickOrder = () => {
 		},
 	])
 	const [products, setProducts] = useState([])
-
-
 
 	const addNewColumn = async () => {
 		console.log('cart', cart)
@@ -86,20 +84,26 @@ const QuickOrder = () => {
 				}
 			})
 		if (cart?.length === 0 || isPreviousRowFilled) {
-			//  getShades(cart[cart.length - 1]["LottypeCode"]?.value)
+			let shadeItemList = []
+			const productQty = products.find((product) => product.productCode === cart[cart.length - 1]?.LottypeCode?.value)
+			console.log("product",productQty, products , cart )
+			await executeApi(baseURL + variables.shades.url + `?productCode=${cart[cart.length - 1]?.LottypeCode?.value}`, {}, variables.shades.method, token, dispatch).then((data) => {
+				shadeItemList = data.data ? data.data : []
+			})
 			let newCart = [
 				...cart,
 				{
-					LottypeCode: cart?.length === 0 ? "" : cart[cart.length - 1]["LottypeCode"],
-					shade: cart?.length === 0 ? [] : cart[cart.length - 1]["shade"],
+					LottypeCode: cart?.length === 0 ? '' : cart[cart.length - 1]['LottypeCode'],
+					shade: cart?.length === 0 ? [] : shadeItemList,
 					ShadeCode: { label: '', value: '', HsCode: '' },
 					yardage: [],
-					selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]["selectedYardage"],
-					OrderQty: cart?.length === 0 ? 0 : cart[cart.length - 1]["OrderQty"],
+					selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]['selectedYardage'],
+					OrderQty: productQty?.boxQty ,
 					price: '0',
 					uuid: v4(),
 				},
 			]
+
 			apiCallFunction()
 			dispatch(updateCart(newCart))
 			debouncedApiCall()
@@ -116,19 +120,16 @@ const QuickOrder = () => {
 			let value = itm?.LottypeCode?.value
 
 			executeApi(baseURL + variables.shades.url + `?productCode=${value}`, {}, variables.shades.method, token, dispatch)
-				.then(data => {
+				.then((data) => {
 					itm.shade = data.data
-
 				})
-				.catch(error => console.log(error))
-
+				.catch((error) => console.log(error))
 		})
 
 		dispatch(updateCart(array))
-
 	}
 
-	const addNewColumnMobile = () => {
+	const addNewColumnMobile = async () => {
 		let isPreviousRowFilled = true
 		console.log('cart', cart)
 		cart?.length > 0 &&
@@ -137,22 +138,33 @@ const QuickOrder = () => {
 					isPreviousRowFilled = false
 				}
 			})
-
+		// const productQty = products.find((product) => product.hsCode === cart[cart.length - 1]?.LottypeCode?.HsCode)
 		if (cart?.length === 0 || isPreviousRowFilled) {
+			let shadeItemList = []
+			const productQty = products.find((product) => product.productCode === cart[cart.length - 1]?.LottypeCode?.value)
+
+			console.log("product",productQty, products , cart )
+			
+			await executeApi(baseURL + variables.shades.url + `?productCode=${cart[cart.length - 1]?.LottypeCode?.value}`, {}, variables.shades.method, token, dispatch).then((data) => {
+				shadeItemList = data.data
+			})
 			let newCart = [
 				...cart,
 				{
-					LottypeCode: cart?.length === 0 ? '' : cart[cart.length - 1]["LottypeCode"],
-					shade: cart?.length === 0 ? [] : cart[cart.length - 1]["shade"],
-					ShadeCode: { label: '', value: '', HsCode: '' },
+					LottypeCode: cart?.length === 0 ? '' : cart[cart.length - 1]['LottypeCode'],
+					shade: cart?.length === 0 ? [] : shadeItemList,
+					ShadeCode: { label: '', value: '', HsCode: '' }, 
 					yardage: [],
-					selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]["selectedYardage"],
-					OrderQty: 12,
+					selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]['selectedYardage'],
+					OrderQty: productQty?.boxQty ,
 					price: '0',
 					uuid: v4(),
 				},
 			]
-			apiCallFunction()
+
+			const newArr = cart.filter((itm) => itm?.LottypeCode?.label && itm?.ShadeCode?.label && itm.selectedYardage.label)
+
+			apiCallFunction(newArr)
 
 			dispatch(updateCart(newCart))
 			debouncedApiCall()
@@ -162,7 +174,6 @@ const QuickOrder = () => {
 			setMessage('Please Fill Row Data')
 			setShowPopup(true)
 		}
-
 	}
 
 	const handleClosePopup = () => {
@@ -171,13 +182,13 @@ const QuickOrder = () => {
 
 	useEffect(() => {
 		executeInitial()
-		executeInitails()
 
+		console.log('Initial', products, cart)
 	}, [])
 
 	const executeInitial = async () => {
 		executeApi(baseURL + variables.product.url, {}, variables.product.method, token, dispatch)
-			.then((data,) => {
+			.then((data) => {
 				// setProducts(data.data)
 				var UO = []
 				const uniqueIds = data.data.reduce((acc, obj) => {
@@ -191,21 +202,18 @@ const QuickOrder = () => {
 				setProducts(UO)
 			})
 			.catch((error) => console.log(error.message))
-			console.log('all Product', products)
+		console.log('all Product', products)
 
 		executeApi(baseURL + variables.Shopes.url, {}, variables.Shopes.method, token, dispatch)
 			.then((data) => setShopes(data.data))
 			.catch((error) => console.log(error.message))
 
-
-
+		executeInitails()
 
 		//
-
 	}
 
 	const deleteExistingRow = (index1) => {
-
 		if (cart.length > 0) {
 			let newRows = cart.filter((i, index) => {
 				if (index !== index1) {
@@ -213,7 +221,7 @@ const QuickOrder = () => {
 				}
 			})
 
-			console.log("index", index1, newRows)
+			console.log('index', index1, newRows)
 
 			dispatch(updateCart(newRows))
 			debouncedApiCall()
@@ -276,7 +284,6 @@ const QuickOrder = () => {
 	}
 
 	const apiCallFunction = async (newRows) => {
-
 		let finalCart = []
 		if (newRows) {
 			for (const orderDetail of newRows) {
@@ -320,10 +327,9 @@ const QuickOrder = () => {
 		apiCallFunction()
 	}
 
-	const apiCallFunction1 = () => { }
+	const apiCallFunction1 = () => {}
 
 	const debouncedApiCall = _.debounce(apiCallFunction1, 3000)
-
 
 	function validateShadeCode(code, index) {
 		console.log('shade index', code, index)
@@ -335,65 +341,55 @@ const QuickOrder = () => {
 
 	const executeInitails = async () => {
 		// console.log("user", user)
-		// if (user) { 
+		// if (user) {
 		executeApi(baseURL + variables.getCart.url, {}, variables.getCart.method, token, dispatch)
 			.then((data) => {
 				if (data.data != null) {
-
-
 					var finalObject = data.data.map((item) => {
-						let jsonData = item;
+						let jsonData = item
 
-						let dataArray = jsonData.shadecodelist.split('OBJEND');
-						dataArray.pop();
+						let dataArray = jsonData.shadecodelist.split('OBJEND')
+						dataArray.pop()
 						// Map the array elements back into objects
-						let parsedArray = dataArray.map(item => {
-							let [shadeCode, shadeDesc] = item.split('BTWOBJ');
-							return { shadeCode, shadeDesc };
-						});
+						let parsedArray = dataArray.map((item) => {
+							let [shadeCode, shadeDesc] = item.split('BTWOBJ')
+							return { shadeCode, shadeDesc }
+						})
 
 						return {
-							"LottypeCode": { label: jsonData.lottypecode.split("BTWOBJ")[0], value: jsonData.lottypecode.split("BTWOBJ")[1], HsCode: jsonData.lottypecode.split("BTWOBJ")[2] },
-							"shade": parsedArray,
-							"ShadeCode": { label: jsonData.shadecode.split("BTWOBJ")[0], value: jsonData.shadecode.split("BTWOBJ")[1] },
-							"yardage": jsonData.yardagelist.split("BTWOBJ"),
-							"selectedYardage": { label: jsonData.yardage.split("BTWOBJ")[0], value: jsonData.yardage.split("BTWOBJ")[1], HsCode: jsonData.yardage.split("BTWOBJ")[2] },
-							"OrderQty": jsonData.qty,
-							"price": 0,
-							"uuid": v4()
+							LottypeCode: { label: jsonData.lottypecode.split('BTWOBJ')[0], value: jsonData.lottypecode.split('BTWOBJ')[1], HsCode: jsonData.lottypecode.split('BTWOBJ')[2] },
+							shade: parsedArray,
+							ShadeCode: { label: jsonData.shadecode.split('BTWOBJ')[0], value: jsonData.shadecode.split('BTWOBJ')[1] },
+							yardage: jsonData.yardagelist.split('BTWOBJ'),
+							selectedYardage: { label: jsonData.yardage.split('BTWOBJ')[0], value: jsonData.yardage.split('BTWOBJ')[1], HsCode: jsonData.yardage.split('BTWOBJ')[2] },
+							OrderQty: jsonData.qty,
+							price: 0,
+							uuid: v4(),
 						}
-					});
+					})
 					console.log('fdfdfdfddfdfdf', finalObject)
 					dispatch(updateCart(finalObject))
 					// console.log('carrrrrrrt', cart)
 
-
-
-
-					const newArray = [...finalObject];
+					const newArray = [...finalObject]
 					console.log('asdsadasdasdasdasdasdasdasdsad', newArray)
-					let count = 0;
+					let count = 0
 
 					for (let i = 0; i < newArray.length; i++) {
 						executeApi(baseURL + variables.shades.url + `?productCode=${newArray[i].LottypeCode.value}`, {}, variables.shades.method, token, dispatch)
 							.then((data) => {
-								newArray[i] = newArray[i] ? { ...newArray[i], shade: data.data ? data.data : [] } : {};
+								newArray[i] = newArray[i] ? { ...newArray[i], shade: data.data ? data.data : [] } : {}
 							})
 							.then(() => {
-								count += 1;
+								count += 1
 								if (count === cart.length) {
-									dispatch(updateCart(newArray));
+									dispatch(updateCart(newArray))
 								}
-							});
+							})
 					}
-
-
-
-
 				} else {
 					dispatch(updateCart(rows))
 				}
-
 
 				// finalObject.map((item, i) =>{
 				// 	let shade = []
@@ -409,8 +405,6 @@ const QuickOrder = () => {
 				// 		console.log('final obj', finalObject)
 				// 	}
 				// })
-
-
 			})
 			.catch((err) => {
 				console.log(err)
@@ -700,7 +694,7 @@ const QuickOrder = () => {
 										item
 										md={7}
 										sm={3}
-									// className="discountImage"
+										// className="discountImage"
 									></Grid>
 									<Grid
 										item
@@ -842,7 +836,7 @@ const QuickOrder = () => {
 										<Typography variant="h4">No Items in the list !</Typography>
 										<Typography
 											variant="body2"
-											color="grey"> 
+											color="grey">
 											Please tap “Add an items” button below to add first item in your list.
 										</Typography>
 										<br />
