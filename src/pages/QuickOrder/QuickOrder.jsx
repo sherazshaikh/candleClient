@@ -101,6 +101,7 @@ const QuickOrder = () => {
 					OrderQty: productQty?.boxQty ,
 					price: '0',
 					uuid: v4(),
+					uom: productQty ? productQty?.uom : ''
 				},
 			]
 
@@ -158,6 +159,7 @@ const QuickOrder = () => {
 					selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]['selectedYardage'],
 					OrderQty: productQty?.boxQty ,
 					price: '0',
+					uom: productQty ? productQty?.uom : '',
 					uuid: v4(),
 				},
 			]
@@ -284,6 +286,7 @@ const QuickOrder = () => {
 	}
 
 	const apiCallFunction = async (newRows) => {
+		console.log("apiCallFunction",newRows, cart )
 		let finalCart = []
 		if (newRows) {
 			for (const orderDetail of newRows) {
@@ -294,6 +297,7 @@ const QuickOrder = () => {
 					yardage: Object.values(orderDetail.selectedYardage).join('BTWOBJ'),
 					yardagelist: orderDetail.yardage.join('BTWOBJ'),
 					shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`).join('OBJEND'),
+					uom: orderDetail.uom
 				})
 			}
 		} else {
@@ -305,6 +309,7 @@ const QuickOrder = () => {
 					yardage: Object.values(orderDetail.selectedYardage).join('BTWOBJ'),
 					yardagelist: orderDetail.yardage.join('BTWOBJ'),
 					shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`).join('OBJEND'),
+					uom: orderDetail.uom
 				})
 			}
 		}
@@ -363,6 +368,7 @@ const QuickOrder = () => {
 							yardage: jsonData.yardagelist.split('BTWOBJ'),
 							selectedYardage: { label: jsonData.yardage.split('BTWOBJ')[0], value: jsonData.yardage.split('BTWOBJ')[1], HsCode: jsonData.yardage.split('BTWOBJ')[2] },
 							OrderQty: jsonData.qty,
+							uom: item.uom,
 							price: 0,
 							uuid: v4(),
 						}
@@ -634,7 +640,7 @@ const QuickOrder = () => {
 													md={2}
 													sm={2.5}
 													className="quickOrderPriceColumn">
-													<Typography variant="h6">Cones</Typography>
+													<Typography variant="h6">{item.uom}</Typography>
 													<Delete
 														style={{ color: 'grey', cursor: 'pointer' }}
 														onClick={() => deleteExistingRow(index)}

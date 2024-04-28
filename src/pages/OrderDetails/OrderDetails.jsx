@@ -131,7 +131,7 @@ const OrderDetails = () => {
                             
                             
                             <Grid item xs={6} sx={{display:{xs:"block", sm:"none"},backgroundColor:{xs:"#f8f8f8", sm:"transparent"},paddingLeft:{xs:"10px", sm:"0px"}, paddingTop:{xs:"10px", ms:"0px"}, borderRadius:"0px 0px 5px 0px"}} className='flex' >
-                                <Typography variant='h6'>{order?.isdelivered?.[0] ? order?.recName : "-" }</Typography>
+                                <Typography variant='h6'>{order?.isdelivered ? order?.recName : "-" }</Typography>
                             </Grid>
                             <Grid item md={3} sm={3} sx={{display:{xs:"none", sm:"none", md:'flex'},backgroundColor:{xs:"#f8f8f8", sm:"transparent"}}} className='flex' >
                                 <Typography variant='h6'>{orderDate(order?.orderDate)}</Typography>
@@ -143,7 +143,7 @@ const OrderDetails = () => {
                                 {/* <Typography variant='h6'>Over-Night Delivery</Typography> */}
                             </Grid>
                             <Grid item md={3} sm={3} sx={{display:{xs:"none", sm:"flex"},backgroundColor:{xs:"#f8f8f8", sm:"transparent"}}} className='flex' >
-                                <Typography variant='body2'>{order?.isdelivered?.[0] ? order?.recName : "-" }</Typography>
+                                <Typography variant='body2'>{order?.isdelivered ? order?.recName : "-" }</Typography>
                             </Grid>
                         </Grid>
                         <Grid item container md={12} sx={{marginTop : {xs : "0px" , md : "49px"}}} className='orderDetailOrderdItems' >

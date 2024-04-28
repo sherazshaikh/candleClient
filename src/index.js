@@ -8,6 +8,13 @@ import { store, persistor } from './pages/redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+if (process.env.NODE_ENV === 'production') {
+  console.log = () => { }
+  console.warn = () => { }
+  console.debug = () => { }
+}
+
 root.render(
   <React.StrictMode>
     <Provider store={store} >

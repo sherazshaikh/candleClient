@@ -80,6 +80,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
                         yardage: Object.values(orderDetail.selectedYardage).join('BTWOBJ'),
                         yardagelist: orderDetail.yardage.join('BTWOBJ'),
                         shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`).join('OBJEND'),
+                        uom: orderDetail.uom
                     })
                 }
             } 
