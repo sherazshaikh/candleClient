@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 
-let response = await fetch('/config.json');  // Relative URL to data.json in the public folder
+let response = await fetch('/config.json');
 let configData = await response.json();
 
-const initialState = configData.BaseURL;
+const initialState = await configData.BaseURL;
 
 export const utilSlice = createSlice({
     name: 'baseURL',

@@ -11,7 +11,7 @@ import cartReducer from '../features/cart/cartslice'
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth', 'baseURL', 'sessionExpired', 'cart'], // Add slice names to persist here
+  whitelist: ['auth', 'sessionExpired', 'cart'], // Add slice names to persist here
 };
 
 

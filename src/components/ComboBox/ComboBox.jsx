@@ -19,7 +19,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 		if (!infoLabel) {
 			updateProduct()
 			let abcd = options.map((option) => {
-				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom }
+				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom, productCode: option.productCode }
 			})
 			setDdOption(abcd)
 		} else {
@@ -30,7 +30,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 				}
 			})
 			abcd = abcd.map((option) => {
-				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom  }
+				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom, productCode: option.productCode  }
 			})
 			setDdOption(abcd)
 		}
@@ -40,7 +40,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 	React.useEffect(() => {
 		if (infoLabel == '') {
 			let abcd = options.map((option) => {
-				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom  }
+				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom, productCode: option.productCode  }
 			})
 			setDdOption(abcd)
 		} else {
@@ -51,7 +51,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 				}
 			})
 			abcd = abcd.map((option) => {
-				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom  }
+				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom, productCode: option.productCode  }
 			})
 
 			setDdOption(abcd)
@@ -68,7 +68,8 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 				LottypeCode: value ? e : { label: '', HsCode: '', value: '' },
 				selectedYardage: { label: e.yardage, value: e.yardage, HsCode: e.yardage },
 				OrderQty: e.boxQty,
-				uom: value ? e.uom : ""
+				uom: value ? e.uom : "",
+				productCode: e?.productCode
 			}
 			setInfoLabel(e.label)
 			executeApi(baseURL + variables.shades.url + `?productCode=${e.value}`, {}, variables.shades.method, token, dispatch)
@@ -94,7 +95,8 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 				ShadeCode: { label: '', HsCode: '', value: '' },
 				selectedYardage: { label: '', HsCode: '', value: '' },
 				shade: [],
-				uom: ""
+				uom: "",
+			
 			}
 			dispatch(updateCart(newArray))
 		}

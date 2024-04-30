@@ -101,7 +101,8 @@ const QuickOrder = () => {
 					OrderQty: productQty?.boxQty ,
 					price: '0',
 					uuid: v4(),
-					uom: productQty ? productQty?.uom : ''
+					uom: productQty ? productQty?.uom : '',
+					productCode: productQty?.productCode,
 				},
 			]
 
@@ -160,6 +161,7 @@ const QuickOrder = () => {
 					OrderQty: productQty?.boxQty ,
 					price: '0',
 					uom: productQty ? productQty?.uom : '',
+					productCode: productQty?.productCode,
 					uuid: v4(),
 				},
 			]
@@ -194,7 +196,6 @@ const QuickOrder = () => {
 				// setProducts(data.data)
 				var UO = []
 				const uniqueIds = data.data.reduce((acc, obj) => {
-					console.log('acc, obj', acc, obj)
 					if (!acc.includes(obj.productCode)) {
 						acc.push(obj.productCode)
 						UO.push(obj)
@@ -297,7 +298,8 @@ const QuickOrder = () => {
 					yardage: Object.values(orderDetail.selectedYardage).join('BTWOBJ'),
 					yardagelist: orderDetail.yardage.join('BTWOBJ'),
 					shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`).join('OBJEND'),
-					uom: orderDetail.uom
+					uom: orderDetail.uom,
+					productCode: orderDetail?.productCode
 				})
 			}
 		} else {
@@ -309,7 +311,8 @@ const QuickOrder = () => {
 					yardage: Object.values(orderDetail.selectedYardage).join('BTWOBJ'),
 					yardagelist: orderDetail.yardage.join('BTWOBJ'),
 					shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`).join('OBJEND'),
-					uom: orderDetail.uom
+					uom: orderDetail.uom,
+					productCode: orderDetail?.productCode
 				})
 			}
 		}
