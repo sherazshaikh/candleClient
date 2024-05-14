@@ -30,7 +30,7 @@ const QuickOrder = () => {
 		auth: {
 			token,
 			curr,
-			user: { firstName },
+			user: { firstName, branchcodeOrcl},
 		},
 	} = useSelector((state) => state)
 	const [Step, setStep] = useState(1)
@@ -86,7 +86,7 @@ const QuickOrder = () => {
 		if (cart?.length === 0 || isPreviousRowFilled) {
 			let shadeItemList = []
 			const productQty = products.find((product) => product.productCode === cart[cart.length - 1]?.LottypeCode?.value)
-			console.log("product",productQty, products , cart )
+			console.log("product", productQty, products, cart)
 			await executeApi(baseURL + variables.shades.url + `?productCode=${cart[cart.length - 1]?.LottypeCode?.value}`, {}, variables.shades.method, token, dispatch).then((data) => {
 				shadeItemList = data.data ? data.data : []
 			})
@@ -98,7 +98,7 @@ const QuickOrder = () => {
 					ShadeCode: { label: '', value: '', HsCode: '' },
 					yardage: [],
 					selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]['selectedYardage'],
-					OrderQty: productQty?.boxQty ,
+					OrderQty: productQty?.boxQty,
 					price: '0',
 					uuid: v4(),
 					uom: productQty ? productQty?.uom : '',
@@ -145,8 +145,8 @@ const QuickOrder = () => {
 			let shadeItemList = []
 			const productQty = products.find((product) => product.productCode === cart[cart.length - 1]?.LottypeCode?.value)
 
-			console.log("product",productQty, products , cart )
-			
+			console.log("product", productQty, products, cart)
+
 			await executeApi(baseURL + variables.shades.url + `?productCode=${cart[cart.length - 1]?.LottypeCode?.value}`, {}, variables.shades.method, token, dispatch).then((data) => {
 				shadeItemList = data.data
 			})
@@ -155,10 +155,10 @@ const QuickOrder = () => {
 				{
 					LottypeCode: cart?.length === 0 ? '' : cart[cart.length - 1]['LottypeCode'],
 					shade: cart?.length === 0 ? [] : shadeItemList,
-					ShadeCode: { label: '', value: '', HsCode: '' }, 
+					ShadeCode: { label: '', value: '', HsCode: '' },
 					yardage: [],
 					selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]['selectedYardage'],
-					OrderQty: productQty?.boxQty ,
+					OrderQty: productQty?.boxQty,
 					price: '0',
 					uom: productQty ? productQty?.uom : '',
 					productCode: productQty?.productCode,
@@ -207,7 +207,7 @@ const QuickOrder = () => {
 			.catch((error) => console.log(error.message))
 		console.log('all Product', products)
 
-		executeApi(baseURL + variables.Shopes.url, {}, variables.Shopes.method, token, dispatch)
+		executeApi(baseURL + `${variables.Shopes.url}?branchCode=${branchcodeOrcl}`, {}, variables.Shopes.method, token, dispatch)
 			.then((data) => setShopes(data.data))
 			.catch((error) => console.log(error.message))
 
@@ -287,7 +287,7 @@ const QuickOrder = () => {
 	}
 
 	const apiCallFunction = async (newRows) => {
-		console.log("apiCallFunction",newRows, cart )
+		console.log("apiCallFunction", newRows, cart)
 		let finalCart = []
 		if (newRows) {
 			for (const orderDetail of newRows) {
@@ -335,7 +335,7 @@ const QuickOrder = () => {
 		apiCallFunction()
 	}
 
-	const apiCallFunction1 = () => {}
+	const apiCallFunction1 = () => { }
 
 	const debouncedApiCall = _.debounce(apiCallFunction1, 3000)
 
@@ -703,7 +703,7 @@ const QuickOrder = () => {
 										item
 										md={7}
 										sm={3}
-										// className="discountImage"
+									// className="discountImage"
 									></Grid>
 									<Grid
 										item

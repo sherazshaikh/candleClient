@@ -266,7 +266,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
                         <Typography variant='h5'>Pickup Points</Typography>
                     </Grid>
                     <Grid container columnSpacing={2}  >
-                        {shopes.map((item) => <DeliveryDuration label={item.addDesc} code={item?.addCode} selected={selectedPoint} setSeleted={setSelectedPointFun} />
+                        {shopes && shopes?.map((item) => <DeliveryDuration label={item.addDesc} code={item?.addCode} selected={selectedPoint} setSeleted={setSelectedPointFun} />
                         )}
                         {/* <DeliveryDuration label="New Karachi" selected={selectedPoint} setSeleted={setSelectedPointFun} />
                         <DeliveryDuration label="Baloch Colony" selected={selectedPoint} setSeleted={setSelectedPointFun} />
