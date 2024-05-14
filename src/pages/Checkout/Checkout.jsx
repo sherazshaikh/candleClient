@@ -326,7 +326,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
                 </Grid>
 
             </Grid>
-            <Grid item container md={4} sm={4} sx={{ display: { xs: "none", sm: "none", md: "flex" } }} className='cartMain' >
+            <Grid item container md={4} sm={4} sx={{ display: { xs: "none", sm: "none", md: "flex" } }} style={{overflowY: 'scroll'}} className='cartMain' >
                 <Grid item md={11} className='yourcartmain2' >
                     <Typography variant='h4'>Your Cart</Typography>
                     <Grid container className='flex' >
