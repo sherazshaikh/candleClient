@@ -57,9 +57,8 @@ function App() {
     },
     {
       path: "/signUp",
-      element: <ProtectedAuthRoute user={user}>
+      element:
         <SignUp />
-      </ProtectedAuthRoute>
     },
     {
       path: "/recentOrders",

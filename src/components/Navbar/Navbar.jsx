@@ -15,6 +15,7 @@ import Logout from '@mui/icons-material/Logout';
 import { logout } from '../../pages/redux/features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import KeyIcon from '@mui/icons-material/Key';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import GradingIcon from '@mui/icons-material/Grading';
 import { setResetPasswordTrue } from '../../pages/redux/features/session/sessionslice';
 import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
@@ -30,8 +31,9 @@ import MailIcon from '@mui/icons-material/Mail';
 const Navbar = () => {
 
   const user = useSelector((state) => state.auth.isAuthenticated);
+  const userData = useSelector((state) => state.auth.user);
   const userName = useSelector((state) => state.auth.user?.firstName);
-  let { baseURL, auth: { token } } = useSelector((state) => state);
+  let { baseURL, auth: { token, } } = useSelector((state) => state);
   const [isOpen, setIsOpen] = useState(false)
 
   const count = useSelector((state) => state.cart.filter((item) => {
@@ -52,6 +54,11 @@ const Navbar = () => {
     navigate("/recentOrders")
     setAnchorEl(null);
   };
+
+  const navigateToSignUp = () => {
+    navigate("/signUp")
+    // console.log("userData", userData)
+  }
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
@@ -76,7 +83,7 @@ const Navbar = () => {
     dispatch(setResetPasswordTrue());
   }
 
-  
+
 
 
 
@@ -134,6 +141,13 @@ const Navbar = () => {
                   <MenuItem onClick={handleRenew}>
                     <Avatar style={{ backgroundColor: "#e9520c" }}><KeyIcon /> </Avatar> Reset Password
                   </MenuItem>
+                  {
+                    userData?.isAdmin &&
+                    <MenuItem onClick={navigateToSignUp}>
+                      <Avatar style={{ backgroundColor: "#e9520c" }}><AssignmentIndIcon /> </Avatar> Sign Up
+                    </MenuItem>
+                  }
+
                   <Divider />
                   <MenuItem onClick={logoutUser}>
                     <ListItemIcon>
@@ -211,6 +225,12 @@ const Navbar = () => {
                   <MenuItem onClick={handleRenew}>
                     <Avatar style={{ backgroundColor: "#e9520c" }}><KeyIcon /> </Avatar> Reset Password
                   </MenuItem>
+                  {
+                    userData?.isAdmin &&
+                    <MenuItem onClick={navigateToSignUp}>
+                      <Avatar style={{ backgroundColor: "#e9520c" }}><AssignmentIndIcon /> </Avatar> Sign Up
+                    </MenuItem>
+                  }
                   <Divider />
                   <MenuItem onClick={logoutUser}>
                     <ListItemIcon>
@@ -223,16 +243,16 @@ const Navbar = () => {
             </>
             :
             <>
-              <Grid item md={3} sm={3} style={{display:"flex", justifyContent:"center"}} onClick={() => navigate("/signin")}  >
+              <Grid item md={3} sm={3} style={{ display: "flex", justifyContent: "center" }} onClick={() => navigate("/signin")}  >
                 <span className='navbarSignin' >
                   Sign In
                 </span>
               </Grid>
-              <Grid item md={4} sm={4} style={{display:"flex" }} onClick={() => navigate("/signUp")} >
+              {/* <Grid item md={4} sm={4} style={{ display: "flex" }} onClick={() => navigate("/signUp")} >
                 <span className='navbarSignin' >
                   Sign Up
                 </span>
-              </Grid>
+              </Grid> */}
             </>
         }
       </Grid>
@@ -264,6 +284,13 @@ const Navbar = () => {
                     <Grid item xs={10} className='MobileMenuButtons' onClick={handleRenew} >
                       <Typography variant='h6' >Reset Password</Typography>
                     </Grid>
+                    {
+                      userData?.isAdmin && <>
+                        <Grid item xs={2} ></Grid>
+                        <Grid item xs={10} className='MobileMenuButtons' onClick={navigateToSignUp} >
+                          <Typography variant='h6' >Sign Up</Typography>
+                        </Grid></>
+                    }
                     <Grid item xs={2} ></Grid>
                     <Grid item xs={10} className='MobileMenuButtons' onClick={logoutUser} >
                       <Typography variant='h6' >Logout</Typography>
@@ -284,10 +311,10 @@ const Navbar = () => {
                     <Grid item xs={10} onClick={() => navigate("/signin")} className='MobileMenuButtons' >
                       <Typography variant='h6' >SignIn</Typography>
                     </Grid>
-                    <Grid item xs={2} ></Grid>
+                    {/* <Grid item xs={2} ></Grid>
                     <Grid item xs={10} className='MobileMenuButtons' onClick={() => navigate("/signup")} >
                       <Typography variant='h6' >SignUp</Typography>
-                    </Grid>
+                    </Grid> */}
 
                   </Grid>
               }

@@ -62,5 +62,10 @@ export const variables = {
     updateCart: {
         url: "/v1/Cart/UpdateCartProducts",
         method: "POST"
+    },
+    getAllProduct: {
+        url: "/v1/Order/getAllProductCategory",
+        method: "GET"
     }
+    //
 }

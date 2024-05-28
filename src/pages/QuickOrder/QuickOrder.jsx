@@ -21,7 +21,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import QuantityCheckout from '../../components/Quantity/QuantityCheckout'
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ProductBox from '../../components/ProductBox'
 
 const QuickOrder = () => {
 	let {
@@ -30,7 +31,7 @@ const QuickOrder = () => {
 		auth: {
 			token,
 			curr,
-			user: { firstName, branchcodeOrcl},
+			user: { firstName, branchcodeOrcl },
 		},
 	} = useSelector((state) => state)
 	const [Step, setStep] = useState(1)
@@ -70,12 +71,51 @@ const QuickOrder = () => {
 			selectedYardage: '',
 			OrderQty: '',
 			price: '0',
+			product: {},
+			productCategoryList: []
 		},
 	])
 	const [products, setProducts] = useState([])
+	const [allProduct, setAllProduct] = useState([])
+
+	const getAllProduct = async () => {
+
+		await executeApi(baseURL + variables.getAllProduct.url, {}, variables.shades.method, token, dispatch)
+			.then((data) => {
+				// let prdct = data.data.map((p) => `${p.categoryId}-${p.categoryName}`)
+				setAllProduct(data.data)
+			})
+			.catch((error) => console.log(error))
+	}
+
+	const setShadesByCode = (product, i) => {
+		let array = [...cart]
+		executeApi(baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${product.id}`, {}, variables.shades.method, token, dispatch)
+			.then((data) => {
+				if (data?.data) {
+					array[i] = { ...array[i], shade: data.data, product: product }
+				} else array[i] = { ...array[i], shade: [], product: product, }
+				dispatch(updateCart(array))
+
+			})
+			.catch((error) => console.log(error))
+
+	}
+
+	const getProductDescriptionbyCode = (shade, i, rows) => {
+		let newArray = [...rows]
+		executeApi(baseURL + `/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i].product.id}&shadeCode=${shade.label}`, {}, variables.shades.method, token, dispatch)
+			.then((data) => {
+				newArray[i] = { ...newArray[i], productCategoryList: data?.data ? data?.data : [] }
+				dispatch(updateCart(newArray))
+				console.log("4", newArray, cart)
+
+			})
+			.catch((error) => console.log(error))
+
+	}
 
 	const addNewColumn = async () => {
-		console.log('cart', cart)
 		let isPreviousRowFilled = true
 		cart?.length > 0 &&
 			cart.map((itm) => {
@@ -85,24 +125,26 @@ const QuickOrder = () => {
 			})
 		if (cart?.length === 0 || isPreviousRowFilled) {
 			let shadeItemList = []
-			const productQty = products.find((product) => product.productCode === cart[cart.length - 1]?.LottypeCode?.value)
-			console.log("product", productQty, products, cart)
-			await executeApi(baseURL + variables.shades.url + `?productCode=${cart[cart.length - 1]?.LottypeCode?.value}`, {}, variables.shades.method, token, dispatch).then((data) => {
-				shadeItemList = data.data ? data.data : []
-			})
+			// const productQty = products.find((product) => product.productCode === cart[cart.length - 1]?.LottypeCode?.value)
+			// await executeApi(baseURL + variables.shades.url + `?productCode=${cart[cart.length - 1]?.LottypeCode?.value}`, {}, variables.shades.method, token, dispatch).then((data) => {
+			// 	shadeItemList = data.data ? data.data : []
+			// })
 			let newCart = [
 				...cart,
 				{
-					LottypeCode: cart?.length === 0 ? '' : cart[cart.length - 1]['LottypeCode'],
-					shade: cart?.length === 0 ? [] : shadeItemList,
+					LottypeCode: {} ,
+					shade: [],
 					ShadeCode: { label: '', value: '', HsCode: '' },
 					yardage: [],
-					selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]['selectedYardage'],
-					OrderQty: productQty?.boxQty,
+					selectedYardage:"",
+					OrderQty: "",
 					price: '0',
 					uuid: v4(),
-					uom: productQty ? productQty?.uom : '',
-					productCode: productQty?.productCode,
+					uom: "",
+					productCode: "",
+					product: {},
+					productCategoryList: cart[0].productCategoryList 
+
 				},
 			]
 
@@ -185,27 +227,26 @@ const QuickOrder = () => {
 	}
 
 	useEffect(() => {
+		getAllProduct()
 		executeInitial()
 
-		console.log('Initial', products, cart)
 	}, [])
 
 	const executeInitial = async () => {
-		executeApi(baseURL + variables.product.url, {}, variables.product.method, token, dispatch)
-			.then((data) => {
-				// setProducts(data.data)
-				var UO = []
-				const uniqueIds = data.data.reduce((acc, obj) => {
-					if (!acc.includes(obj.productCode)) {
-						acc.push(obj.productCode)
-						UO.push(obj)
-					}
-					return acc
-				}, [])
-				setProducts(UO)
-			})
-			.catch((error) => console.log(error.message))
-		console.log('all Product', products)
+		// executeApi(baseURL + variables.product.url, {}, variables.product.method, token, dispatch)
+		// 	.then((data) => {
+		// 		// setProducts(data.data)
+		// 		var UO = []
+		// 		const uniqueIds = data.data.reduce((acc, obj) => {
+		// 			if (!acc.includes(obj.productCode)) {
+		// 				acc.push(obj.productCode)
+		// 				UO.push(obj)
+		// 			}
+		// 			return acc
+		// 		}, [])
+		// 		setProducts(UO)
+		// 	})
+		// 	.catch((error) => console.log(error.message))
 
 		executeApi(baseURL + `${variables.Shopes.url}?branchCode=${branchcodeOrcl}`, {}, variables.Shopes.method, token, dispatch)
 			.then((data) => setShopes(data.data))
@@ -362,11 +403,13 @@ const QuickOrder = () => {
 						let parsedArray = dataArray.map((item) => {
 							let [shadeCode, shadeDesc] = item.split('BTWOBJ')
 							return { shadeCode, shadeDesc }
+ 
 						})
 
+						console.log("get product data from ", parsedArray, dataArray, jsonData)
 						return {
 							LottypeCode: { label: jsonData.lottypecode.split('BTWOBJ')[0], value: jsonData.lottypecode.split('BTWOBJ')[1], HsCode: jsonData.lottypecode.split('BTWOBJ')[2] },
-							shade: parsedArray,
+							shade: [],
 							ShadeCode: { label: jsonData.shadecode.split('BTWOBJ')[0], value: jsonData.shadecode.split('BTWOBJ')[1] },
 							yardage: jsonData.yardagelist.split('BTWOBJ'),
 							selectedYardage: { label: jsonData.yardage.split('BTWOBJ')[0], value: jsonData.yardage.split('BTWOBJ')[1], HsCode: jsonData.yardage.split('BTWOBJ')[2] },
@@ -374,28 +417,27 @@ const QuickOrder = () => {
 							uom: item.uom,
 							price: 0,
 							uuid: v4(),
+							productCategoryList:allProduct,
+							products:{}
 						}
 					})
-					console.log('fdfdfdfddfdfdf', finalObject)
 					dispatch(updateCart(finalObject))
-					// console.log('carrrrrrrt', cart)
 
-					const newArray = [...finalObject]
-					console.log('asdsadasdasdasdasdasdasdasdsad', newArray)
-					let count = 0
+					// const newArray = [...finalObject]
+					// let count = 0
 
-					for (let i = 0; i < newArray.length; i++) {
-						executeApi(baseURL + variables.shades.url + `?productCode=${newArray[i].LottypeCode.value}`, {}, variables.shades.method, token, dispatch)
-							.then((data) => {
-								newArray[i] = newArray[i] ? { ...newArray[i], shade: data.data ? data.data : [] } : {}
-							})
-							.then(() => {
-								count += 1
-								if (count === cart.length) {
-									dispatch(updateCart(newArray))
-								}
-							})
-					}
+					// for (let i = 0; i < newArray.length; i++) {
+					// 	executeApi(baseURL + variables.shades.url + `?productCode=${newArray[i].LottypeCode.value}`, {}, variables.shades.method, token, dispatch)
+					// 		.then((data) => {
+					// 			newArray[i] = newArray[i] ? { ...newArray[i], shade: data.data ? data.data : [] } : {}
+					// 		})
+					// 		.then(() => {
+					// 			count += 1
+					// 			if (count === cart.length) {
+					// 				dispatch(updateCart(newArray))
+					// 			}
+					// 		})
+					// }
 				} else {
 					dispatch(updateCart(rows))
 				}
@@ -544,8 +586,8 @@ const QuickOrder = () => {
 										</Grid>
 										<Grid
 											item
-											md={2.5}
-											sm={2}>
+											md={2}
+											sm={2.5}>
 											<Typography
 												variant="body1"
 												className="greyFont">
@@ -554,7 +596,18 @@ const QuickOrder = () => {
 										</Grid>
 										<Grid
 											item
-											md={2.5}
+											md={3}
+											sm={3}>
+											<Typography
+												variant="body1"
+												className="greyFont">
+												Product Description
+											</Typography>
+										</Grid>
+
+										<Grid
+											item
+											md={1.5}
 											sm={2}>
 											<Typography
 												variant="body1"
@@ -565,7 +618,7 @@ const QuickOrder = () => {
 										<Grid
 											item
 											md={1}
-											sm={4}>
+											sm={1.5}>
 											<Typography
 												variant="body1"
 												className="greyFont">
@@ -589,21 +642,22 @@ const QuickOrder = () => {
 													item
 													md={3}
 													sm={3}>
-													<ComboBox
+													<ProductBox
 														debouncedApiCall={debouncedApiCall}
 														token={token}
 														baseURL={baseURL}
-														options={products}
+														options={allProduct}
 														index={index}
 														rows={cart}
 														setRows={setRows}
-														label="Select Color Code"
+														label="Select Product"
+														setShadesByCode={setShadesByCode}
 													/>
 												</Grid>
 												<Grid
 													item
-													md={2.5}
-													sm={2}>
+													md={2}
+													sm={2.5}>
 													<ShadeBox
 														debouncedApiCall={debouncedApiCall}
 														label="Shades"
@@ -611,11 +665,28 @@ const QuickOrder = () => {
 														rows={cart}
 														setRows={setRows}
 														index={index}
+														getProductDescriptionbyCode={getProductDescriptionbyCode}
 													/>
 												</Grid>
 												<Grid
 													item
-													md={2.5}
+													md={3}
+													sm={3}>
+													<ComboBox
+														debouncedApiCall={debouncedApiCall}
+														token={token}
+														baseURL={baseURL}
+														options={item.productCategoryList}
+														index={index}
+														rows={cart}
+														setRows={setRows}
+														label="Select Color Code"
+													/>
+												</Grid>
+
+												<Grid
+													item
+													md={1.5}
 													sm={2}>
 													<YardageBox
 														debouncedApiCall={debouncedApiCall}
@@ -628,8 +699,8 @@ const QuickOrder = () => {
 												</Grid>
 												<Grid
 													item
-													md={2}
-													sm={2.5}>
+													md={1}
+													sm={1.5}>
 													<Quantity
 														debouncedApiCall={debouncedApiCall}
 														rows={cart}
@@ -640,8 +711,8 @@ const QuickOrder = () => {
 												<Grid
 													container
 													item
-													md={2}
-													sm={2.5}
+													md={1.5}
+													sm={1.5}
 													className="quickOrderPriceColumn">
 													<Typography variant="h6">{item.uom}</Typography>
 													<Delete
@@ -653,9 +724,9 @@ const QuickOrder = () => {
 										))}
 									</Grid>
 								</Grid>
-								<Grid
+								{/* <Grid
 									item
-									xs={2}></Grid>
+									xs={2}></Grid> */}
 								<Grid
 									item
 									md={11}
@@ -932,22 +1003,27 @@ const QuickOrder = () => {
 												style={{ paddingLeft: '7%', marginBottom: '5px' }}>
 												<Typography variant="body2"> Product </Typography>
 											</Grid>
+
 											<Grid
 												item
 												xs={12}
 												className="flex">
-												<ComboBox
+												<ProductBox
 													debouncedApiCall={debouncedApiCall}
 													token={token}
 													baseURL={baseURL}
-													options={products}
+													options={allProduct}
 													index={mobileItem}
 													rows={cart}
 													setRows={setRows}
-													label="Select Color Code"
+													label="Select Product"
+													setShadesByCode={setShadesByCode}
 												/>
+
 											</Grid>
 										</Grid>
+
+
 										<Grid
 											item
 											container
@@ -971,6 +1047,36 @@ const QuickOrder = () => {
 													rows={cart}
 													setRows={setRows}
 													index={mobileItem}
+												/>
+											</Grid>
+										</Grid>
+										<Grid
+											item
+											container
+											xs={12}
+											className="flex"
+											style={{ marginBottom: '10px' }}>
+											<Grid
+												item
+												xs={12}
+												style={{ paddingLeft: '7%', marginBottom: '5px' }}>
+												<Typography variant="body2"> Product Description </Typography>
+											</Grid>
+
+
+											<Grid
+												item
+												xs={12}
+												className="flex">
+												<ComboBox
+													debouncedApiCall={debouncedApiCall}
+													token={token}
+													baseURL={baseURL}
+													options={cart[mobileItem].productCategoryList}
+													index={mobileItem}
+													rows={cart}
+													setRows={setRows}
+													label="Select Color Code"
 												/>
 											</Grid>
 										</Grid>

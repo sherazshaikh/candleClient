@@ -14,12 +14,14 @@ const initialState = [{
 }];
 
 
-
+let count = 0
 export const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
         updateCart: (state, action) => {
+            count += 1
+            console.log("count from store", count)
             console.log(action.payload);
             return action.payload;
         },

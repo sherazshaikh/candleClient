@@ -159,9 +159,9 @@ const SignIn = () => {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item md={12} className='signInSectionExisted'  >
+            {/* <Grid item md={12} className='signInSectionExisted'  >
               <Typography variant='body1'>I don't have an account! <b onClick={() => navigate("/signup")} style={{ textDecoration: "underline", cursor: "pointer" }} >Sign up</b></Typography>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Grid>
         <Grid container item md={4} sm={4} sx={{ display: { xs: 'none', sm: 'block' } }} className='signInPageBack flex' ></Grid>

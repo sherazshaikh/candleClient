@@ -19,7 +19,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 		if (!infoLabel) {
 			updateProduct()
 			let abcd = options.map((option) => {
-				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom, productCode: option.productCode }
+				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom: option.uom, productCode: option.productCode }
 			})
 			setDdOption(abcd)
 		} else {
@@ -30,7 +30,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 				}
 			})
 			abcd = abcd.map((option) => {
-				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom, productCode: option.productCode  }
+				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom: option.uom, productCode: option.productCode }
 			})
 			setDdOption(abcd)
 		}
@@ -40,27 +40,37 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 	React.useEffect(() => {
 		if (infoLabel == '') {
 			let abcd = options.map((option) => {
-				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom, productCode: option.productCode  }
+				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom: option.uom, productCode: option.productCode }
 			})
 			setDdOption(abcd)
 		} else {
-			// let abcd = []
-			let abcd = options.filter((option) => {
-				if (option.productDesc?.toLowerCase().includes(infoLabel?.toLowerCase())) {
-					return option
-				}
-			})
-			abcd = abcd.map((option) => {
-				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom:option.uom, productCode: option.productCode  }
-			})
+			if (rows[index]['ShadeCode']['label']) {
+				let abcd = options.filter((option) => {
+					if (option.productDesc?.toLowerCase().includes(infoLabel?.toLowerCase())) {
+						return option
+					}
+				})
+				abcd = abcd.map((option) => {
+					return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom: option.uom, productCode: option.productCode }
+				})
 
-			setDdOption(abcd)
+				setDdOption(abcd)
+
+			} else {
+				setInfoLabel("")
+			}
 		}
 		setOpen(true)
 	}, [options])
 
+	// React.useEffect(() => {
+	// 	let abcd = options.map((option) => {
+	// 		return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom: option.uom, productCode: option.productCode }
+	// 	})
+	// 	setDdOption(abcd)
+	// }, [options])
+
 	const updateProduct = (value, e) => {
-		console.log('3', options, rows, e)
 		let newArray = [...rows]
 		if (value) {
 			newArray[index] = {
@@ -72,37 +82,27 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 				productCode: e?.productCode
 			}
 			setInfoLabel(e.label)
-			executeApi(baseURL + variables.shades.url + `?productCode=${e.value}`, {}, variables.shades.method, token, dispatch)
-				.then((data) => {
-					newArray[index] = { ...newArray[index], shade: data.data ? data.data : [] }
-				})
-				.then(() => {
-					// executeApi(baseURL + variables.yardage.url + `?productCode=${e.value}`, {}, variables.yardage.method, token, dispatch)
-					//   .then(data => {
-					//     newArray[index] = { ...newArray[index], yardage: data.data ? data.data : [], selectedYardage: { label: data.data[0], value: data.data[0], HsCode: data.data[0] } }
-					dispatch(updateCart(newArray))
-					//   })
-					//   .catch(error => console.log(error))
-				})
-				.catch((error) => console.log(error))
+
+			dispatch(updateCart(newArray))
+
 		} else {
 			setInfoLabel('')
-			// rows[index].OrderQty = 0
+			console.log("hello 2")
 			newArray[index] = {
 				...rows[index],
 				OrderQty: 0,
 				LottypeCode: { label: '', HsCode: '', value: '' },
-				ShadeCode: { label: '', HsCode: '', value: '' },
-				selectedYardage: { label: '', HsCode: '', value: '' },
-				shade: [],
+				selectedYardage: { label: "", value: "", HsCode: "" },
 				uom: "",
-			
+				productCode: ""
+
 			}
 			dispatch(updateCart(newArray))
 		}
 
 		// validateShadeCode(value, index)
 	}
+
 
 	return (
 		<>
@@ -120,7 +120,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 	)
 }
 
-export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [], baseURL, token }) {
+export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [], baseURL, token, getProductDescriptionbyCode }) {
 	// let {
 	//   cart,
 
@@ -136,14 +136,13 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
 	React.useEffect(() => {
 		if (!infoLabel) {
 			let newArray = [...rows]
-			newArray[index] = { ...rows[index], ShadeCode: { label: '', HsCode: '', value: '' } }
 			dispatch(updateCart(newArray))
 			let abcd = options.map((option, ind) => {
 				return { label: option.shadeCode, value: option.shadeDesc, key: ind }
 			})
 			setDdOption(abcd)
 		} else {
-			console.log('2', options, rows, infoLabel, cart)
+
 			let abcd = options.filter((option) => {
 				if (option.shadeCode?.includes(infoLabel.toString())) {
 					return option
@@ -157,13 +156,13 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
 				})
 			}
 			setDdOption(abcd)
+
 			// setTimeout(()=> abcd?.length === 0 && setInfoLabel(""), 1100)
 		}
 	}, [infoLabel])
 
 	React.useEffect(() => {
 		if (!infoLabel) {
-			console.log('3', options, rows, infoLabel, cart)
 			if (rows[index]['ShadeCode']['label']) {
 				setInfoLabel(rows[index]['ShadeCode']['label'])
 			}
@@ -172,43 +171,53 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
 			})
 			setDdOption(abcd)
 		} else {
-			// let abcd = []
-			let abcd = options.filter((option) => {
-				if (option.shadeCode.includes(infoLabel.toString())) {
-					return option
-				} else return option
-			})
-			abcd = abcd.map((option, ind) => {
-				return { label: option.shadeCode, value: option.shadeDesc, key: ind }
-			})
+			if (rows[index]['product'] && rows[index]['product']['label']) {
+				let abcd = options.filter((option) => {
+					if (option.shadeCode.includes(infoLabel.toString())) {
+						return option
+					} else return option
+				})
+				abcd = abcd.map((option, ind) => {
+					return { label: option.shadeCode, value: option.shadeDesc, key: ind }
+				})
 
-			setDdOption(abcd)
-			console.log('4', options, rows, infoLabel, cart)
+				setDdOption(abcd)
+			} else setInfoLabel("")
 		}
 	}, [options])
+	// React.useEffect(() => {
+	// 	setInfoLabel("")
+	// }, [rows[index]['']['label']])
+	//
+
+
 
 	const updateProduct = (value, e) => {
-		console.log('5', options, rows)
+
 		let newArray = [...rows]
+		if (value) {
+			setInfoLabel(e ? e.label : '')
+			newArray[index] = { ...rows[index], ShadeCode: e, LottypeCode: { label: '', HsCode: '', value: '' } }
+			dispatch(updateCart(newArray))
+			getProductDescriptionbyCode(e, index, newArray)
+		} else {
 
-		setInfoLabel(e ? e.label : '')
-		// const validShadeCode = rows[index].shade.some(shade => shade.shadeCode === infoLabel)
-		// console.log("validShadeCode", validShadeCode, rows)
-		// if(validShadeCode){
-		newArray[index] = { ...rows[index], ShadeCode: value ? e : { label: '', HsCode: '', value: '' } }
-		// }else {
-		//   newArray[index] = { ...rows[index], ShadeCode: { label: "", HsCode: "", value: "" } }
-		// }
+			newArray[index] = {
+				...rows[index],
+				OrderQty: 0,
+				LottypeCode: { label: '', HsCode: '', value: '' },
+				selectedYardage: { label: "", value: "", HsCode: "" },
+				ShadeCode: { label: '', HsCode: '', value: '' },
+				productCategoryList: [],
+				uom: "",
+				productCode: ""
 
-		dispatch(updateCart(newArray))
-		console.log('6', options, rows, newArray)
+			}
+			dispatch(updateCart(newArray))
+		}
 	}
 
-	React.useEffect(() => {
-		if (!rows[index]['LottypeCode']['label']) {
-			setInfoLabel('')
-		}
-	}, [rows[index]['LottypeCode']['label']])
+
 
 	return (
 		<>

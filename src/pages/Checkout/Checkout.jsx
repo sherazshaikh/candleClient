@@ -296,7 +296,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
                     <Grid container columnSpacing={2} >
                         {
                             paymentType == "Cash" ?
-                                <PaymentMethod label="Cash" selected={paymntMethod} setSeleted={setPaymntMethod} />
+                                <PaymentMethod label="Advance" selected={paymntMethod} setSeleted={setPaymntMethod} />
                                 :
                                 <>
                                     <PaymentMethod label="Credit" selected={paymntMethod} setSeleted={setPaymntMethod} />
