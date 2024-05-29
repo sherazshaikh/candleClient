@@ -15,6 +15,31 @@ function ProductBox({ options, rows, index, setShadesByCode }) {
 
 
   useEffect(() => {
+    console.log("infoLabel", infoLabel, options)
+  if (!infoLabel) {
+    // updateProduct()
+    let abcd = options.map((option) => {
+      return { label: option.categoryName, value: option.categoryName, id: option.categoryId }
+    })
+    setDdOption(abcd)
+  } else {
+    // let abcd = [...options]
+    let abcd = options.filter((option) => {
+      if (option.categoryName?.toLowerCase().includes(infoLabel?.toLowerCase())) {
+        return option
+      }
+    })
+    console.log("Filter", abcd)
+    abcd = abcd.map((option) => {
+      return { label: option.categoryName, value: option.categoryName, id: option.categoryId }
+    })
+    setDdOption(abcd)
+  }
+
+}, [infoLabel])
+
+
+  useEffect(() => {
     if (options && options.length > 0) {
       let abcd = options?.map((option) => {
         // categoryId

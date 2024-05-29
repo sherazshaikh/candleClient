@@ -143,7 +143,7 @@ const QuickOrder = () => {
 					uom: "",
 					productCode: "",
 					product: {},
-					productCategoryList: cart[0].productCategoryList 
+					productCategoryList:[]
 
 				},
 			]
@@ -1047,6 +1047,7 @@ const QuickOrder = () => {
 													rows={cart}
 													setRows={setRows}
 													index={mobileItem}
+													getProductDescriptionbyCode={getProductDescriptionbyCode}
 												/>
 											</Grid>
 										</Grid>
