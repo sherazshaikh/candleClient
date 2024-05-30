@@ -102,13 +102,16 @@ const QuickOrder = () => {
 
 	}
 
-	const getProductDescriptionbyCode = (shade, i, rows) => {
+	const getProductDescriptionbyCode = async (shade, i, rows) => {
 		let newArray = [...rows]
-		executeApi(baseURL + `/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i].product.id}&shadeCode=${shade.label}`, {}, variables.shades.method, token, dispatch)
+		newArray[i] = { ...newArray[i], productCategoryList: [] }
+		await executeApi(baseURL + `/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i]?.product?.id}&shadeCode=${shade?.label}`, {}, variables.shades.method, token, dispatch)
 			.then((data) => {
 				newArray[i] = { ...newArray[i], productCategoryList: data?.data ? data?.data : [] }
+
+				// newArray[i].LottypeCode = { ...data?.data[0], label: data?.data.length === 1 ? data.data[0].productDesc : "" };
+				// console.log("4", data.data, newArray[i])
 				dispatch(updateCart(newArray))
-				console.log("4", newArray, cart)
 
 			})
 			.catch((error) => console.log(error))
@@ -132,18 +135,18 @@ const QuickOrder = () => {
 			let newCart = [
 				...cart,
 				{
-					LottypeCode: {} ,
+					LottypeCode: {},
 					shade: [],
 					ShadeCode: { label: '', value: '', HsCode: '' },
 					yardage: [],
-					selectedYardage:"",
+					selectedYardage: "",
 					OrderQty: "",
 					price: '0',
 					uuid: v4(),
 					uom: "",
 					productCode: "",
 					product: {},
-					productCategoryList: cart[0].productCategoryList 
+					productCategoryList: cart[0].productCategoryList
 
 				},
 			]
@@ -403,7 +406,7 @@ const QuickOrder = () => {
 						let parsedArray = dataArray.map((item) => {
 							let [shadeCode, shadeDesc] = item.split('BTWOBJ')
 							return { shadeCode, shadeDesc }
- 
+
 						})
 
 						console.log("get product data from ", parsedArray, dataArray, jsonData)
@@ -417,9 +420,14 @@ const QuickOrder = () => {
 							uom: item.uom,
 							price: 0,
 							uuid: v4(),
-							productCategoryList:allProduct,
-							products:{}
+							productCategoryList: allProduct,
+							products: {}
 						}
+					})
+
+					console.log("ffINAL ", finalObject)
+					finalObject.map(async (rowData, i) => {
+						await getProductDescriptionbyCode(rowData.shadeCode, i, finalObject)
 					})
 					dispatch(updateCart(finalObject))
 
@@ -605,7 +613,7 @@ const QuickOrder = () => {
 											</Typography>
 										</Grid>
 
-										<Grid
+										{/* <Grid
 											item
 											md={1.5}
 											sm={2}>
@@ -614,11 +622,11 @@ const QuickOrder = () => {
 												className="greyFont">
 												Yardage
 											</Typography>
-										</Grid>
+										</Grid> */}
 										<Grid
 											item
-											md={1}
-											sm={1.5}>
+											md={2}
+											sm={2.5}>
 											<Typography
 												variant="body1"
 												className="greyFont">
@@ -684,7 +692,7 @@ const QuickOrder = () => {
 													/>
 												</Grid>
 
-												<Grid
+												{/* <Grid
 													item
 													md={1.5}
 													sm={2}>
@@ -696,11 +704,11 @@ const QuickOrder = () => {
 														setRows={setRows}
 														index={index}
 													/>
-												</Grid>
+												</Grid> */}
 												<Grid
 													item
-													md={1}
-													sm={1.5}>
+													md={2}
+													sm={2.5}>
 													<Quantity
 														debouncedApiCall={debouncedApiCall}
 														rows={cart}
@@ -1080,7 +1088,7 @@ const QuickOrder = () => {
 												/>
 											</Grid>
 										</Grid>
-										<Grid
+										{/* <Grid
 											item
 											container
 											xs={12}
@@ -1105,7 +1113,7 @@ const QuickOrder = () => {
 													index={mobileItem}
 												/>
 											</Grid>
-										</Grid>
+										</Grid> */}
 										<Grid
 											item
 											container

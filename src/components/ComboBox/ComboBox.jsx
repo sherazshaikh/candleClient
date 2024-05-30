@@ -34,6 +34,13 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 			})
 			setDdOption(abcd)
 		}
+
+		if(ddOption.length > 0){
+			setInfoLabel(ddOption[0].label)
+		}
+
+		console.log("OPTIONS SSSSSS", ddOption)
+
 		setOpen(true)
 	}, [infoLabel])
 
@@ -42,6 +49,7 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 			let abcd = options.map((option) => {
 				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom: option.uom, productCode: option.productCode }
 			})
+		
 			setDdOption(abcd)
 		} else {
 			if (rows[index]['ShadeCode']['label']) {
@@ -60,6 +68,12 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 				setInfoLabel("")
 			}
 		}
+
+		if(options.length === 1){
+			setInfoLabel(options[0].label)
+		}
+
+
 		setOpen(true)
 	}, [options])
 
