@@ -144,7 +144,7 @@ const Navbar = () => {
                   {
                     userData?.isAdmin &&
                     <MenuItem onClick={navigateToSignUp}>
-                      <Avatar style={{ backgroundColor: "#e9520c" }}><AssignmentIndIcon /> </Avatar> Sign Up
+                      <Avatar style={{ backgroundColor: "#e9520c" }}><AssignmentIndIcon /> </Avatar> Create User
                     </MenuItem>
                   }
 
@@ -228,7 +228,7 @@ const Navbar = () => {
                   {
                     userData?.isAdmin &&
                     <MenuItem onClick={navigateToSignUp}>
-                      <Avatar style={{ backgroundColor: "#e9520c" }}><AssignmentIndIcon /> </Avatar> Sign Up
+                      <Avatar style={{ backgroundColor: "#e9520c" }}><AssignmentIndIcon /> </Avatar> Create User
                     </MenuItem>
                   }
                   <Divider />
@@ -288,7 +288,7 @@ const Navbar = () => {
                       userData?.isAdmin && <>
                         <Grid item xs={2} ></Grid>
                         <Grid item xs={10} className='MobileMenuButtons' onClick={navigateToSignUp} >
-                          <Typography variant='h6' >Sign Up</Typography>
+                          <Typography variant='h6' >Create User</Typography>
                         </Grid></>
                     }
                     <Grid item xs={2} ></Grid>

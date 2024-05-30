@@ -1055,6 +1055,7 @@ const QuickOrder = () => {
 													rows={cart}
 													setRows={setRows}
 													index={mobileItem}
+													getProductDescriptionbyCode={getProductDescriptionbyCode}
 												/>
 											</Grid>
 										</Grid>
