@@ -109,7 +109,7 @@ const QuickOrder = () => {
 			.then((data) => {
 				newArray[i] = { ...newArray[i], productCategoryList: data?.data ? data?.data : [] }
 
-				// newArray[i].LottypeCode = { ...data?.data[0], label: data?.data.length === 1 ? data.data[0].productDesc : "" };
+				newArray[i].LottypeCode = { ...data?.data[0], label: data?.data.length > 0 ? data.data[0].productDesc : "" };
 				// console.log("4", data.data, newArray[i])
 				dispatch(updateCart(newArray))
 
@@ -123,6 +123,7 @@ const QuickOrder = () => {
 		cart?.length > 0 &&
 			cart.map((itm) => {
 				if (!itm?.LottypeCode?.label || !itm?.ShadeCode?.label || !itm.selectedYardage.label) {
+					console.log("asas", itm)
 					isPreviousRowFilled = false
 				}
 			})
@@ -145,8 +146,8 @@ const QuickOrder = () => {
 					uuid: v4(),
 					uom: "",
 					productCode: "",
-					product: {},
-					productCategoryList: cart[0].productCategoryList
+					// product: {},
+					productCategoryList: []
 
 				},
 			]
