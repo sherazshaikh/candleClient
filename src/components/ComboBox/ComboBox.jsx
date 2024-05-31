@@ -16,11 +16,13 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 	const [ddOption, setDdOption] = React.useState([{ label: 'loading...', value: 'loading...' }])
 
 	React.useEffect(() => {
+		// console.log("initial label working", rows[index])
 		if (!infoLabel) {
 			updateProduct()
 			let abcd = options.map((option) => {
 				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom: option.uom, productCode: option.productCode }
 			})
+			
 			setDdOption(abcd)
 		} else {
 			// let abcd = [...options]
@@ -32,14 +34,27 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 			abcd = abcd.map((option) => {
 				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom: option.uom, productCode: option.productCode }
 			})
+			if(infoLabel.includes('loading')){
+				setInfoLabel(rows[index]?.LottypeCode?.label)
+			}
 			setDdOption(abcd)
 		}
 
 		if(ddOption.length > 0){
-			setInfoLabel(ddOption[0].label)
+
+			let newArray = [...rows]
+				newArray[index] = {
+					...rows[index],
+					LottypeCode:  ddOption[0],
+					selectedYardage: { label: ddOption[0].yardage, value: ddOption[0].yardage, HsCode: ddOption[0].yardage },
+					OrderQty: ddOption[0].boxQty,
+					uom:  ddOption[0].uom ,
+					productCode: ddOption[0]?.productCode
+				}
+				setInfoLabel(ddOption[0].label)
+				dispatch(updateCart(newArray))
 		}
 
-		console.log("OPTIONS SSSSSS", ddOption)
 
 		setOpen(true)
 	}, [infoLabel])
@@ -77,12 +92,12 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 		setOpen(true)
 	}, [options])
 
-	// React.useEffect(() => {
-	// 	let abcd = options.map((option) => {
-	// 		return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom: option.uom, productCode: option.productCode }
-	// 	})
-	// 	setDdOption(abcd)
-	// }, [options])
+	React.useEffect(() => {
+		if(!rows[index]['LottypeCode']['label']){
+
+			setInfoLabel("")
+		}
+	}, [rows[index]['LottypeCode']['label']])
 
 	const updateProduct = (value, e) => {
 		let newArray = [...rows]
@@ -101,7 +116,6 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 
 		} else {
 			setInfoLabel('')
-			console.log("hello 2")
 			newArray[index] = {
 				...rows[index],
 				OrderQty: 0,
@@ -111,6 +125,8 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 				productCode: ""
 
 			}
+		console.log("arr",value, e , newArray	 )
+
 			dispatch(updateCart(newArray))
 		}
 
@@ -150,7 +166,7 @@ export function ShadeBox({ debouncedApiCall, label, index, rows, setRows, option
 	React.useEffect(() => {
 		if (!infoLabel) {
 			let newArray = [...rows]
-			dispatch(updateCart(newArray))
+			// dispatch(updateCart(newArray))
 			let abcd = options.map((option, ind) => {
 				return { label: option.shadeCode, value: option.shadeDesc, key: ind }
 			})

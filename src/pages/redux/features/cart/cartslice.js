@@ -21,8 +21,6 @@ export const cartSlice = createSlice({
     reducers: {
         updateCart: (state, action) => {
             count += 1
-            console.log("count from store", count)
-            console.log(action.payload);
             return action.payload;
         },
         emptyCart: (state) => {
