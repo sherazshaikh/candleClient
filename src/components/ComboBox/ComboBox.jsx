@@ -92,12 +92,12 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 		setOpen(true)
 	}, [options])
 
-	// React.useEffect(() => {
-	// 	let abcd = options.map((option) => {
-	// 		return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom: option.uom, productCode: option.productCode }
-	// 	})
-	// 	setDdOption(abcd)
-	// }, [options])
+	React.useEffect(() => {
+		if(!rows[index]['LottypeCode']['label']){
+
+			setInfoLabel("")
+		}
+	}, [rows[index]['LottypeCode']['label']])
 
 	const updateProduct = (value, e) => {
 		let newArray = [...rows]
@@ -125,6 +125,8 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 				productCode: ""
 
 			}
+		console.log("arr",value, e , newArray	 )
+
 			dispatch(updateCart(newArray))
 		}
 

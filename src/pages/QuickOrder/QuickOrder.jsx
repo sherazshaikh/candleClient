@@ -102,7 +102,8 @@ const QuickOrder = () => {
 	const getProductDescriptionbyCode = async (shade, i, rows, initial) => {
 		
 		let newArray = [...rows]
-		newArray[i] = { ...newArray[i], productCategoryList: [] }
+		// newArray[i] = { ...newArray[i], productCategoryList: [] }
+		console.log("123=>", rows, cart)
 		await executeApi(
 			baseURL +
 				`/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i]?.product?.id}&shadeCode=${shade?.label}`,
@@ -138,7 +139,7 @@ const QuickOrder = () => {
 				{
 					LottypeCode: {},
 					shade: [],
-					ShadeCode: { label: "", value: "", HsCode: "" },
+					ShadeCode: cart.length > 0 ? cart[cart.length - 1]?.ShadeCode  : { label: "", value: "", HsCode: "" },
 					yardage: [],
 					selectedYardage: "",
 					OrderQty: "",
@@ -146,16 +147,22 @@ const QuickOrder = () => {
 					uuid: v4(),
 					uom: "",
 					productCode: "",
-					// product: ,
+					product: cart.length > 0 ? cart[cart.length - 1]?.product : {} ,
 					productCategoryList: [],
 				},
 			]
 
-			console.log("add new web column", newCart)
-
 			apiCallFunction()
 			dispatch(updateCart(newCart))
 			debouncedApiCall()
+
+			if (newCart[newCart.length - 1]?.product) {
+				setShadesByCode(newCart[newCart.length - 1]?.product, newCart.length - 1 )
+			}
+			if (newCart[newCart.length - 1].ShadeCode?.label && newCart[newCart.length - 1].product?.label) {
+				console.log("shasdasdasdasdasdsada", newCart[newCart.length - 1] )
+				getProductDescriptionbyCode(newCart[newCart.length - 1].ShadeCode, newCart.length - 1, newCart, 'initail')
+			}
 		} else {
 			setSeverty("error")
 			setMessage("Please Fill Row Data")
