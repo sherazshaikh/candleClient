@@ -138,8 +138,8 @@ const QuickOrder = () => {
 			let newCart = [
 				...cart,
 				{
-					LottypeCode: {},
-					shade: [],
+					LottypeCode: cart.length > 0 ? cart[cart.length - 1]?.LottypeCode : {},
+					shade: cart.length > 0 ? cart[cart.length - 1]?.shade : [],
 					ShadeCode: cart.length > 0 ? cart[cart.length - 1]?.ShadeCode  : { label: "", value: "", HsCode: "" },
 					yardage: [],
 					selectedYardage: "",
@@ -149,7 +149,7 @@ const QuickOrder = () => {
 					uom: "",
 					productCode: "",
 					product: cart.length > 0 ? cart[cart.length - 1]?.product : {} ,
-					productCategoryList: [],
+					productCategoryList: cart.length > 0 ? cart[cart.length - 1]?.productCategoryList : [],
 				},
 			]
 
@@ -157,13 +157,13 @@ const QuickOrder = () => {
 			dispatch(updateCart(newCart))
 			debouncedApiCall()
 
-			if (newCart[newCart.length - 1]?.product) {
-				setShadesByCode(newCart[newCart.length - 1]?.product, newCart.length - 1 )
-			}
-			if (newCart[newCart.length - 1].ShadeCode?.label && newCart[newCart.length - 1].product?.label) {
-				console.log("shasdasdasdasdasdsada", newCart[newCart.length - 1] )
-				getProductDescriptionbyCode(newCart[newCart.length - 1].ShadeCode, newCart.length - 1, newCart, 'initail')
-			}
+			// if (newCart[newCart.length - 1]?.product) {
+			// 	setShadesByCode(newCart[newCart.length - 1]?.product, newCart.length - 1 )
+			// }
+			// if (newCart[newCart.length - 1].ShadeCode?.label && newCart[newCart.length - 1].product?.label) {
+			// 	console.log("shasdasdasdasdasdsada", newCart[newCart.length - 1] )
+			// 	getProductDescriptionbyCode(newCart[newCart.length - 1].ShadeCode, newCart.length - 1, newCart, 'initail')
+			// }
 		} else {
 			setSeverty("error")
 			setMessage("Please Fill Row Data")
@@ -209,17 +209,31 @@ const QuickOrder = () => {
 			})
 			let newCart = [
 				...cart,
+				// {
+				// 	LottypeCode: cart?.length === 0 ? "" : cart[cart.length - 1]["LottypeCode"],
+				// 	shade: cart?.length === 0 ? [] : shadeItemList,
+				// 	ShadeCode: { label: "", value: "", HsCode: "" },
+				// 	yardage: [],
+				// 	selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]["selectedYardage"],
+				// 	OrderQty: productQty?.boxQty,
+				// 	price: "0",
+				// 	uom: productQty ? productQty?.uom : "",
+				// 	productCode: productQty?.productCode,
+				// 	uuid: v4(),
+				// },
 				{
-					LottypeCode: cart?.length === 0 ? "" : cart[cart.length - 1]["LottypeCode"],
-					shade: cart?.length === 0 ? [] : shadeItemList,
-					ShadeCode: { label: "", value: "", HsCode: "" },
+					LottypeCode: cart.length > 0 ? cart[cart.length - 1]?.LottypeCode : {},
+					shade: cart.length > 0 ? cart[cart.length - 1]?.shade : [],
+					ShadeCode: cart.length > 0 ? cart[cart.length - 1]?.ShadeCode  : { label: "", value: "", HsCode: "" },
 					yardage: [],
-					selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]["selectedYardage"],
-					OrderQty: productQty?.boxQty,
+					selectedYardage: "",
+					OrderQty: "",
 					price: "0",
-					uom: productQty ? productQty?.uom : "",
-					productCode: productQty?.productCode,
 					uuid: v4(),
+					uom: "",
+					productCode: "",
+					product: cart.length > 0 ? cart[cart.length - 1]?.product : {} ,
+					productCategoryList: cart.length > 0 ? cart[cart.length - 1]?.productCategoryList : [],
 				},
 			]
 

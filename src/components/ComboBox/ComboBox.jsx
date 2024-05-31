@@ -34,9 +34,9 @@ export default function ComboBox({ debouncedApiCall, label, index, rows, setRows
 			abcd = abcd.map((option) => {
 				return { label: option.productDesc, value: option.productCode, HsCode: option.hsCode, yardage: option.yardage, boxQty: option.boxQty, uom: option.uom, productCode: option.productCode }
 			})
-			if(infoLabel.includes('loading')){
-				setInfoLabel(rows[index]?.LottypeCode?.label)
-			}
+			// if(infoLabel.includes('')){
+			// 	setInfoLabel(rows[index]?.LottypeCode?.label)
+			// }
 			setDdOption(abcd)
 		}
 
