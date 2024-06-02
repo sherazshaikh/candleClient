@@ -142,9 +142,8 @@ const QuickOrder = () => {
 			console.log("CARD PP AT", newArray)
 		}
 
-	const getProductDescriptionbyCode = async (shade, i, rows, initial) => {
+	const getProductDescriptionbyCode = async (shade, i,rows, initial) => {
 		let newArray = [...rows]
-		console.log('record 2', cart, i , rows)
 		await executeApi(
 			baseURL +
 			`/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i]?.product?.id}&shadeCode=${shade?.label}`,
@@ -159,7 +158,7 @@ const QuickOrder = () => {
 					...newArray[i],
 					shade: newArray[i].shade,
 					productCategoryList: data?.data,
-					// ShadeCode: { label: newArray[i].shadeCode, value: newArray[i].shadeDesc },
+					// ShadeCode: newArray[i].ShadeCode,
 					LottypeCode: data?.data.length > 0 ? { ...cData, label: cData.productDesc, value: cData.productDesc } : {},
 					OrderQty: initial ? newArray[i].OrderQty : cData.boxQty,
 					selectedYardage: { label: cData.yardage, value: cData.yardage, HsCode: cData.yardage },
@@ -167,6 +166,10 @@ const QuickOrder = () => {
 					productCode: cData.productCode
 
 				}
+
+		console.log('record 2',i,newArray )
+
+
 				dispatch(updateCart(newArray))
 			})
 			.catch((error) => console.log(error))
@@ -463,10 +466,13 @@ const QuickOrder = () => {
 						let dataArray = jsonData.shadecodelist.split("OBJEND")
 						dataArray.pop()
 						// Map the array elements back into objects
+						let shadeList = []
 						let parsedArray = dataArray.map((item) => {
 							let [shadeCode, shadeDesc] = item.split("BTWOBJ")
-							return { shadeCode, shadeDesc }
+							shadeList.push({ shadeCode: shadeCode, shadeDesc: shadeDesc }) 
+
 						})
+						console.log("parsedArray",shadeList)
 
 						return {
 							LottypeCode: {
@@ -474,7 +480,7 @@ const QuickOrder = () => {
 								value: jsonData.lottypecode.split("BTWOBJ")[1],
 								HsCode: jsonData.lottypecode.split("BTWOBJ")[2],
 							},
-							shade: [],
+							shade: shadeList,
 							ShadeCode: {
 								label: jsonData.shadecode.split("BTWOBJ")[0],
 								value: jsonData.shadecode.split("BTWOBJ")[1],
@@ -500,20 +506,22 @@ const QuickOrder = () => {
 						}
 					})
 
+					console.log('sgggg0', finalObject)
+
 					// if(cart.length, finalObject.length)  s
 					// dispatch(updateCart(finalObject))
 					// cart = finalObject
 
 					
 
-					dispatch(updateCart(finalObject))
 
+					dispatch(updateCart(finalObject))
 					cart?.map((ct, i) => {
-						if (ct?.product?.label) {
-							setShadesByCode(ct?.product, i, cart)
-						}
+						// if (ct?.product?.label) {
+						// 	setShadesByCode(ct?.product, i, cart)
+						// }
 						if (ct?.ShadeCode?.label && ct?.product?.label) {
-							 getProductDescriptionbyCode(ct.ShadeCode, i, finalObject)
+							 getProductDescriptionbyCode(ct.ShadeCode, i,finalObject, 'initial')
 						}
 					})
 
@@ -525,6 +533,7 @@ const QuickOrder = () => {
 			.catch((err) => {
 				console.log(err)
 			})
+
 			
 			console.log('New  CARD HE BHAI 1', cart)
 	}

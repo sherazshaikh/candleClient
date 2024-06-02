@@ -24,6 +24,7 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
 
     useEffect(() => {
         setInfoLabel(initialLabel?.label)
+        console.log('record 3', initialLabel)
     }, [initialLabel])
 
     useEffect(() => {
@@ -38,10 +39,28 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
 
         let newArray = [...rows]
         if (value) {
+
             setInfoLabel(e ? e.label : '')
             newArray[index] = { ...rows[index], ShadeCode: e, LottypeCode: { label: '', HsCode: '', value: '' } }
-            // dispatch(updateCart(newArray))
+            dispatch(updateCart(newArray))
+            getProductDescriptionbyCode(e, index, newArray)
+
         } else {
+
+            let abcd = optionsList.filter((option) => {
+                if (infoLabel) {
+                    if (option.shadeCode.includes(infoLabel.toString())) {
+                        return option
+                    }
+
+                } else return option
+            })
+            abcd = abcd.map((option, ind) => {
+                return { label: option.shadeCode, value: option.shadeDesc, key: ind }
+            })
+            console.log("dd", abcd.length)
+
+            setDdOption(abcd)
 
             newArray[index] = {
                 ...rows[index],
@@ -56,8 +75,6 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
             }
         }
         console.log("record 1", newArray)
-        dispatch(updateCart(newArray))
-        getProductDescriptionbyCode(e, index, newArray)
 
     }
 
@@ -70,6 +87,7 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
                 placeholder="Select Shade"
                 allowClear={true}
                 value={infoLabel}
+                onKeyUp={(v) => updateProduct()}
                 onSelect={(e, v) => updateProduct(e, v)}
                 onSearch={(v) => setInfoLabel(v)}
                 onClear={() => updateProduct()}
