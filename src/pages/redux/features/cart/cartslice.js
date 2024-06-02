@@ -14,13 +14,11 @@ const initialState = [{
 }];
 
 
-let count = 0
 export const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
         updateCart: (state, action) => {
-            count += 1
             return action.payload;
         },
         emptyCart: (state) => {

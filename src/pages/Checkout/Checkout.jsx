@@ -21,6 +21,7 @@ import { UploadOutlined } from '@mui/icons-material'
 
 const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSuccess, shopes }) => {
 	const { userId, paymentType, branchcodeOrcl } = useSelector((state) => state.auth.user)
+	let { cart } = useSelector(state => state)
 	const [selectedPoint, setSelectedPoint] = useState(branchcodeOrcl)
 	const navigate = useNavigate()
 	const [attachment, setAttachment] = useState('')
@@ -37,6 +38,10 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 	const [paymntMethod, setPaymntMethod] = useState(paymentType)
 	const dispatch = useDispatch()
 	const [fileList, setFileList] = useState([])
+
+	useEffect(() => {
+		console.log("Checkout", rows)
+	}, [rows])
 
 	const setSelectedPointFun = (v) => {
 		setSelectedPoint(v)
@@ -297,8 +302,9 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 						container
 						columnSpacing={2}>
 						{shopes &&
-							shopes?.map((item) => (
+							shopes?.map((item, index) => (
 								<DeliveryDuration
+									key={index}
 									label={item.addDesc}
 									code={item?.addCode}
 									selected={selectedPoint}
@@ -455,11 +461,14 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 							md={12}
 							className="cartScrollSection">
 							{rows.map((item, index) => {
-								if (item.LottypeCode.value && item.ShadeCode.label && item.LottypeCode.HsCode && item.OrderQty && item.selectedYardage.label) {
+								if (item.LottypeCode.value && item.ShadeCode.label && (item.LottypeCode.HsCode || item.LottypeCode.hsCode) && item.OrderQty && item.selectedYardage.label) {
 									return (
+
 										<Grid
 											container
+											key={index}
 											className="yourCartRow">
+
 											<Grid
 												container
 												item
@@ -494,7 +503,6 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 													index={index}
 												/>
 											</Grid>
-											{/* <Grid item md={4} style={{ textAlign: "center" }} >{item.OrderQty}x</Grid> */}
 											<Grid
 												item
 												container

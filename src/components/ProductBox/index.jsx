@@ -3,6 +3,7 @@ import React, { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { AutoComplete, Input } from "antd"
 import { updateCart } from "../../pages/redux/features/cart/cartslice"
+import { useFetcher } from "react-router-dom"
 
 function ProductBox({ options, rows, index, setShadesByCode }) {
 	let { cart } = useSelector((state) => state)
@@ -16,8 +17,8 @@ function ProductBox({ options, rows, index, setShadesByCode }) {
 
 		if (!infoLabel) {
 			// updateProduct()
-			let abcd = options.map((option) => {
-				return { label: option.categoryName, value: option.categoryName, id: option.categoryId }
+			let abcd = options.map((option, i) => {
+				return { label: option.categoryName, value: option.categoryName, id: option.categoryId, key: `${index}-${i}` }
 			})
 
       setInfoLabel(rows[index]?.product?.label)
@@ -44,6 +45,8 @@ function ProductBox({ options, rows, index, setShadesByCode }) {
 		}
 	}, [rows[index]["product"]])
 
+	// useEffect(()=> console.log("BOXXXX", rows[index]), [rows])
+
 	useEffect(() => {
 		if (options && options.length > 0) {
 			let abcd = options?.map((option) => {
@@ -58,7 +61,7 @@ function ProductBox({ options, rows, index, setShadesByCode }) {
 		if (value) {
 			setInfoLabel(value)
 
-			setShadesByCode(obj, index)
+			setShadesByCode(obj, index, rows)
 		}
 		let newArray = [...rows]
 

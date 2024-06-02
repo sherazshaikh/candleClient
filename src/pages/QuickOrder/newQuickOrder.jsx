@@ -1,3 +1,4 @@
+import React from 'react'
 import { Grid, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import "./quickorder.css"
@@ -22,14 +23,15 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos"
 import ModeEditIcon from "@mui/icons-material/ModeEdit"
 import QuantityCheckout from "../../components/Quantity/QuantityCheckout"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
-
-
 import ProductBox from "../../components/ProductBox";
 import ShadeCodeBox from "../../components/ShadeCodeBox";
 import CategoryBox from "../../components/CategoryBox";
 
-const QuickOrder = () => {
-	let {
+function newQuickOrder() {
+	const { orderPage } = useParams()
+	const [mobileItem, setMobileItem] = useState("NS")
+
+    let {
 		baseURL,
 		auth: {
 			token,
@@ -37,29 +39,9 @@ const QuickOrder = () => {
 			user: { firstName, branchcodeOrcl },
 		},
 	} = useSelector((state) => state)
-	let cart = useSelector(state => state.cart)
-	let state = useSelector(state => state)
-	const [Step, setStep] = useState(1)
-	const { orderPage } = useParams()
-	const [isMobileEmpty, setIsMobileEmpty] = useState(false)
-	const [mobileItem, setMobileItem] = useState("NS")
-	// const [cart, setCart] = useState(nCart)
-	const count = useSelector((state) =>
-		state.cart.filter((item) => {
-			if (!item.LottypeCode?.label || !item.ShadeCode?.label || !item.selectedYardage?.label) {
-			} else {
-				return item
-			}
-		}),
-	)
-	const mobileItems = useSelector((state) =>
-		state.cart.filter((item) => {
-			if (item.LottypeCode?.label || item.ShadeCode?.label || item.selectedYardage?.label) {
-				return item
-			} else {
-			}
-		}),
-	)
+    let cart = useSelector(state => state.cart)
+
+
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
 	const [showPopup, setShowPopup] = useState(false)
@@ -82,454 +64,11 @@ const QuickOrder = () => {
 			productCategoryList: [],
 		},
 	])
-	const [products, setProducts] = useState([])
-	const [allProduct, setAllProduct] = useState([])
 
-	const [isMobileView, setMobileView] = useState(false)
 
 
 
-	const getAllProduct = async () => {
-		await executeApi(baseURL + variables.getAllProduct.url, {}, variables.shades.method, token, dispatch)
-			.then((data) => {
-				// let prdct = data.data.map((p) => `${p.categoryId}-${p.categoryName}`)
-				setAllProduct(data.data)
-			})
-			.catch((error) => console.log(error))
-	}
-
-	const setShadesByCode = async (product, i, rows) => {
-		
-		let newArray = [...rows]
-
-		executeApi(baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${product.id}`, {}, variables.shades.method, token, dispatch)
-			.then((data) => {
-
-				newArray[i] = {
-					...newArray[i],
-					shade: data.data,
-					product: product
-				}
-
-				dispatch(updateCart(newArray))
-			})
-			.catch((error) => console.log(error))
- 
-	}
-
-	const getInitialShadeByAll = ()=>{
-		let newArray = [...cart]
-
-		newArray.map((data) =>{
-			 executeApi(baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${data.product.id}`, {}, variables.shades.method, token, dispatch)
-			.then((data) => {
-
-			
-					data.shade = data.data
-				
-				// newArray[i] = {
-				// 	...newArray[i],
-				// 	shade: data.data,
-				// 	product: product
-				// }
-
-				// dispatch(updateCart(newArray))
-			})
-			.catch((error) => console.log(error))
-		})
-
-		
-			console.log("CARD PP AT", newArray)
-		}
-
-	const getProductDescriptionbyCode = async (shade, i, rows, initial) => {
-		let newArray = [...rows]
-		console.log('record 2', cart, i , rows)
-		await executeApi(
-			baseURL +
-			`/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i]?.product?.id}&shadeCode=${shade?.label}`,
-			{},
-			variables.shades.method,
-			token,
-			dispatch,
-		)
-			.then((data) => {
-				const cData = data?.data[0]
-				newArray[i] = {
-					...newArray[i],
-					shade: newArray[i].shade,
-					productCategoryList: data?.data,
-					// ShadeCode: { label: newArray[i].shadeCode, value: newArray[i].shadeDesc },
-					LottypeCode: data?.data.length > 0 ? { ...cData, label: cData.productDesc, value: cData.productDesc } : {},
-					OrderQty: initial ? newArray[i].OrderQty : cData.boxQty,
-					selectedYardage: { label: cData.yardage, value: cData.yardage, HsCode: cData.yardage },
-					uom: cData.uom,
-					productCode: cData.productCode
-
-				}
-				dispatch(updateCart(newArray))
-			})
-			.catch((error) => console.log(error))
-
-		setLaoding(false)
-	}
-
-	const addNewColumn = async () => {
-		let isPreviousRowFilled = true
-		cart?.length > 0 &&
-			cart.map((itm) => {
-				if (!itm?.LottypeCode?.label || !itm?.ShadeCode?.label || !itm.selectedYardage.label) {
-					isPreviousRowFilled = false
-				}
-			})
-		if (cart?.length === 0 || isPreviousRowFilled) {
-			let shadeItemList = []
-			// const productQty = products.find((product) => product.productCode === cart[cart.length - 1]?.LottypeCode?.value)
-			// await executeApi(baseURL + variables.shades.url + `?productCode=${cart[cart.length - 1]?.LottypeCode?.value}`, {}, variables.shades.method, token, dispatch).then((data) => {
-			// 	shadeItemList = data.data ? data.data : []
-			// }) 
-			let newCart = [
-				...cart,
-				{
-					LottypeCode: cart.length > 0 ? cart[cart.length - 1]?.LottypeCode : {},
-					shade: cart.length > 0 ? cart[cart.length - 1]?.shade : [],
-					ShadeCode: cart.length > 0 ? cart[cart.length - 1]?.ShadeCode : { label: "", value: "", HsCode: "" },
-					yardage: [],
-					selectedYardage: cart.length > 0 ? cart[cart.length - 1].selectedYardage : '',
-					OrderQty: cart.length > 0 ? cart[cart.length - 1].OrderQty : '',
-					price: "0",
-					uuid: v4(),
-					uom: cart.length > 0 ? cart[cart.length - 1].uom : '',
-					productCode: cart.length > 0 ? cart[cart.length - 1].productCode : '',
-					product: cart.length > 0 ? cart[cart.length - 1]?.product : {},
-					productCategoryList: cart.length > 0 ? cart[cart.length - 1]?.productCategoryList : [],
-				},
-			]
-
-			apiCallFunction()
-			dispatch(updateCart(newCart))
-			debouncedApiCall()
-
-			// if (newCart[newCart.length - 1]?.product) {
-			// 	setShadesByCode(newCart[newCart.length - 1]?.product, newCart.length - 1 )
-			// }
-			// if (newCart[newCart.length - 1].ShadeCode?.label && newCart[newCart.length - 1].product?.label) {
-			// 	console.log("shasdasdasdasdasdsada", newCart[newCart.length - 1] )
-			// 	getProductDescriptionbyCode(newCart[newCart.length - 1].ShadeCode, newCart.length - 1, newCart, 'initail')
-			// }
-		} else {
-			setSeverty("error")
-			setMessage("Please Fill Row Data")
-			setShowPopup(true)
-		}
-	}
-
-	function getShades() {
-		let array = [...newCart]
-		array?.map((itm) => {
-			let value = itm?.LottypeCode?.value
-
-			executeApi(baseURL + variables.shades.url + `?productCode=${value}`, {}, variables.shades.method, token, dispatch)
-				.then((data) => {
-					itm.shade = data.data
-				})
-				.catch((error) => console.log(error))
-		})
-
-		dispatch(updateCart(array))
-	}
-
-	const addNewColumnMobile = async () => {
-		let isPreviousRowFilled = true
-		console.log("SHADE CHECK KARO", cart)
-		cart?.length > 0 &&
-			cart.map((itm) => {
-				if (!itm?.LottypeCode?.label || !itm?.ShadeCode?.label || !itm.selectedYardage.label) {
-					isPreviousRowFilled = false
-				}
-			})
-		// const productQty = products.find((product) => product.hsCode === cart[cart.length - 1]?.LottypeCode?.HsCode)
-		if (cart?.length === 0 || isPreviousRowFilled) {
-			// let shadeItemList = []
-			// const productQty = products.find((product) => product.productCode === cart[cart.length - 1]?.LottypeCode?.value)
-			// await executeApi(
-			// 	baseURL + variables.shades.url + `?productCode=${cart[cart.length - 1]?.LottypeCode?.value}`,
-			// 	{},
-			// 	variables.shades.method,
-			// 	token,
-			// 	dispatch,
-			// ).then((data) => {
-			// 	shadeItemList = data.data
-			// })
-			let newCart = [
-				...cart,
-				// {
-				// 	LottypeCode: cart?.length === 0 ? "" : cart[cart.length - 1]["LottypeCode"],
-				// 	shade: cart?.length === 0 ? [] : shadeItemList,
-				// 	ShadeCode: { label: "", value: "", HsCode: "" },
-				// 	yardage: [],
-				// 	selectedYardage: cart?.length === 0 ? [] : cart[cart.length - 1]["selectedYardage"],
-				// 	OrderQty: productQty?.boxQty,
-				// 	price: "0",
-				// 	uom: productQty ? productQty?.uom : "",
-				// 	productCode: productQty?.productCode,
-				// 	uuid: v4(),
-				// },
-				{
-					LottypeCode: cart.length > 0 ? cart[cart.length - 1]?.LottypeCode : {},
-					shade: cart.length > 0 ? cart[cart.length - 1]?.shade : [],
-					ShadeCode: cart.length > 0 ? cart[cart.length - 1]?.ShadeCode : { label: "", value: "", HsCode: "" },
-					yardage: [],
-					selectedYardage: cart.length > 0 ? cart[cart.length - 1].selectedYardage : '',
-					OrderQty: cart.length > 0 ? cart[cart.length - 1].OrderQty : '',
-					price: "0",
-					uuid: v4(),
-					uom: cart.length > 0 ? cart[cart.length - 1].uom : '',
-					productCode: cart.length > 0 ? cart[cart.length - 1].productCode : '',
-					product: cart.length > 0 ? cart[cart.length - 1]?.product : {},
-					productCategoryList: cart.length > 0 ? cart[cart.length - 1]?.productCategoryList : [],
-				},
-			]
-
-			const newArr = cart.filter((itm) => itm?.LottypeCode?.label && itm?.ShadeCode?.label && itm.selectedYardage.label)
-
-			apiCallFunction(newArr)
-
-			dispatch(updateCart(newCart))
-			debouncedApiCall()
-			setMobileItem(newCart.length - 1)
-		} else {
-			setSeverty("error")
-			setMessage("Please Fill Row Data")
-			setShowPopup(true)
-		}
-	}
-
-	const handleClosePopup = () => {
-		setShowPopup(false)
-	}
-
-	useEffect(() => {
-		getAllProduct()
-		executeInitial()
-	}, [])
-
-	const executeInitial = async () => {
-
-		executeApi(baseURL + `${variables.Shopes.url}?branchCode=${branchcodeOrcl}`, {}, variables.Shopes.method, token, dispatch)
-			.then((data) => setShopes(data.data))
-			.catch((error) => console.log(error.message))
-
-		executeInitails()
-
-		//
-	}
-
-	const deleteExistingRow = (index1) => {
-		if (cart.length > 0) {
-			let newRows = cart.filter((i, index) => {
-				if (index !== index1) {
-					return i
-				}
-			})
-
-			dispatch(updateCart(newRows))
-			debouncedApiCall()
-			apiCallFunction(newRows)
-		}
-
-	}
-
-	function validateOrder() {
-		for (const orderDetail of cart) {
-			if (!orderDetail.OrderQty || isNaN(orderDetail.OrderQty) || orderDetail.OrderQty <= 0) {
-				return false
-			}
-			if (!orderDetail?.LottypeCode?.label || !orderDetail?.ShadeCode?.label || !orderDetail.selectedYardage.label) {
-				return false
-			}
-		}
-		return true
-	}
-
-	const moveToNext = async () => {
-		let isPreviousRowFilled = true
-
-		cart?.length > 0 &&
-			cart.map((itm) => {
-				if (!itm?.LottypeCode?.label || !itm?.ShadeCode?.label || !itm.selectedYardage.label) {
-					isPreviousRowFilled = false
-				}
-			})
-
-		if (isPreviousRowFilled) {
-			apiCallFunction()
-			if (count.length < 1) {
-				setShowPopup(true)
-			} else {
-				navigate("/quickOrder/2")
-			}
-		} else {
-			setSeverty("error")
-			setMessage("Please Fill Row Data")
-			setShowPopup(true)
-		}
-	}
-
-
-
-	const apiCallFunction = async (newRows) => {
-		let finalCart = []
-		if (newRows) {
-			for (const orderDetail of newRows) {
-				finalCart.push({
-					lottypecode: Object.values(orderDetail.LottypeCode).join("BTWOBJ"),
-					shadecode: Object.values(orderDetail.ShadeCode).join("BTWOBJ"),
-					qty: orderDetail.OrderQty,
-					yardage: Object.values(orderDetail.selectedYardage).join("BTWOBJ"),
-					yardagelist: orderDetail.yardage.join("BTWOBJ"),
-					shadecodelist: orderDetail.shade
-						.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`)
-						.join("OBJEND"),
-					uom: orderDetail.uom,
-					productCode: orderDetail?.productCode,
-					categoryCode: Object.values(orderDetail.product).join("BTWOBJ"),
-					products: Object.values(orderDetail.product).join("BTWOBJ"),
-				})
-			}
-		} else {
-			for (const orderDetail of cart) {
-				finalCart.push({
-					...cart,
-					lottypecode: Object.values(orderDetail.LottypeCode).join("BTWOBJ"),
-					shadecode: Object.values(orderDetail.ShadeCode).join("BTWOBJ"),
-					qty: orderDetail.OrderQty,
-					yardage: Object.values(orderDetail.selectedYardage).join("BTWOBJ"),
-					yardagelist: orderDetail.yardage.join("BTWOBJ"),
-					shadecodelist: orderDetail.shade
-						.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`)
-						.join("OBJEND"),
-					uom: orderDetail.uom,
-					productCode: orderDetail?.productCode,
-					categoryCode: Object.values(orderDetail.product).join("BTWOBJ"),
-					products: Object.values(orderDetail.product).join("BTWOBJ"),
-				})
-			}
-		}
-
-		// console.log("finalCart", finalCart)
-		// dispatch(updateCart(finalCart))
-		await executeApi(baseURL + variables.updateCart.url, finalCart, variables.updateCart.method, token, dispatch)
-			.then((data) => console.log(data))
-			.catch((err) => console.log(err))
-	}
-
-
-
-	function handleOrderSuccess(isOrderSuccess) {
-		setOrderSuccess(isOrderSuccess)
-	}
-
-	function updatProductFromMobile() {
-		setMobileItem("NS")
-		apiCallFunction()
-	}
-
-	const apiCallFunction1 = () => { }
-
-	const debouncedApiCall = _.debounce(apiCallFunction1, 3000)
-
-	function validateShadeCode(code, index) { }
-
-	useEffect(() => {
-		setProducts(products)
-	}, [mobileItem])
-
-	const executeInitails = async () => {
-
-		const OldCartLenght = cart.length
-		console.log(
-			"OLD CARD LENTH", OldCartLenght
-		)
-
-
-
-		await executeApi(baseURL + variables.getCart.url, {}, variables.getCart.method, token, dispatch)
-			.then((data) => {
-				if (data.data != null) {
-					var finalObject = data.data.map((item) => {
-						let jsonData = item
-
-						let dataArray = jsonData.shadecodelist.split("OBJEND")
-						dataArray.pop()
-						// Map the array elements back into objects
-						let parsedArray = dataArray.map((item) => {
-							let [shadeCode, shadeDesc] = item.split("BTWOBJ")
-							return { shadeCode, shadeDesc }
-						})
-
-						return {
-							LottypeCode: {
-								label: jsonData.lottypecode.split("BTWOBJ")[1],
-								value: jsonData.lottypecode.split("BTWOBJ")[1],
-								HsCode: jsonData.lottypecode.split("BTWOBJ")[2],
-							},
-							shade: [],
-							ShadeCode: {
-								label: jsonData.shadecode.split("BTWOBJ")[0],
-								value: jsonData.shadecode.split("BTWOBJ")[1],
-							},
-							yardage: jsonData.yardagelist.split("BTWOBJ"),
-							selectedYardage: {
-								label: jsonData.yardage.split("BTWOBJ")[0],
-								value: jsonData.yardage.split("BTWOBJ")[1],
-								HsCode: jsonData.yardage.split("BTWOBJ")[2],
-							},
-							OrderQty: jsonData.qty,
-							uom: item.uom,
-							price: 0,
-							uuid: v4(),
-							productCategoryList: [],
-							product: {
-								label: jsonData.categoryCode.split("BTWOBJ")[0],
-								value: jsonData.categoryCode.split("BTWOBJ")[0],
-								id: jsonData.categoryCode.split("BTWOBJ")[2],
-							},
-							productCode: jsonData.productCode
-
-						}
-					})
-
-					// if(cart.length, finalObject.length)  s
-					// dispatch(updateCart(finalObject))
-					// cart = finalObject
-
-					
-
-					dispatch(updateCart(finalObject))
-
-					cart?.map((ct, i) => {
-						if (ct?.product?.label) {
-							setShadesByCode(ct?.product, i, cart)
-						}
-						if (ct?.ShadeCode?.label && ct?.product?.label) {
-							 getProductDescriptionbyCode(ct.ShadeCode, i, finalObject)
-						}
-					})
-
-				} else {
-					dispatch(updateCart(rows))
-				}
-				
-			})
-			.catch((err) => {
-				console.log(err)
-			})
-			
-			console.log('New  CARD HE BHAI 1', cart)
-	}
-
-	return !orderSuccess ? (
+    return !orderSuccess ? (
 		<>
 			<Grid
 				container
@@ -972,7 +511,7 @@ const QuickOrder = () => {
 										paddingLeft: "20px",
 										marginBottom: "10px",
 									}}>
-									<Typography variant="h3">Quick Order </Typography>
+									<Typography variant="h3">Quick Order</Typography>
 								</Grid>
 								<Grid
 									item
@@ -1272,7 +811,7 @@ const QuickOrder = () => {
 													Product Description{" "}
 												</Typography>
 											</Grid>
-												{console.log("IM From IN JSX", mobileItem)}
+
 											<Grid
 												item
 												xs={12}
@@ -1587,4 +1126,4 @@ const QuickOrder = () => {
 	)
 }
 
-export default QuickOrder
+export default newQuickOrder
