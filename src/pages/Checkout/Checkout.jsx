@@ -62,6 +62,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 		setShowPopup(false)
 	}
 	const deleteExistingRow = async (index1) => {
+		
 		if (rows.length > 0) {
 			let newRows = rows.filter((i) => {
 				if (index1 !== i.uuid) {
@@ -82,6 +83,8 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 						shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`).join('OBJEND'),
 						uom: orderDetail.uom,
 						productCode: orderDetail?.productCode,
+						categoryCode: Object.values(orderDetail.product).join("BTWOBJ"),
+						products: Object.values(orderDetail.product).join("BTWOBJ"),
 					})
 				}
 			}

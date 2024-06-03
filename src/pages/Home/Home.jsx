@@ -37,7 +37,7 @@ const Home = () => {
               return { shadeCode, shadeDesc };
             });
             return {
-              "LottypeCode": { label: jsonData.lottypecode.split("BTWOBJ")[1], value: jsonData.lottypecode.split("BTWOBJ")[1], HsCode: jsonData.lottypecode.split("BTWOBJ")[2] },
+              "LottypeCode": { label: jsonData.lottypecode.split("BTWOBJ")[0], value: jsonData.lottypecode.split("BTWOBJ")[1], HsCode: jsonData.lottypecode.split("BTWOBJ")[2] },
               "shade": parsedArray,
               "ShadeCode": { label: jsonData.shadecode.split("BTWOBJ")[0], value: jsonData.shadecode.split("BTWOBJ")[1] },
               "yardage": jsonData.yardagelist.split("BTWOBJ"),

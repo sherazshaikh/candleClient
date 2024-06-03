@@ -23,10 +23,9 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit"
 import QuantityCheckout from "../../components/Quantity/QuantityCheckout"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 
-
-import ProductBox from "../../components/ProductBox";
-import ShadeCodeBox from "../../components/ShadeCodeBox";
-import CategoryBox from "../../components/CategoryBox";
+import ProductBox from "../../components/ProductBox"
+import ShadeCodeBox from "../../components/ShadeCodeBox"
+import CategoryBox from "../../components/CategoryBox"
 
 const QuickOrder = () => {
 	let {
@@ -37,8 +36,8 @@ const QuickOrder = () => {
 			user: { firstName, branchcodeOrcl },
 		},
 	} = useSelector((state) => state)
-	let cart = useSelector(state => state.cart)
-	let state = useSelector(state => state)
+	let cart = useSelector((state) => state.cart)
+	let state = useSelector((state) => state)
 	const [Step, setStep] = useState(1)
 	const { orderPage } = useParams()
 	const [isMobileEmpty, setIsMobileEmpty] = useState(false)
@@ -87,8 +86,6 @@ const QuickOrder = () => {
 
 	const [isMobileView, setMobileView] = useState(false)
 
-
-
 	const getAllProduct = async () => {
 		await executeApi(baseURL + variables.getAllProduct.url, {}, variables.shades.method, token, dispatch)
 			.then((data) => {
@@ -99,54 +96,54 @@ const QuickOrder = () => {
 	}
 
 	const setShadesByCode = async (product, i, rows) => {
-		
 		let newArray = [...rows]
 
 		executeApi(baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${product.id}`, {}, variables.shades.method, token, dispatch)
 			.then((data) => {
-
 				newArray[i] = {
 					...newArray[i],
 					shade: data.data,
-					product: product
+					product: product,
 				}
 
 				dispatch(updateCart(newArray))
 			})
 			.catch((error) => console.log(error))
- 
 	}
 
-	const getInitialShadeByAll = ()=>{
+	const getInitialShadeByAll = () => {
 		let newArray = [...cart]
 
-		newArray.map((data) =>{
-			 executeApi(baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${data.product.id}`, {}, variables.shades.method, token, dispatch)
-			.then((data) => {
-
-			
+		newArray.map((data) => {
+			executeApi(
+				baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${data.product.id}`,
+				{},
+				variables.shades.method,
+				token,
+				dispatch,
+			)
+				.then((data) => {
 					data.shade = data.data
-				
-				// newArray[i] = {
-				// 	...newArray[i],
-				// 	shade: data.data,
-				// 	product: product
-				// }
 
-				// dispatch(updateCart(newArray))
-			})
-			.catch((error) => console.log(error))
+					// newArray[i] = {
+					// 	...newArray[i],
+					// 	shade: data.data,
+					// 	product: product
+					// }
+
+					// dispatch(updateCart(newArray))
+				})
+				.catch((error) => console.log(error))
 		})
 
-		
-			console.log("CARD PP AT", newArray)
-		}
+		console.log("CARD PP AT", newArray)
+	}
 
-	const getProductDescriptionbyCode = async (shade, i,rows, initial) => {
+	const getProductDescriptionbyCode = async (shade, i, rows, initial) => {
 		let newArray = [...rows]
 		await executeApi(
 			baseURL +
-			`/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i]?.product?.id}&shadeCode=${shade?.label}`,
+				`/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i]?.product?.id}&shadeCode=${shade?.label}`,
 			{},
 			variables.shades.method,
 			token,
@@ -159,16 +156,25 @@ const QuickOrder = () => {
 					shade: newArray[i].shade,
 					productCategoryList: data?.data,
 					// ShadeCode: newArray[i].ShadeCode,
-					LottypeCode: data?.data.length > 0 ? { ...cData, label: cData.productDesc, value: cData.productDesc } : {},
+					LottypeCode:
+						data?.data.length > 0
+							? {
+									label: cData.productDesc,
+									value: cData.productCode,
+									HsCode: cData.hsCode,
+									yardage: cData.yardage,
+									boxQty: cData.boxQty,
+									uom: cData.uom,
+									productCode: cData.productCode,
+							  }
+							: {},
 					OrderQty: initial ? newArray[i].OrderQty : cData.boxQty,
 					selectedYardage: { label: cData.yardage, value: cData.yardage, HsCode: cData.yardage },
 					uom: cData.uom,
-					productCode: cData.productCode
-
+					productCode: cData.productCode,
 				}
 
-		console.log('record 2',i,newArray )
-
+				console.log("record 2", i, newArray)
 
 				dispatch(updateCart(newArray))
 			})
@@ -190,20 +196,21 @@ const QuickOrder = () => {
 			// const productQty = products.find((product) => product.productCode === cart[cart.length - 1]?.LottypeCode?.value)
 			// await executeApi(baseURL + variables.shades.url + `?productCode=${cart[cart.length - 1]?.LottypeCode?.value}`, {}, variables.shades.method, token, dispatch).then((data) => {
 			// 	shadeItemList = data.data ? data.data : []
-			// }) 
+			// })
 			let newCart = [
 				...cart,
 				{
 					LottypeCode: cart.length > 0 ? cart[cart.length - 1]?.LottypeCode : {},
 					shade: cart.length > 0 ? cart[cart.length - 1]?.shade : [],
-					ShadeCode: cart.length > 0 ? cart[cart.length - 1]?.ShadeCode : { label: "", value: "", HsCode: "" },
+					ShadeCode:
+						cart.length > 0 ? cart[cart.length - 1]?.ShadeCode : { label: "", value: "", HsCode: "" },
 					yardage: [],
-					selectedYardage: cart.length > 0 ? cart[cart.length - 1].selectedYardage : '',
-					OrderQty: cart.length > 0 ? cart[cart.length - 1].OrderQty : '',
+					selectedYardage: cart.length > 0 ? cart[cart.length - 1].selectedYardage : "",
+					OrderQty: cart.length > 0 ? cart[cart.length - 1].OrderQty : "",
 					price: "0",
 					uuid: v4(),
-					uom: cart.length > 0 ? cart[cart.length - 1].uom : '',
-					productCode: cart.length > 0 ? cart[cart.length - 1].productCode : '',
+					uom: cart.length > 0 ? cart[cart.length - 1].uom : "",
+					productCode: cart.length > 0 ? cart[cart.length - 1].productCode : "",
 					product: cart.length > 0 ? cart[cart.length - 1]?.product : {},
 					productCategoryList: cart.length > 0 ? cart[cart.length - 1]?.productCategoryList : [],
 				},
@@ -281,14 +288,15 @@ const QuickOrder = () => {
 				{
 					LottypeCode: cart.length > 0 ? cart[cart.length - 1]?.LottypeCode : {},
 					shade: cart.length > 0 ? cart[cart.length - 1]?.shade : [],
-					ShadeCode: cart.length > 0 ? cart[cart.length - 1]?.ShadeCode : { label: "", value: "", HsCode: "" },
+					ShadeCode:
+						cart.length > 0 ? cart[cart.length - 1]?.ShadeCode : { label: "", value: "", HsCode: "" },
 					yardage: [],
-					selectedYardage: cart.length > 0 ? cart[cart.length - 1].selectedYardage : '',
-					OrderQty: cart.length > 0 ? cart[cart.length - 1].OrderQty : '',
+					selectedYardage: cart.length > 0 ? cart[cart.length - 1].selectedYardage : "",
+					OrderQty: cart.length > 0 ? cart[cart.length - 1].OrderQty : "",
 					price: "0",
 					uuid: v4(),
-					uom: cart.length > 0 ? cart[cart.length - 1].uom : '',
-					productCode: cart.length > 0 ? cart[cart.length - 1].productCode : '',
+					uom: cart.length > 0 ? cart[cart.length - 1].uom : "",
+					productCode: cart.length > 0 ? cart[cart.length - 1].productCode : "",
 					product: cart.length > 0 ? cart[cart.length - 1]?.product : {},
 					productCategoryList: cart.length > 0 ? cart[cart.length - 1]?.productCategoryList : [],
 				},
@@ -318,7 +326,6 @@ const QuickOrder = () => {
 	}, [])
 
 	const executeInitial = async () => {
-
 		executeApi(baseURL + `${variables.Shopes.url}?branchCode=${branchcodeOrcl}`, {}, variables.Shopes.method, token, dispatch)
 			.then((data) => setShopes(data.data))
 			.catch((error) => console.log(error.message))
@@ -340,7 +347,6 @@ const QuickOrder = () => {
 			debouncedApiCall()
 			apiCallFunction(newRows)
 		}
-
 	}
 
 	function validateOrder() {
@@ -379,8 +385,6 @@ const QuickOrder = () => {
 		}
 	}
 
-
-
 	const apiCallFunction = async (newRows) => {
 		let finalCart = []
 		if (newRows) {
@@ -403,7 +407,7 @@ const QuickOrder = () => {
 		} else {
 			for (const orderDetail of cart) {
 				finalCart.push({
-					...cart,
+					// ...orderDetail,
 					lottypecode: Object.values(orderDetail.LottypeCode).join("BTWOBJ"),
 					shadecode: Object.values(orderDetail.ShadeCode).join("BTWOBJ"),
 					qty: orderDetail.OrderQty,
@@ -420,14 +424,12 @@ const QuickOrder = () => {
 			}
 		}
 
-		// console.log("finalCart", finalCart)
+		console.log("finalCart", finalCart)
 		// dispatch(updateCart(finalCart))
 		await executeApi(baseURL + variables.updateCart.url, finalCart, variables.updateCart.method, token, dispatch)
 			.then((data) => console.log(data))
 			.catch((err) => console.log(err))
 	}
-
-
 
 	function handleOrderSuccess(isOrderSuccess) {
 		setOrderSuccess(isOrderSuccess)
@@ -438,24 +440,18 @@ const QuickOrder = () => {
 		apiCallFunction()
 	}
 
-	const apiCallFunction1 = () => { }
+	const apiCallFunction1 = () => {}
 
 	const debouncedApiCall = _.debounce(apiCallFunction1, 3000)
 
-	function validateShadeCode(code, index) { }
+	function validateShadeCode(code, index) {}
 
 	useEffect(() => {
 		setProducts(products)
 	}, [mobileItem])
 
 	const executeInitails = async () => {
-
 		const OldCartLenght = cart.length
-		console.log(
-			"OLD CARD LENTH", OldCartLenght
-		)
-
-
 
 		await executeApi(baseURL + variables.getCart.url, {}, variables.getCart.method, token, dispatch)
 			.then((data) => {
@@ -469,14 +465,13 @@ const QuickOrder = () => {
 						let shadeList = []
 						let parsedArray = dataArray.map((item) => {
 							let [shadeCode, shadeDesc] = item.split("BTWOBJ")
-							shadeList.push({ shadeCode: shadeCode, shadeDesc: shadeDesc }) 
-
+							shadeList.push({ shadeCode: shadeCode, shadeDesc: shadeDesc })
 						})
-						console.log("parsedArray",shadeList)
+						console.log("parsedArray", shadeList)
 
 						return {
 							LottypeCode: {
-								label: jsonData.lottypecode.split("BTWOBJ")[1],
+								label: jsonData.lottypecode.split("BTWOBJ")[0],
 								value: jsonData.lottypecode.split("BTWOBJ")[1],
 								HsCode: jsonData.lottypecode.split("BTWOBJ")[2],
 							},
@@ -501,19 +496,15 @@ const QuickOrder = () => {
 								value: jsonData.categoryCode.split("BTWOBJ")[0],
 								id: jsonData.categoryCode.split("BTWOBJ")[2],
 							},
-							productCode: jsonData.productCode
-
+							productCode: jsonData.productCode,
 						}
 					})
 
-					console.log('sgggg0', finalObject)
+					console.log("Get Latest Card", finalObject)
 
 					// if(cart.length, finalObject.length)  s
 					// dispatch(updateCart(finalObject))
 					// cart = finalObject
-
-					
-
 
 					dispatch(updateCart(finalObject))
 					cart?.map((ct, i) => {
@@ -521,21 +512,18 @@ const QuickOrder = () => {
 						// 	setShadesByCode(ct?.product, i, cart)
 						// }
 						if (ct?.ShadeCode?.label && ct?.product?.label) {
-							 getProductDescriptionbyCode(ct.ShadeCode, i,finalObject, 'initial')
+							getProductDescriptionbyCode(ct.ShadeCode, i, finalObject, "initial")
 						}
 					})
-
 				} else {
 					dispatch(updateCart(rows))
 				}
-				
 			})
 			.catch((err) => {
 				console.log(err)
 			})
 
-			
-			console.log('New  CARD HE BHAI 1', cart)
+		console.log("New  CARD HE BHAI 1", cart)
 	}
 
 	return !orderSuccess ? (
@@ -913,7 +901,7 @@ const QuickOrder = () => {
 										item
 										md={7}
 										sm={3}
-									// className="discountImage"
+										// className="discountImage"
 									></Grid>
 									<Grid
 										item
@@ -1281,7 +1269,10 @@ const QuickOrder = () => {
 													Product Description{" "}
 												</Typography>
 											</Grid>
-												{console.log("IM From IN JSX", mobileItem)}
+											{console.log(
+												"IM From IN JSX",
+												mobileItem,
+											)}
 											<Grid
 												item
 												xs={12}
@@ -1295,7 +1286,8 @@ const QuickOrder = () => {
 													options={
 														cart[
 															mobileItem
-														]?.productCategoryList
+														]
+															?.productCategoryList
 													}
 													index={mobileItem}
 													rows={cart}
