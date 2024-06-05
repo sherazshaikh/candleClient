@@ -465,6 +465,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 				sx={{ display: { xs: 'none', sm: 'none', md: 'flex' } }}
 				style={{ overflowY: 'scroll' }}
 				className="cartMain">
+			
 				<Grid
 					item
 					md={11}

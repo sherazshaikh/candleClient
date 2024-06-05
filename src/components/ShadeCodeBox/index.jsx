@@ -6,19 +6,35 @@ import { useDispatch, useSelector } from "react-redux"
 import { AutoComplete, Input } from "antd"
 
 function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [], baseURL, token, getProductDescriptionbyCode }) {
-    const optionsList = useSelector((state) => state.cart[index].shade)
-    const initialLabel = useSelector((state) => state.cart[index].ShadeCode)
+    const optionsList = useSelector((state) => state.cart[index]?.shade)
+    const initialLabel = useSelector((state) => state.cart[index]?.ShadeCode)
     const dispatch = useDispatch()
-    const [infoLabel, setInfoLabel] = React.useState("")
+    const [infoLabel, setInfoLabel] = React.useState(initialLabel)
     const isMobile = useMediaQuery("(max-width: 600px)")
     const [ddOption, setDdOption] = React.useState([])
 
-    const OptionState = () => {
-        let list = optionsList?.map((opt, i) => {
-            return
-        })
-        return list
-    }
+	const GetCategoryLabl = () => {
+		const initialLabel = useSelector((state) => state.cart[index]?.product?.label)
+		return initialLabel
+	}
+
+	const allOptionsList = optionsList?.map((option, ind) => {
+		return { label: option.shadeCode, value: option.shadeDesc, key: ind }
+	})
+
+	const GetInfoLabl = () => {
+		const initialLabel = useSelector((state) => state.cart[index]?.ShadeCode?.label)
+		return initialLabel
+	}
+
+	const shadeLabel = GetInfoLabl()
+
+	const categoryLabel = GetCategoryLabl()
+
+	React.useEffect(() => {
+			setInfoLabel(categoryLabel ? shadeLabel : "")
+	}, [categoryLabel])
+
 
     useEffect(() => {
         setInfoLabel(initialLabel?.label)
@@ -26,15 +42,15 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
 
     useEffect(() => {
 
-        let abcd = optionsList.filter((option) => {
+        let abcd = optionsList?.filter((option) => {
             if (infoLabel) {
-                if (option.shadeCode.includes(infoLabel)) {
+                if (option.shadeCode?.includes(infoLabel)) {
                     return option
                 }
             } else return option
         })
 
-        abcd = abcd.map((option, ind) => {
+        abcd = abcd?.map((option, ind) => {
             return { label: option.shadeCode, value: option.shadeDesc, key: ind }
         })
         setDdOption(abcd)
@@ -68,8 +84,19 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
             }
             dispatch(updateCart(newArray))
         }
+		setTimeout(() => { setDdOption(allOptionsList)}, 300)
         console.log("record 1", newArray)
     }
+
+	const ShowAllOptions = () => {
+		if (options && options.length > 0) {
+			let abcd = options?.map((option, i) => {
+				// categoryId
+				return { label: option.shadeCode, value: option.shadeDesc, key: `${index}-${i}` }
+			})
+			setDdOption(abcd)
+		}
+	}
 
     return (
         <>
@@ -81,6 +108,7 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
                 onSelect={(e, v) => updateProduct(e, v)}
                 onSearch={(v) => setInfoLabel(v)}
                 onClear={() => updateProduct()}
+				onFocus={ShowAllOptions}
                 style={{
                     width: "90%",
                     height: "40px",
