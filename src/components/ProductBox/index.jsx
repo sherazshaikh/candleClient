@@ -13,6 +13,12 @@ function ProductBox({ options, rows, index, setShadesByCode }) {
 	const isMobile = useMediaQuery("(max-width: 600px)")
 	const [ddOption, setDdOption] = React.useState([])
 
+	const GetUpdatedLabel = () => {
+		const initialLabel = useSelector((state) => state.cart[index]?.LottypeCode?.label)
+		return initialLabel
+	}
+	const initialLabel = GetUpdatedLabel()
+
 	useEffect(() => {
 
 		if (!infoLabel) {
