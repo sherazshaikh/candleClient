@@ -12,9 +12,9 @@ const CategoryBox = ({ debouncedApiCall, label, index, rows, setRows, options = 
 	const isMobile = useMediaQuery("(max-width: 600px)")
 	const [open, setOpen] = React.useState(false)
 	const [ddOption, setDdOption] = React.useState([{ label: "loading...", value: "loading..." }])
-	
+
 	const optionsList = useSelector((state) => state.cart[index]?.productCategoryList)
-	
+
 	const GetUpdatedLabel = () => {
 		const initialLabel = useSelector((state) => state.cart[index]?.LottypeCode?.label)
 		return initialLabel
@@ -57,6 +57,32 @@ const CategoryBox = ({ debouncedApiCall, label, index, rows, setRows, options = 
 
 		setDdOption(list)
 	}, [optionsList])
+
+	React.useEffect(() => {
+
+		let abcd = optionsList.filter((option) => {
+			if (infoLabel) {
+				if (option.productDesc.includes(infoLabel)) {
+					return option
+				}
+			} else return option
+		})
+
+		abcd = abcd.map((option, ind) => {
+			return {
+				label: option.productDesc,
+				value: option.productCode,
+				HsCode: option.hsCode,
+				yardage: option.yardage,
+				boxQty: option.boxQty,
+				uom: option.uom,
+				productCode: option.productCode,
+				key: `${index}-${ind}`,
+			}
+		})
+		setDdOption(abcd)
+
+	}, [infoLabel])
 
 	// React.useEffect(() => {
 	// 	// console.log("initial label working", rows[index])

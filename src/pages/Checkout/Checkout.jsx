@@ -1,4 +1,4 @@
-import { CircularProgress, Grid, Typography } from '@mui/material'
+import { Backdrop, CircularProgress, Grid, IconButton, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import './checkout.css'
 import DeliveryDuration from '../../components/DeliveryDuration/DeliveryDuration'
@@ -17,7 +17,7 @@ import { v4 } from 'uuid'
 import Quantity from '../../components/Quantity/Quantity'
 import QuantityCheckout from '../../components/Quantity/QuantityCheckout'
 import { Button, Upload, message } from 'antd'
-import { UploadOutlined } from '@mui/icons-material'
+import { Spa, UploadOutlined } from '@mui/icons-material'
 
 const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSuccess, shopes }) => {
 	const { userId, paymentType, branchcodeOrcl } = useSelector((state) => state.auth.user)
@@ -30,6 +30,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 	const [loadingState, setLoadingState] = useState(false)
 	const [severty, setSeverty] = useState('')
 	const [showPopup, setShowPopup] = useState(false)
+	const [isLoading, setLoading] = useState(false)
 	let {
 		baseURL,
 		auth: { token },
@@ -62,7 +63,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 		setShowPopup(false)
 	}
 	const deleteExistingRow = async (index1) => {
-		
+		setLoading(true)
 		if (rows.length > 0) {
 			let newRows = rows.filter((i) => {
 				if (index1 !== i.uuid) {
@@ -92,6 +93,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 			await executeApi(baseURL + variables.updateCart.url, finalCart, variables.updateCart.method, token, dispatch)
 				.then((data) => console.log(data))
 				.catch((err) => console.log(err))
+			setLoading(false)
 		}
 		// else {
 		//     let newRows = [{
@@ -251,6 +253,17 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 
 	return (
 		<Grid container>
+
+
+			{isLoading &&
+				<Backdrop
+					sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+					open={isLoading}
+				>
+					<CircularProgress color="inherit" />
+				</Backdrop>
+			}
+
 			<Grid
 				item
 				md={12}
@@ -281,6 +294,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 						md={12}
 						sm={12}
 						sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}
+						disable={isLoading}
 						onClick={() => navigate('/')}
 						className="checkoutLogo"></Grid>
 					<Grid
@@ -428,6 +442,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 						sm={12}
 						className="checkoutPageCheckoutButtons">
 						<button
+							disabled={isLoading}
 							onClick={() => navigate('/quickOrder/1')}
 							className="checkoutButtonBack flex">
 							<KeyboardArrowLeftIcon />
