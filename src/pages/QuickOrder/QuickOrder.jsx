@@ -2,7 +2,7 @@ import { Grid, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import "./quickorder.css"
 import ComboBox, { ShadeBox, YardageBox } from "../../components/ComboBox/ComboBox"
-import { CoPresentOutlined, Delete } from "@mui/icons-material"
+import { CoPresentOutlined, Delete, ShoppingBasket } from "@mui/icons-material"
 import DeleteIcon from "@mui/icons-material/Delete"
 import Quantity from "../../components/Quantity/Quantity"
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward"
@@ -436,6 +436,7 @@ const QuickOrder = () => {
 	}
 
 	function updatProductFromMobile() {
+		
 		setMobileItem("NS")
 		apiCallFunction()
 	}
@@ -1359,7 +1360,23 @@ const QuickOrder = () => {
 								</Grid>
 								<Grid
 									item
+									xs={2}
+									className="flex">
+										<button
+										onClick={() => updatProductFromMobile()}
+										className="addAnItemButtonMobile flex"
+										style={{ textAlign: "center", justifyContent:"center", alignItems:"center" }}>
+										<Typography
+											variant="h6"
+											style={{ marginRight: "10px" }}>
+											<ShoppingBasket /> 
+										</Typography>
+									</button>
+									</Grid>
+								<Grid
+									item
 									xs={12}
+									style={{position:"absolute", bottom:"50px", width:"100%"}}
 									className="flex">
 									<button
 										onClick={() => updatProductFromMobile()}
@@ -1368,7 +1385,7 @@ const QuickOrder = () => {
 										<Typography
 											variant="h6"
 											style={{ marginRight: "10px" }}>
-											Done
+											Done 
 										</Typography>
 									</button>
 								</Grid>
