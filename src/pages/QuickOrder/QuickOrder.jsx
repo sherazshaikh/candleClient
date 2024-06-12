@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material"
+import { Backdrop, CircularProgress, Grid, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import "./quickorder.css"
 import ComboBox, { ShadeBox, YardageBox } from "../../components/ComboBox/ComboBox"
@@ -68,6 +68,7 @@ const QuickOrder = () => {
 	const [orderSuccess, setOrderSuccess] = useState(false)
 	const [newCart, setNewCart] = useState([])
 	const [islaoding, setLaoding] = useState(true)
+	const [isLoading, setLoading] = useState(false)
 	const [rows, setRows] = useState([
 		{
 			LottypeCode: "",
@@ -157,7 +158,7 @@ const QuickOrder = () => {
 					productCategoryList: data?.data,
 					// ShadeCode: newArray[i].ShadeCode,
 					LottypeCode:
-						data?.data.length > 0
+						!initial && data?.data.length === 1
 							? {
 									label: cData.productDesc,
 									value: cData.productCode,
@@ -167,8 +168,10 @@ const QuickOrder = () => {
 									uom: cData.uom,
 									productCode: cData.productCode,
 							  }
+							: initial
+							? newArray[i].LottypeCode
 							: {},
-					OrderQty: initial ? newArray[i].OrderQty : cData.boxQty,
+					OrderQty: cData.boxQty,
 					selectedYardage: { label: cData.yardage, value: cData.yardage, HsCode: cData.yardage },
 					uom: cData.uom,
 					productCode: cData.productCode,
@@ -206,7 +209,7 @@ const QuickOrder = () => {
 						cart.length > 0 ? cart[cart.length - 1]?.ShadeCode : { label: "", value: "", HsCode: "" },
 					yardage: [],
 					selectedYardage: cart.length > 0 ? cart[cart.length - 1].selectedYardage : "",
-					OrderQty: cart.length > 0 ? cart[cart.length - 1].OrderQty : "",
+					OrderQty: cart.length > 0 ? cart[cart.length - 1].OrderQty : 0,
 					price: "0",
 					uuid: v4(),
 					uom: cart.length > 0 ? cart[cart.length - 1].uom : "",
@@ -215,6 +218,8 @@ const QuickOrder = () => {
 					productCategoryList: cart.length > 0 ? cart[cart.length - 1]?.productCategoryList : [],
 				},
 			]
+
+			console.log("aidassod", newCart)
 
 			apiCallFunction()
 			dispatch(updateCart(newCart))
@@ -303,6 +308,7 @@ const QuickOrder = () => {
 			]
 
 			const newArr = cart.filter((itm) => itm?.LottypeCode?.label && itm?.ShadeCode?.label && itm.selectedYardage.label)
+			console.log("Mob add", newArr, newCart, cart)
 
 			apiCallFunction(newArr)
 
@@ -336,6 +342,7 @@ const QuickOrder = () => {
 	}
 
 	const deleteExistingRow = (index1) => {
+		setLoading(true)
 		if (cart.length > 0) {
 			let newRows = cart.filter((i, index) => {
 				if (index !== index1) {
@@ -427,7 +434,10 @@ const QuickOrder = () => {
 		console.log("finalCart", finalCart)
 		// dispatch(updateCart(finalCart))
 		await executeApi(baseURL + variables.updateCart.url, finalCart, variables.updateCart.method, token, dispatch)
-			.then((data) => console.log(data))
+			.then((data) => {
+				console.log(data)
+				setLoading(false)
+			})
 			.catch((err) => console.log(err))
 	}
 
@@ -1431,6 +1441,18 @@ const QuickOrder = () => {
 								container
 								xs={12}
 								className="flex cartProductMobile">
+								{isLoading && (
+									<Backdrop
+										sx={{
+											color: "#fff",
+											zIndex: (theme) =>
+												theme.zIndex.drawer + 1,
+										}}
+										open={isLoading}>
+										<CircularProgress color="inherit" />
+									</Backdrop>
+								)}
+
 								<Grid
 									container
 									item

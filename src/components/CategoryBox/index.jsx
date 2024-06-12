@@ -14,11 +14,30 @@ const CategoryBox = ({ debouncedApiCall, label, index, rows, setRows, options = 
 	const [ddOption, setDdOption] = React.useState([{ label: "loading...", value: "loading..." }])
 
 	const optionsList = useSelector((state) => state.cart[index]?.productCategoryList)
+	const allOptionsList = optionsList?.map((option, i) => {
+		return {
+			label: option.productDesc,
+			value: option.productCode,
+			HsCode: option.hsCode,
+			yardage: option.yardage,
+			boxQty: option.boxQty,
+			uom: option.uom,
+			productCode: option.productCode,
+			key: `${index}-${i}`,
+		}
+	})
 
 	const GetUpdatedLabel = () => {
 		const initialLabel = useSelector((state) => state.cart[index]?.LottypeCode?.label)
 		return initialLabel
 	}
+
+	const GetProductLabel = () => {
+		const initialLabel = useSelector((state) => state.cart[index]?.product?.label)
+		return initialLabel
+	}
+
+	const productLabel = GetProductLabel()
 	const initialLabel = GetUpdatedLabel()
 
 	const OptionState = () => {
@@ -42,6 +61,10 @@ const CategoryBox = ({ debouncedApiCall, label, index, rows, setRows, options = 
 	}, [initialLabel])
 
 	React.useEffect(() => {
+		setInfoLabel(productLabel ? initialLabel : "" )
+	}, [productLabel])
+
+	React.useEffect(() => {
 		let list = optionsList?.map((option, i) => {
 			return {
 				label: option.productDesc,
@@ -60,7 +83,7 @@ const CategoryBox = ({ debouncedApiCall, label, index, rows, setRows, options = 
 
 	React.useEffect(() => {
 
-		let abcd = optionsList.filter((option) => {
+		let abcd = optionsList?.filter((option) => {
 			if (infoLabel) {
 				if (option.productDesc.includes(infoLabel)) {
 					return option
@@ -68,7 +91,7 @@ const CategoryBox = ({ debouncedApiCall, label, index, rows, setRows, options = 
 			} else return option
 		})
 
-		abcd = abcd.map((option, ind) => {
+		abcd = abcd?.map((option, ind) => {
 			return {
 				label: option.productDesc,
 				value: option.productCode,
@@ -187,12 +210,33 @@ const CategoryBox = ({ debouncedApiCall, label, index, rows, setRows, options = 
 				uom: "",
 				productCode: "",
 			}
-
+			// setDdOption(optionsList)
 			dispatch(updateCart(newArray))
 		}
+		setTimeout(() => { setDdOption(allOptionsList)}, 300)
 
 		// validateShadeCode(value, index)
 	}
+
+
+	const ShowAllOptions = () => {
+		if (options && options.length > 0) {
+			let abcd = options?.map((option,i) => {
+				// categoryId
+				return {
+					label: option.productDesc,
+					value: option.productCode,
+					HsCode: option.hsCode,
+					yardage: option.yardage,
+					boxQty: option.boxQty,
+					uom: option.uom,
+					productCode: option.productCode,
+					key: `${index}-${i}`,
+				}
+			})
+			setDdOption(abcd)
+		}
+	} 
 
 	return (
 		<>
@@ -204,6 +248,7 @@ const CategoryBox = ({ debouncedApiCall, label, index, rows, setRows, options = 
 				onSelect={(e, v) => updateProduct(e, v)}
 				onSearch={(v) => setInfoLabel(v)}
 				onClear={() => updateProduct()}
+				onFocus={ShowAllOptions}
 				style={{
 					width: "90%",
 					height: "40px",

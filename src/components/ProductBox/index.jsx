@@ -7,36 +7,42 @@ import { useFetcher } from "react-router-dom"
 
 function ProductBox({ options, rows, index, setShadesByCode }) {
 	let { cart } = useSelector((state) => state)
+	const initialLabel = useSelector((state) => state.cart[index]?.product?.label)
+	// const optionsList = useSelector((state) => state.cart[index].productCategoryList)
 
 	const dispatch = useDispatch()
-	const [infoLabel, setInfoLabel] = React.useState("")
+	const [infoLabel, setInfoLabel] = React.useState(initialLabel)
 	const isMobile = useMediaQuery("(max-width: 600px)")
 	const [ddOption, setDdOption] = React.useState([])
 
-	const GetUpdatedLabel = () => {
-		const initialLabel = useSelector((state) => state.cart[index]?.LottypeCode?.label)
-		return initialLabel
-	}
-	const initialLabel = GetUpdatedLabel()
+		const allOptions = options?.map((option, i) => {
+			return { label: option.categoryName, value: option.categoryName, id: option.categoryId, key: `${index}-${i}` }
+		})
+	
 
 	useEffect(() => {
-
 		if (!infoLabel) {
 			// updateProduct()
 			let abcd = options.map((option, i) => {
 				return { label: option.categoryName, value: option.categoryName, id: option.categoryId, key: `${index}-${i}` }
 			})
+			let newArray = [...rows]
+			newArray[index] = {
+				...newArray[index],
+				LottypeCode: {},
+				ShadeCode: {},
+			}
 
-      setInfoLabel(rows[index]?.product?.label)
+			dispatch(updateCart(newArray))
+
 			setDdOption(abcd)
 		} else {
 			// let abcd = [...options]
-			let abcd = options.filter((option) => {
+			let abcd = options?.filter((option) => {
 				if (option.categoryName?.toLowerCase().includes(infoLabel?.toLowerCase())) {
 					return option
 				}
 			})
-
 			abcd = abcd.map((option) => {
 				return { label: option.categoryName, value: option.categoryName, id: option.categoryId }
 			})
@@ -44,14 +50,12 @@ function ProductBox({ options, rows, index, setShadesByCode }) {
 		}
 	}, [infoLabel])
 
-	useEffect(() => {
+	// useEffect(() => {
 
-		if (rows[index]["product"] && rows[index]["product"]["label"]) {
-			setInfoLabel(rows[index]["product"]["label"])
-		}
-	}, [rows[index]["product"]])
-
-	// useEffect(()=> console.log("BOXXXX", rows[index]), [rows])
+	// 	if (rows[index]["product"] && rows[index]["product"]["label"]) {
+	// 		setInfoLabel(rows[index]["product"]["label"])
+	// 	}
+	// }, [rows[index]["product"]])
 
 	useEffect(() => {
 		if (options && options.length > 0) {
@@ -79,10 +83,21 @@ function ProductBox({ options, rows, index, setShadesByCode }) {
 			selectedYardage: { label: "", HsCode: "", value: "" },
 			shade: [],
 			product: obj,
-			productCategoryList: [],
+			// productCategoryList: [],
 			uom: "",
 		}
+		// console.log("pdate", allOptions)
+		setTimeout(() => { setDdOption(allOptions)}, 300)
 		dispatch(updateCart(newArray))
+	}
+
+	const ShowAllOptions = () => {
+		if (options && options.length > 0) {
+			let abcd = options?.map((option) => {
+				return { label: option.categoryName, value: option.categoryName, id: option.categoryId }
+			})
+			setDdOption(abcd)
+		}
 	}
 
 	return (
@@ -95,6 +110,7 @@ function ProductBox({ options, rows, index, setShadesByCode }) {
 				onSelect={(e, v) => updateProduct(e, v)}
 				onSearch={(v) => setInfoLabel(v)}
 				onClear={() => updateProduct()}
+				onFocus={ShowAllOptions}
 				style={{
 					width: "90%",
 					height: "40px",
