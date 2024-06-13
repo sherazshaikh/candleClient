@@ -69,6 +69,7 @@ const QuickOrder = () => {
 	const [newCart, setNewCart] = useState([])
 	const [islaoding, setLaoding] = useState(true)
 	const [isLoading, setLoading] = useState(false)
+	const [isMobItemLoading, setIsMobItemLoading] = useState(false)
 	const [rows, setRows] = useState([
 		{
 			LottypeCode: "",
@@ -144,7 +145,7 @@ const QuickOrder = () => {
 		let newArray = [...rows]
 		await executeApi(
 			baseURL +
-				`/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i]?.product?.id}&shadeCode=${shade?.label}`,
+			`/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i]?.product?.id}&shadeCode=${shade?.label}`,
 			{},
 			variables.shades.method,
 			token,
@@ -160,17 +161,17 @@ const QuickOrder = () => {
 					LottypeCode:
 						!initial && data?.data.length === 1
 							? {
-									label: cData.productDesc,
-									value: cData.productCode,
-									HsCode: cData.hsCode,
-									yardage: cData.yardage,
-									boxQty: cData.boxQty,
-									uom: cData.uom,
-									productCode: cData.productCode,
-							  }
+								label: cData.productDesc,
+								value: cData.productCode,
+								HsCode: cData.hsCode,
+								yardage: cData.yardage,
+								boxQty: cData.boxQty,
+								uom: cData.uom,
+								productCode: cData.productCode,
+							}
 							: initial
-							? newArray[i].LottypeCode
-							: {},
+								? newArray[i].LottypeCode
+								: {},
 					OrderQty: cData.boxQty,
 					selectedYardage: { label: cData.yardage, value: cData.yardage, HsCode: cData.yardage },
 					uom: cData.uom,
@@ -397,38 +398,39 @@ const QuickOrder = () => {
 		if (newRows) {
 			for (const orderDetail of newRows) {
 				finalCart.push({
-					lottypecode: Object.values(orderDetail.LottypeCode).join("BTWOBJ"),
-					shadecode: Object.values(orderDetail.ShadeCode).join("BTWOBJ"),
+					lottypecode: Object.values(orderDetail.LottypeCode)?.join("BTWOBJ"),
+					shadecode: Object.values(orderDetail.ShadeCode)?.join("BTWOBJ"),
 					qty: orderDetail.OrderQty,
-					yardage: Object.values(orderDetail.selectedYardage).join("BTWOBJ"),
-					yardagelist: orderDetail.yardage.join("BTWOBJ"),
+					yardage: Object.values(orderDetail.selectedYardage)?.join("BTWOBJ"),
+					yardagelist: orderDetail.yardage?.join("BTWOBJ"),
 					shadecodelist: orderDetail.shade
 						.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`)
-						.join("OBJEND"),
+						?.join("OBJEND"),
 					uom: orderDetail.uom,
 					productCode: orderDetail?.productCode,
-					categoryCode: Object.values(orderDetail.product).join("BTWOBJ"),
-					products: Object.values(orderDetail.product).join("BTWOBJ"),
+					categoryCode: Object.values(orderDetail.product)?.join("BTWOBJ"),
+					products: Object.values(orderDetail.product)?.join("BTWOBJ"),
 				})
 			}
 		} else {
 			for (const orderDetail of cart) {
 				finalCart.push({
 					// ...orderDetail,
-					lottypecode: Object.values(orderDetail.LottypeCode).join("BTWOBJ"),
-					shadecode: Object.values(orderDetail.ShadeCode).join("BTWOBJ"),
+					lottypecode: Object.values(orderDetail.LottypeCode)?.join("BTWOBJ"),
+					shadecode: Object.values(orderDetail.ShadeCode)?.join("BTWOBJ"),
 					qty: orderDetail.OrderQty,
-					yardage: Object.values(orderDetail.selectedYardage).join("BTWOBJ"),
-					yardagelist: orderDetail.yardage.join("BTWOBJ"),
+					yardage: Object.values(orderDetail.selectedYardage)?.join("BTWOBJ"),
+					yardagelist: orderDetail.yardage?.join("BTWOBJ"),
 					shadecodelist: orderDetail.shade
-						.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`)
-						.join("OBJEND"),
+						?.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`)
+						?.join("OBJEND"),
 					uom: orderDetail.uom,
 					productCode: orderDetail?.productCode,
-					categoryCode: Object.values(orderDetail.product).join("BTWOBJ"),
-					products: Object.values(orderDetail.product).join("BTWOBJ"),
+					categoryCode: Object.values(orderDetail.product)?.join("BTWOBJ"),
+					products: Object.values(orderDetail.product)?.join("BTWOBJ"),
 				})
 			}
+
 		}
 
 		console.log("finalCart", finalCart)
@@ -439,23 +441,61 @@ const QuickOrder = () => {
 				setLoading(false)
 			})
 			.catch((err) => console.log(err))
+
+		setIsMobItemLoading(false)
+
 	}
 
 	function handleOrderSuccess(isOrderSuccess) {
 		setOrderSuccess(isOrderSuccess)
 	}
 
-	function updatProductFromMobile() {
-		
-		setMobileItem("NS")
-		apiCallFunction()
+	function updatProductFromMobile(isNS) {
+		console.log("cart Count mobile", cart)
+		if (isNS) setMobileItem("NS")
+		else {
+			let newCart = [...cart,{
+				...cart[cart.length - 1],
+				ShadeCode:{ label: "", value: "", HsCode: "" },
+				yardage: [],
+				selectedYardage:  "",
+				OrderQty:  0,
+				price: "0",
+				uuid: v4(),
+				uom:  "",
+				productCode:  "",
+				product: {},
+				productCategoryList: cart.length > 0 ? cart[cart.length - 1]?.productCategoryList : [],
+
+			}]
+			console.log("cart New Count mobile", newCart)
+
+			dispatch(updateCart(newCart))
+			setMobileItem(cart.length)
+		}
+
+		let isPreviousRowFilled = true
+		cart?.length > 0 &&
+			cart.map((itm) => {
+				if (!itm?.LottypeCode?.label || !itm?.ShadeCode?.label || !itm.selectedYardage.label) {
+					isPreviousRowFilled = false
+				}
+			})
+		if (isPreviousRowFilled) {
+			setIsMobItemLoading(true)
+			apiCallFunction()
+		} else {
+			setSeverty("error")
+			setMessage("Please Fill Row Data")
+			setShowPopup(true)
+		}
 	}
 
-	const apiCallFunction1 = () => {}
+	const apiCallFunction1 = () => { }
 
 	const debouncedApiCall = _.debounce(apiCallFunction1, 3000)
 
-	function validateShadeCode(code, index) {}
+	function validateShadeCode(code, index) { }
 
 	useEffect(() => {
 		setProducts(products)
@@ -912,7 +952,7 @@ const QuickOrder = () => {
 										item
 										md={7}
 										sm={3}
-										// className="discountImage"
+									// className="discountImage"
 									></Grid>
 									<Grid
 										item
@@ -1371,31 +1411,47 @@ const QuickOrder = () => {
 								<Grid
 									item
 									xs={2}
+									style={{ position: "absolute", bottom: "15%", right: "0", width: "100%", }}
 									className="flex">
-										<button
+
+									<button
+
 										onClick={() => updatProductFromMobile()}
 										className="addAnItemButtonMobile flex"
-										style={{ textAlign: "center", justifyContent:"center", alignItems:"center" }}>
-										<Typography
-											variant="h6"
-											style={{ marginRight: "10px" }}>
-											<ShoppingBasket /> 
-										</Typography>
+										style={{ position: "relative", textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center" }}>
+										{isMobItemLoading ? <CircularProgress
+											size={24}
+											style={{
+												position: 'absolute',
+												top: '50%',
+												left: '50%',
+												marginTop: -12,
+												marginLeft: -12,
+											}}
+										/> :
+											<Typography
+												variant="h6"
+												style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+												<ShoppingBasket />
+											</Typography>
+										}
+
 									</button>
-									</Grid>
+								</Grid>
 								<Grid
 									item
 									xs={12}
-									style={{position:"absolute", bottom:"50px", width:"100%"}}
+									style={{ position: "absolute", bottom: "20px", width: "100%" }}
 									className="flex">
 									<button
-										onClick={() => updatProductFromMobile()}
+										disabled={isMobItemLoading}
+										onClick={() => updatProductFromMobile(true)}
 										className="addAnItemButtonMobile flex"
 										style={{ textAlign: "center" }}>
 										<Typography
 											variant="h6"
 											style={{ marginRight: "10px" }}>
-											Done 
+											Done
 										</Typography>
 									</button>
 								</Grid>
