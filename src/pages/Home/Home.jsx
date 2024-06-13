@@ -1,5 +1,5 @@
 import { Backdrop, CircularProgress, Grid, Typography } from '@mui/material'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../../components/Navbar/Navbar'
 import './home.css';
 import Footer from '../../components/Footer/Footer';
@@ -19,6 +19,10 @@ const Home = () => {
   let { baseURL, auth: { token } } = useSelector((state) => state);
   const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
+  const [images, setImages] = React.useState([]);
+  // const [transitionDirection, setTransitionDirection] = useState('right');
+  // const [currentIndex, setCurrentIndex] = useState(0);
+
 
 
   const executeInitails = () => {
@@ -53,20 +57,38 @@ const Home = () => {
           dispatch(updateCart(finalObject))
           setOpen(false)
         })
-        .catch((err) => {setOpen(false);
-          console.log(err)})
+        .catch((err) => {
+          setOpen(false);
+          console.log(err)
+        })
     }
   }
 
-  useEffect(() => {
+  useEffect(async () => {
+    // await fetch('/images.json')
+    //   .then((response) => response.json())
+    //   .then((data) => setImages(data.images));
+
+    console.log("imaf", images)
+
     executeInitails();
   }, [])
 
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setTransitionDirection('right');
+  //     setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
+  //   }, 3000); // Change image every 3 seconds
+  //   return () => clearInterval(interval); // Cleanup interval on component unmount
+  // }, [images]);
 
   return (
     <Grid container  >
       <Navbar />
-      <Grid container className='heroDiv' >
+      <Grid container className='heroDiv'
+       
+      >
+       
         <Grid item container md={7} xs={11} sx={{ marginTop: { xs: "20vh", md: "100px" } }} className='heroDivContent' >
           <Typography variant='h3' sx={{ fontFamily: "Axiforma" }} >
             Threading Colors into Your World

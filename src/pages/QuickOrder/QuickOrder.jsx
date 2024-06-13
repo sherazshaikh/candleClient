@@ -454,17 +454,17 @@ const QuickOrder = () => {
 		console.log("cart Count mobile", cart)
 		if (isNS) setMobileItem("NS")
 		else {
-			let newCart = [...cart,{
+			let newCart = [...cart, {
 				...cart[cart.length - 1],
-				ShadeCode:{ label: "", value: "", HsCode: "" },
+				ShadeCode: { label: "", value: "", HsCode: "" },
 				yardage: [],
-				selectedYardage:  "",
-				OrderQty:  0,
+				selectedYardage: "",
+				OrderQty: 0,
 				price: "0",
 				uuid: v4(),
-				uom:  "",
-				productCode:  "",
-				product: {},
+				uom: "",
+				productCode: "",
+				product: { label: "", value: "", id: "", },
 				productCategoryList: cart.length > 0 ? cart[cart.length - 1]?.productCategoryList : [],
 
 			}]
@@ -472,22 +472,23 @@ const QuickOrder = () => {
 
 			dispatch(updateCart(newCart))
 			setMobileItem(cart.length)
-		}
 
-		let isPreviousRowFilled = true
-		cart?.length > 0 &&
-			cart.map((itm) => {
-				if (!itm?.LottypeCode?.label || !itm?.ShadeCode?.label || !itm.selectedYardage.label) {
-					isPreviousRowFilled = false
-				}
-			})
-		if (isPreviousRowFilled) {
-			setIsMobItemLoading(true)
-			apiCallFunction()
-		} else {
-			setSeverty("error")
-			setMessage("Please Fill Row Data")
-			setShowPopup(true)
+
+			let isPreviousRowFilled = true
+			cart?.length > 0 &&
+				cart.map((itm) => {
+					if (!itm?.LottypeCode?.label || !itm?.ShadeCode?.label || !itm.selectedYardage.label) {
+						isPreviousRowFilled = false
+					}
+				})
+			if (isPreviousRowFilled) {
+				setIsMobItemLoading(true)
+				apiCallFunction()
+			} else {
+				setSeverty("error")
+				setMessage("Please Fill Row Data")
+				setShowPopup(true)
+			}
 		}
 	}
 
