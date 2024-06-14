@@ -14,6 +14,8 @@ const CategoryBox = ({ debouncedApiCall, label, index, rows, setRows, options = 
 	const [ddOption, setDdOption] = React.useState([{ label: "loading...", value: "loading..." }])
 
 	const optionsList = useSelector((state) => state.cart[index]?.productCategoryList)
+
+
 	const allOptionsList = optionsList?.map((option, i) => {
 		return {
 			label: option.productDesc,
@@ -60,9 +62,9 @@ const CategoryBox = ({ debouncedApiCall, label, index, rows, setRows, options = 
 		setInfoLabel(initialLabel)
 	}, [initialLabel])
 
-	React.useEffect(() => {
-		setInfoLabel(productLabel ? initialLabel : "" )
-	}, [productLabel])
+	// React.useEffect(() => {
+	// 	setInfoLabel("")
+	// }, [productLabel])
 
 	React.useEffect(() => {
 		let list = optionsList?.map((option, i) => {

@@ -5,7 +5,7 @@ import { AutoComplete, Input } from "antd"
 import { updateCart } from "../../pages/redux/features/cart/cartslice"
 import { useFetcher } from "react-router-dom"
 
-function ProductBox({ options, rows, index, setShadesByCode }) {
+function ProductBox({ options, rows, index, setShadesByCode, updateComp }) {
 	let { cart } = useSelector((state) => state)
 	const initialLabel = useSelector((state) => state.cart[index]?.product?.label)
 	// const optionsList = useSelector((state) => state.cart[index].productCategoryList)
@@ -75,6 +75,11 @@ function ProductBox({ options, rows, index, setShadesByCode }) {
 		}
 		let newArray = [...rows]
 
+		if(updateComp){
+			
+			console.log("compoent Updated",newArray  )
+		}
+
 		newArray[index] = {
 			...rows[index],
 			OrderQty: 0,
@@ -86,7 +91,6 @@ function ProductBox({ options, rows, index, setShadesByCode }) {
 			// productCategoryList: [],
 			uom: "",
 		}
-		// console.log("pdate", allOptions)
 		setTimeout(() => { setDdOption(allOptions)}, 300)
 		dispatch(updateCart(newArray))
 	}

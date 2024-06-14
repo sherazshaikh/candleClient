@@ -70,6 +70,7 @@ const QuickOrder = () => {
 	const [islaoding, setLaoding] = useState(true)
 	const [isLoading, setLoading] = useState(false)
 	const [isMobItemLoading, setIsMobItemLoading] = useState(false)
+	const [pdateComponent, setUpdateComponent] = useState(0)
 	const [rows, setRows] = useState([
 		{
 			LottypeCode: "",
@@ -117,13 +118,7 @@ const QuickOrder = () => {
 		let newArray = [...cart]
 
 		newArray.map((data) => {
-			executeApi(
-				baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${data.product.id}`,
-				{},
-				variables.shades.method,
-				token,
-				dispatch,
-			)
+			executeApi(baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${data.product.id}`, {}, variables.shades.method, token, dispatch)
 				.then((data) => {
 					data.shade = data.data
 
@@ -143,14 +138,7 @@ const QuickOrder = () => {
 
 	const getProductDescriptionbyCode = async (shade, i, rows, initial) => {
 		let newArray = [...rows]
-		await executeApi(
-			baseURL +
-			`/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i]?.product?.id}&shadeCode=${shade?.label}`,
-			{},
-			variables.shades.method,
-			token,
-			dispatch,
-		)
+		await executeApi(baseURL + `/v1/Order/getProductByCategoryIdAndShadeCode?categoryId=${newArray[i]?.product?.id}&shadeCode=${shade?.label}`, {}, variables.shades.method, token, dispatch)
 			.then((data) => {
 				const cData = data?.data[0]
 				newArray[i] = {
@@ -161,18 +149,18 @@ const QuickOrder = () => {
 					LottypeCode:
 						!initial && data?.data.length === 1
 							? {
-								label: cData.productDesc,
-								value: cData.productCode,
-								HsCode: cData.hsCode,
-								yardage: cData.yardage,
-								boxQty: cData.boxQty,
-								uom: cData.uom,
-								productCode: cData.productCode,
-							}
+									label: cData.productDesc,
+									value: cData.productCode,
+									HsCode: cData.hsCode,
+									yardage: cData.yardage,
+									boxQty: cData.boxQty,
+									uom: cData.uom,
+									productCode: cData.productCode,
+							  }
 							: initial
-								? newArray[i].LottypeCode
-								: {},
-					OrderQty: cData.boxQty,
+							? newArray[i].LottypeCode
+							: {},
+					OrderQty: initial ? newArray[i]?.OrderQty : cData.boxQty,
 					selectedYardage: { label: cData.yardage, value: cData.yardage, HsCode: cData.yardage },
 					uom: cData.uom,
 					productCode: cData.productCode,
@@ -206,8 +194,7 @@ const QuickOrder = () => {
 				{
 					LottypeCode: cart.length > 0 ? cart[cart.length - 1]?.LottypeCode : {},
 					shade: cart.length > 0 ? cart[cart.length - 1]?.shade : [],
-					ShadeCode:
-						cart.length > 0 ? cart[cart.length - 1]?.ShadeCode : { label: "", value: "", HsCode: "" },
+					ShadeCode: cart.length > 0 ? cart[cart.length - 1]?.ShadeCode : { label: "", value: "", HsCode: "" },
 					yardage: [],
 					selectedYardage: cart.length > 0 ? cart[cart.length - 1].selectedYardage : "",
 					OrderQty: cart.length > 0 ? cart[cart.length - 1].OrderQty : 0,
@@ -255,7 +242,7 @@ const QuickOrder = () => {
 		dispatch(updateCart(array))
 	}
 
-	const addNewColumnMobile = async () => {
+	const addNewColumnMobile = async (isAdd) => {
 		let isPreviousRowFilled = true
 		console.log("SHADE CHECK KARO", cart)
 		cart?.length > 0 &&
@@ -294,8 +281,7 @@ const QuickOrder = () => {
 				{
 					LottypeCode: cart.length > 0 ? cart[cart.length - 1]?.LottypeCode : {},
 					shade: cart.length > 0 ? cart[cart.length - 1]?.shade : [],
-					ShadeCode:
-						cart.length > 0 ? cart[cart.length - 1]?.ShadeCode : { label: "", value: "", HsCode: "" },
+					ShadeCode: cart.length > 0 ? cart[cart.length - 1]?.ShadeCode : { label: "", value: "", HsCode: "" },
 					yardage: [],
 					selectedYardage: cart.length > 0 ? cart[cart.length - 1].selectedYardage : "",
 					OrderQty: cart.length > 0 ? cart[cart.length - 1].OrderQty : "",
@@ -403,9 +389,7 @@ const QuickOrder = () => {
 					qty: orderDetail.OrderQty,
 					yardage: Object.values(orderDetail.selectedYardage)?.join("BTWOBJ"),
 					yardagelist: orderDetail.yardage?.join("BTWOBJ"),
-					shadecodelist: orderDetail.shade
-						.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`)
-						?.join("OBJEND"),
+					shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`)?.join("OBJEND"),
 					uom: orderDetail.uom,
 					productCode: orderDetail?.productCode,
 					categoryCode: Object.values(orderDetail.product)?.join("BTWOBJ"),
@@ -421,19 +405,15 @@ const QuickOrder = () => {
 					qty: orderDetail.OrderQty,
 					yardage: Object.values(orderDetail.selectedYardage)?.join("BTWOBJ"),
 					yardagelist: orderDetail.yardage?.join("BTWOBJ"),
-					shadecodelist: orderDetail.shade
-						?.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`)
-						?.join("OBJEND"),
+					shadecodelist: orderDetail.shade?.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`)?.join("OBJEND"),
 					uom: orderDetail.uom,
 					productCode: orderDetail?.productCode,
 					categoryCode: Object.values(orderDetail.product)?.join("BTWOBJ"),
 					products: Object.values(orderDetail.product)?.join("BTWOBJ"),
 				})
 			}
-
 		}
 
-		console.log("finalCart", finalCart)
 		// dispatch(updateCart(finalCart))
 		await executeApi(baseURL + variables.updateCart.url, finalCart, variables.updateCart.method, token, dispatch)
 			.then((data) => {
@@ -443,7 +423,6 @@ const QuickOrder = () => {
 			.catch((err) => console.log(err))
 
 		setIsMobItemLoading(false)
-
 	}
 
 	function handleOrderSuccess(isOrderSuccess) {
@@ -451,36 +430,25 @@ const QuickOrder = () => {
 	}
 
 	function updatProductFromMobile(isNS) {
-		console.log("cart Count mobile", cart)
-		if (isNS) setMobileItem("NS")
-		else {
-			let newCart = [...cart, {
-				...cart[cart.length - 1],
-				ShadeCode: { label: "", value: "", HsCode: "" },
-				yardage: [],
-				selectedYardage: "",
-				OrderQty: 0,
-				price: "0",
-				uuid: v4(),
-				uom: "",
-				productCode: "",
-				product: { label: "", value: "", id: "", },
-				productCategoryList: cart.length > 0 ? cart[cart.length - 1]?.productCategoryList : [],
-
-			}]
-			console.log("cart New Count mobile", newCart)
-
+		if (isNS) {
+			setMobileItem("NS")
+			let newCart = [...cart]
+			newCart.length > 0 && newCart.pop()
+			console.log("cart fil", newCart, cart)
 			dispatch(updateCart(newCart))
-			setMobileItem(cart.length)
+		} else {
+			// setMobileItem(cart.length)
 
+			// setShadesByCode(cart[mobileItem].product, mobileItem, cart)
 
 			let isPreviousRowFilled = true
-			cart?.length > 0 &&
-				cart.map((itm) => {
-					if (!itm?.LottypeCode?.label || !itm?.ShadeCode?.label || !itm.selectedYardage.label) {
-						isPreviousRowFilled = false
-					}
-				})
+			// cart?.length > 0 &&
+			// 	cart.map((itm) => {
+			// 		if (!itm?.LottypeCode?.label || !itm?.ShadeCode?.label || !itm.selectedYardage.label) {
+			// 			isPreviousRowFilled = false
+			// 		}
+			// 	})
+			addNewColumnMobile()
 			if (isPreviousRowFilled) {
 				setIsMobItemLoading(true)
 				apiCallFunction()
@@ -492,11 +460,11 @@ const QuickOrder = () => {
 		}
 	}
 
-	const apiCallFunction1 = () => { }
+	const apiCallFunction1 = () => {}
 
 	const debouncedApiCall = _.debounce(apiCallFunction1, 3000)
 
-	function validateShadeCode(code, index) { }
+	function validateShadeCode(code, index) {}
 
 	useEffect(() => {
 		setProducts(products)
@@ -580,72 +548,29 @@ const QuickOrder = () => {
 
 	return !orderSuccess ? (
 		<>
-			<Grid
-				container
-				sm={12}
-				sx={{ display: { xs: "none", sm: "none", md: "flex" } }}>
-				<Grid
-					item
-					container
-					md={3}
-					sx={{ display: { sm: "none", md: "block" } }}
-					className="quickOrderLeftSection">
-					<Grid
-						item
-						md={12}
-						sm={12}
-						style={{ height: "20vh", color: "white" }}>
+			<Grid container sm={12} sx={{ display: { xs: "none", sm: "none", md: "flex" } }}>
+				<Grid item container md={3} sx={{ display: { sm: "none", md: "block" } }} className="quickOrderLeftSection">
+					<Grid item md={12} sm={12} style={{ height: "20vh", color: "white" }}>
 						<Typography variant="h3">Quick Order</Typography>
 					</Grid>
-					<Grid
-						item
-						container
-						md={11}
-						sm={12}
-						className="quickOrderTab">
-						<Grid
-							item
-							cotainer
-							className={orderPage == 2 ? "quickOrderOptions opacity5" : "quickOrderOptions"}>
-							<Grid
-								item
-								container>
-								<Grid
-									item
-									md={4}
-									sm={3}
-									className="quickOrderOptionsCount">
+					<Grid item container md={11} sm={12} className="quickOrderTab">
+						<Grid item cotainer className={orderPage == 2 ? "quickOrderOptions opacity5" : "quickOrderOptions"}>
+							<Grid item container>
+								<Grid item md={4} sm={3} className="quickOrderOptionsCount">
 									<Typography variant="h2">1</Typography>
 								</Grid>
-								<Grid
-									item
-									md={8}
-									sm={9}
-									className="quickOrderOptionsContent">
+								<Grid item md={8} sm={9} className="quickOrderOptionsContent">
 									<Typography variant="h5">Items List</Typography>
 									{/* <Typography variant='p'>Lorem ipsum dolor sit amet, consetetur sadipscing elitr.</Typography> */}
 								</Grid>
 							</Grid>
 						</Grid>
-						<Grid
-							item
-							cotainer
-							className={orderPage == 1 ? "quickOrderOptions opacity5" : "quickOrderOptions"}>
-							<Grid
-								item
-								container>
-								<Grid
-									item
-									md={4}
-									sm={3}
-									className="quickOrderOptionsCount">
+						<Grid item cotainer className={orderPage == 1 ? "quickOrderOptions opacity5" : "quickOrderOptions"}>
+							<Grid item container>
+								<Grid item md={4} sm={3} className="quickOrderOptionsCount">
 									<Typography variant="h2">2</Typography>
 								</Grid>
-								<Grid
-									item
-									md={8}
-									sm={9}
-									className="quickOrderOptionsContent">
+								<Grid item md={8} sm={9} className="quickOrderOptionsContent">
 									<Typography variant="h5">Checkout</Typography>
 									{/* <Typography variant='p'>Lorem ipsum dolor sit amet, consetetur sadipscing elitr.</Typography> */}
 								</Grid>
@@ -653,71 +578,32 @@ const QuickOrder = () => {
 						</Grid>
 					</Grid>
 				</Grid>
-				<Grid
-					item
-					container
-					md={9}
-					sm={12}
-					style={{ display: "block" }}>
+				<Grid item container md={9} sm={12} style={{ display: "block" }}>
 					{orderPage == 1 ? (
 						<>
-							<Grid
-								container
-								className="rightContent flex">
-								<Grid
-									item
-									container
-									md={11}
-									sm={11}>
-									<Grid
-										item
-										md={8}>
-										<Typography variant="h3">
-											Make Item List
-										</Typography>
+							<Grid container className="rightContent flex">
+								<Grid item container md={11} sm={11}>
+									<Grid item md={8}>
+										<Typography variant="h3">Make Item List</Typography>
 										{/* <Typography variant='p'>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed.</Typography> */}
 									</Grid>
 								</Grid>
 							</Grid>
-							<Grid
-								container
-								className="addItemMain flex">
-								<Grid
-									item
-									container
-									md={11}
-									sm={11}
-									className="addItemSection">
-									<Grid
-										container
-										style={{ height: "40px" }}>
-										<Grid
-											item
-											md={3}
-											sm={3}>
-											<Typography
-												variant="body1"
-												className="greyFont">
+							<Grid container className="addItemMain flex">
+								<Grid item container md={11} sm={11} className="addItemSection">
+									<Grid container style={{ height: "40px" }}>
+										<Grid item md={3} sm={3}>
+											<Typography variant="body1" className="greyFont">
 												Product
 											</Typography>
 										</Grid>
-										<Grid
-											item
-											md={2}
-											sm={2.5}>
-											<Typography
-												variant="body1"
-												className="greyFont">
+										<Grid item md={2} sm={2.5}>
+											<Typography variant="body1" className="greyFont">
 												Shades
 											</Typography>
 										</Grid>
-										<Grid
-											item
-											md={3}
-											sm={3}>
-											<Typography
-												variant="body1"
-												className="greyFont">
+										<Grid item md={3} sm={3}>
+											<Typography variant="body1" className="greyFont">
 												Product Description
 											</Typography>
 										</Grid>
@@ -732,13 +618,8 @@ const QuickOrder = () => {
 												Yardage
 											</Typography>
 										</Grid> */}
-										<Grid
-											item
-											md={2}
-											sm={2.5}>
-											<Typography
-												variant="body1"
-												className="greyFont">
+										<Grid item md={2} sm={2.5}>
+											<Typography variant="body1" className="greyFont">
 												Quantity
 											</Typography>
 											<br />
@@ -747,101 +628,48 @@ const QuickOrder = () => {
                                                     <Typography variant='body1' className='greyFont' >Price</Typography>
                                                 </Grid> */}
 									</Grid>
-									<Grid
-										item
-										container
-										className="addItemRowSection">
+									<Grid item container className="addItemRowSection">
 										{cart.map((item, index) => (
 											<Grid
 												container
 												style={{
 													marginBottom: "10px",
 													height: "50px",
-												}}>
-												<Grid
-													item
-													md={3}
-													sm={3}>
+												}}
+											>
+												<Grid item md={3} sm={3}>
 													<ProductBox
-														debouncedApiCall={
-															debouncedApiCall
-														}
-														token={
-															token
-														}
-														baseURL={
-															baseURL
-														}
-														options={
-															allProduct
-														}
-														index={
-															index
-														}
-														rows={
-															cart
-														}
-														setRows={
-															setRows
-														}
+														debouncedApiCall={debouncedApiCall}
+														token={token}
+														baseURL={baseURL}
+														options={allProduct}
+														index={index}
+														rows={cart}
+														setRows={setRows}
 														label="Select Product"
-														setShadesByCode={
-															setShadesByCode
-														}
+														setShadesByCode={setShadesByCode}
 													/>
 												</Grid>
-												<Grid
-													item
-													md={2}
-													sm={2.5}>
+												<Grid item md={2} sm={2.5}>
 													<ShadeCodeBox
-														debouncedApiCall={
-															debouncedApiCall
-														}
+														debouncedApiCall={debouncedApiCall}
 														label="Shades"
-														options={
-															item.shade
-														}
-														rows={
-															cart
-														}
-														setRows={
-															setRows
-														}
-														index={
-															index
-														}
-														getProductDescriptionbyCode={
-															getProductDescriptionbyCode
-														}
+														options={item.shade}
+														rows={cart}
+														setRows={setRows}
+														index={index}
+														getProductDescriptionbyCode={getProductDescriptionbyCode}
 													/>
 												</Grid>
-												<Grid
-													item
-													md={3}
-													sm={3}>
+												<Grid item md={3} sm={3}>
 													<CategoryBox
-														debouncedApiCall={
-															debouncedApiCall
-														}
-														token={
-															token
-														}
-														baseURL={
-															baseURL
-														}
-														options={
-															item.productCategoryList
-														}
-														index={
-															index
-														}
-														rows={
-															cart
-														}
-														setRows={
-															setRows
-														}
+														debouncedApiCall={debouncedApiCall}
+														token={token}
+														baseURL={baseURL}
+														options={item.productCategoryList}
+														index={index}
+														rows={cart}
+														setRows={setRows}
 														label="Select Color Code"
 													/>
 												</Grid>
@@ -859,44 +687,17 @@ const QuickOrder = () => {
 														index={index}
 													/>
 												</Grid> */}
-												<Grid
-													item
-													md={2}
-													sm={2.5}>
-													<Quantity
-														debouncedApiCall={
-															debouncedApiCall
-														}
-														rows={
-															cart
-														}
-														setRows={
-															setRows
-														}
-														index={
-															index
-														}
-													/>
+												<Grid item md={2} sm={2.5}>
+													<Quantity debouncedApiCall={debouncedApiCall} rows={cart} setRows={setRows} index={index} />
 												</Grid>
-												<Grid
-													container
-													item
-													md={1.5}
-													sm={1.5}
-													className="quickOrderPriceColumn">
-													<Typography variant="h6">
-														{item.uom}
-													</Typography>
+												<Grid container item md={1.5} sm={1.5} className="quickOrderPriceColumn">
+													<Typography variant="h6">{item.uom}</Typography>
 													<Delete
 														style={{
 															color: "grey",
 															cursor: "pointer",
 														}}
-														onClick={() =>
-															deleteExistingRow(
-																index,
-															)
-														}
+														onClick={() => deleteExistingRow(index)}
 													/>
 												</Grid>
 											</Grid>
@@ -906,45 +707,21 @@ const QuickOrder = () => {
 								{/* <Grid
 									item
 									xs={2}></Grid> */}
-								<Grid
-									item
-									md={11}
-									sm={11}>
-									<button
-										className="addAnItemButton flex"
-										onClick={() => addNewColumn()}
-										style={{ textAlign: "center" }}>
-										<Typography
-											variant="h6"
-											style={{ marginRight: "10px" }}>
+								<Grid item md={11} sm={11}>
+									<button className="addAnItemButton flex" onClick={() => addNewColumn()} style={{ textAlign: "center" }}>
+										<Typography variant="h6" style={{ marginRight: "10px" }}>
 											+
 										</Typography>
 										Add an Item
 									</button>
 								</Grid>
-								<Grid
-									item
-									container
-									md={11}
-									sm={11}
-									className="quickOrderBottomSection">
-									<Grid
-										item
-										container
-										md={3}
-										sm={6}
-										className="flex">
-										<Grid
-											ietm
-											md={6}
-											style={{ textAlign: "right" }}>
+								<Grid item container md={11} sm={11} className="quickOrderBottomSection">
+									<Grid item container md={3} sm={6} className="flex">
+										<Grid ietm md={6} style={{ textAlign: "right" }}>
 											{/* <Typography variant='body1' className='greyFont'>VAT:</Typography>
                                                     <Typography variant='h5' >Total Price:</Typography> */}
 										</Grid>
-										<Grid
-											ietm
-											md={6}
-											style={{ paddingLeft: "10px" }}>
+										<Grid ietm md={6} style={{ paddingLeft: "10px" }}>
 											{/* <Typography variant='body1' className='greyFont'>{curr} 0</Typography>
                                                     <Typography variant='h5' >{curr} 0</Typography> */}
 										</Grid>
@@ -953,21 +730,13 @@ const QuickOrder = () => {
 										item
 										md={7}
 										sm={3}
-									// className="discountImage"
+										// className="discountImage"
 									></Grid>
-									<Grid
-										item
-										md={2}
-										sm={3}
-										className="flex">
-										<Typography
-											onClick={() => moveToNext()}
-											variant="h6">
+									<Grid item md={2} sm={3} className="flex">
+										<Typography onClick={() => moveToNext()} variant="h6">
 											Next &nbsp;
 										</Typography>
-										<button
-											onClick={() => moveToNext()}
-											className="nextButton flex">
+										<button onClick={() => moveToNext()} className="nextButton flex">
 											<ArrowForwardIcon />
 										</button>
 									</Grid>
@@ -985,34 +754,16 @@ const QuickOrder = () => {
 						/>
 					)}
 				</Grid>
-				<PopupAlert
-					open={showPopup}
-					message={message}
-					severty={severty}
-					onClose={handleClosePopup}
-				/>
+				<PopupAlert open={showPopup} message={message} severty={severty} onClose={handleClosePopup} />
 			</Grid>
 			{orderPage == "1" ? (
-				<Grid
-					container
-					xs={12}
-					sx={{ display: { xs: "block", sm: "block", md: "none" } }}>
-					<Grid
-						item
-						container
-						style={{ height: "78px" }}>
+				<Grid container xs={12} sx={{ display: { xs: "block", sm: "block", md: "none" } }}>
+					<Grid item container style={{ height: "78px" }}>
 						<Navbar />
 					</Grid>
 					{mobileItem === "NS" ? (
-						<Grid
-							item
-							container
-							xs={12}>
-							<Grid
-								item
-								container
-								xs={12}
-								style={{ height: "60px" }}>
+						<Grid item container xs={12}>
+							<Grid item container xs={12} style={{ height: "60px" }}>
 								<Grid
 									item
 									xs={12}
@@ -1020,7 +771,8 @@ const QuickOrder = () => {
 										paddingTop: "10px",
 										paddingLeft: "20px",
 										marginBottom: "10px",
-									}}>
+									}}
+								>
 									<Typography variant="h3">Quick Order </Typography>
 								</Grid>
 								<Grid
@@ -1031,7 +783,8 @@ const QuickOrder = () => {
 										display: "flex",
 										alignItems: "center",
 										justifyContent: "right",
-									}}>
+									}}
+								>
 									{/* <CloseIcon /> */}
 								</Grid>
 							</Grid>
@@ -1047,7 +800,8 @@ const QuickOrder = () => {
 									justifyContent: "center",
 									backgroundColor: "#f8f8f8",
 									overflowY: "scroll",
-								}}>
+								}}
+							>
 								{cart.map((item, index) => {
 									// if (item.LottypeCode.value || item.ShadeCode.label || item.LottypeCode.HsCode || item.selectedYardage.label) {
 									return (
@@ -1059,25 +813,13 @@ const QuickOrder = () => {
 											style={{
 												minHeight: "80px",
 												paddingLeft: "10px",
-											}}>
-											<Grid
-												item
-												xs={8}
-												style={{ height: "90%" }}>
-												<Typography
-													variant="body1"
-													color="grey">
-													{item.LottypeCode
-														?.label ??
-														"No Item Detail Selected, Edit to Select"}
+											}}
+										>
+											<Grid item xs={8} style={{ height: "90%" }}>
+												<Typography variant="body1" color="grey">
+													{item.LottypeCode?.label ?? "No Item Detail Selected, Edit to Select"}
 												</Typography>
-												<Typography variant="h4">
-													{
-														item
-															.ShadeCode
-															?.label
-													}
-												</Typography>
+												<Typography variant="h4">{item.ShadeCode?.label}</Typography>
 											</Grid>
 											<Grid
 												item
@@ -1086,24 +828,15 @@ const QuickOrder = () => {
 													height: "90%",
 													textAlign: "right",
 													paddingRight: "5px",
-												}}>
+												}}
+											>
 												<ModeEditIcon
-													onClick={() =>
-														setMobileItem(
-															index,
-														)
-													}
+													onClick={() => setMobileItem(index)}
 													style={{
 														paddingRight: "5px",
 													}}
 												/>
-												<Delete
-													onClick={() =>
-														deleteExistingRow(
-															index,
-														)
-													}
-												/>
+												<Delete onClick={() => deleteExistingRow(index)} />
 												<Typography variant="h6">
 													{" "}
 													<Typography
@@ -1111,7 +844,8 @@ const QuickOrder = () => {
 															color: "grey",
 															fontSize: "12px",
 														}}
-														variant="p">
+														variant="p"
+													>
 														{" "}
 														Qty:
 													</Typography>{" "}
@@ -1133,68 +867,39 @@ const QuickOrder = () => {
 											flexDirection: "column",
 											textAlign: "center",
 										}}
-										className="flex">
-										<Typography variant="h4">
-											No Items in the list !
-										</Typography>
-										<Typography
-											variant="body2"
-											color="grey">
-											Please tap “Add an items” button below
-											to add first item in your list.
+										className="flex"
+									>
+										<Typography variant="h4">No Items in the list !</Typography>
+										<Typography variant="body2" color="grey">
+											Please tap “Add an items” button below to add first item in your list.
 										</Typography>
 										<br />
-										<Typography
-											variant="body2"
-											color="grey">
+										<Typography variant="body2" color="grey">
 											<ArrowDownwardIcon />
 										</Typography>
 									</Grid>
 								)}
 							</Grid>
-							<Grid
-								item
-								xs={12}
-								className="flex"
-								style={{ background: "transparent" }}>
-								<button
-									className="addAnItemButtonMobile flex"
-									onClick={() => addNewColumnMobile()}
-									style={{ textAlign: "center" }}>
-									<Typography
-										variant="h6"
-										style={{ marginRight: "10px" }}>
+							<Grid item xs={12} className="flex" style={{ background: "transparent" }}>
+								<button className="addAnItemButtonMobile flex" onClick={() => addNewColumnMobile(true)} style={{ textAlign: "center" }}>
+									<Typography variant="h6" style={{ marginRight: "10px" }}>
 										+
 									</Typography>
 									Add an Item
 								</button>
 							</Grid>
-							<Grid
-								item
-								xs={12}
-								className="quickOrderBottomSectionMobile">
-								<Typography
-									onClick={() => moveToNext()}
-									variant="h6">
+							<Grid item xs={12} className="quickOrderBottomSectionMobile">
+								<Typography onClick={() => moveToNext()} variant="h6">
 									Next &nbsp;
 								</Typography>
-								<button
-									onClick={() => moveToNext()}
-									className="nextButtonMobile  flex">
+								<button onClick={() => moveToNext()} className="nextButtonMobile  flex">
 									<ArrowForwardIcon />
 								</button>
 							</Grid>
 						</Grid>
 					) : (
-						<Grid
-							item
-							container
-							xs={12}>
-							<Grid
-								item
-								container
-								xs={12}
-								style={{ height: "40px" }}>
+						<Grid item container xs={12}>
+							<Grid item container xs={12} style={{ height: "40px" }}>
 								<Grid
 									onClick={() => setMobileItem("NS")}
 									item
@@ -1205,49 +910,30 @@ const QuickOrder = () => {
 										alignItems: "center",
 										justifyContent: "center",
 										marginBottom: "15px",
-									}}>
+									}}
+								>
 									<ArrowBackIosIcon />
 								</Grid>
-								<Grid
-									item
-									xs={10.5}
-									style={{ paddingTop: "10px", marginBottom: "15px" }}>
+								<Grid item xs={10.5} style={{ paddingTop: "10px", marginBottom: "15px" }}>
 									<Typography variant="h3">Add An Item</Typography>
 								</Grid>
-								<Grid
-									item
-									container
-									className="addItemRowSectionMobile">
-									<Grid
-										container
-										style={{ marginBottom: "10px", height: "60px" }}>
-										<Grid
-											item
-											container
-											xs={12}
-											className="flex"
-											style={{ marginBottom: "10px" }}>
+								<Grid item container className="addItemRowSectionMobile">
+									<Grid container style={{ marginBottom: "10px", height: "60px" }}>
+										<Grid item container xs={12} className="flex" style={{ marginBottom: "10px" }}>
 											<Grid
 												item
 												xs={12}
 												style={{
 													paddingLeft: "7%",
 													marginBottom: "5px",
-												}}>
-												<Typography variant="body2">
-													{" "}
-													Product{" "}
-												</Typography>
+												}}
+											>
+												<Typography variant="body2"> Product </Typography>
 											</Grid>
 
-											<Grid
-												item
-												xs={12}
-												className="flex">
+											<Grid item xs={12} className="flex">
 												<ProductBox
-													debouncedApiCall={
-														debouncedApiCall
-													}
+													debouncedApiCall={debouncedApiCall}
 													token={token}
 													baseURL={baseURL}
 													options={allProduct}
@@ -1255,92 +941,53 @@ const QuickOrder = () => {
 													rows={cart}
 													setRows={setRows}
 													label="Select Product"
-													setShadesByCode={
-														setShadesByCode
-													}
+													setShadesByCode={setShadesByCode}
+													updateComp="update"
 												/>
 											</Grid>
 										</Grid>
 
-										<Grid
-											item
-											container
-											xs={12}
-											className="flex"
-											style={{ marginBottom: "10px" }}>
+										<Grid item container xs={12} className="flex" style={{ marginBottom: "10px" }}>
 											<Grid
 												item
 												xs={12}
 												style={{
 													paddingLeft: "7%",
 													marginBottom: "5px",
-												}}>
-												<Typography variant="body2">
-													{" "}
-													Shades
-												</Typography>
+												}}
+											>
+												<Typography variant="body2"> Shades</Typography>
 											</Grid>
-											<Grid
-												item
-												xs={12}
-												className="flex">
+											<Grid item xs={12} className="flex">
 												<ShadeCodeBox
-													debouncedApiCall={
-														debouncedApiCall
-													}
+													debouncedApiCall={debouncedApiCall}
 													label="Shades"
-													options={
-														cart[
-															mobileItem
-														]?.shade
-													}
+													options={cart[mobileItem]?.shade}
 													rows={cart}
 													setRows={setRows}
 													index={mobileItem}
-													getProductDescriptionbyCode={
-														getProductDescriptionbyCode
-													}
+													getProductDescriptionbyCode={getProductDescriptionbyCode}
 												/>
 											</Grid>
 										</Grid>
-										<Grid
-											item
-											container
-											xs={12}
-											className="flex"
-											style={{ marginBottom: "10px" }}>
+										<Grid item container xs={12} className="flex" style={{ marginBottom: "10px" }}>
 											<Grid
 												item
 												xs={12}
 												style={{
 													paddingLeft: "7%",
 													marginBottom: "5px",
-												}}>
-												<Typography variant="body2">
-													{" "}
-													Product Description{" "}
-												</Typography>
+												}}
+											>
+												<Typography variant="body2"> Product Description </Typography>
 											</Grid>
-											{console.log(
-												"IM From IN JSX",
-												mobileItem,
-											)}
-											<Grid
-												item
-												xs={12}
-												className="flex">
+											{console.log("IM From IN JSX", mobileItem)}
+											<Grid item xs={12} className="flex">
 												<CategoryBox
-													debouncedApiCall={
-														debouncedApiCall
-													}
+													debouncedApiCall={debouncedApiCall}
 													token={token}
 													baseURL={baseURL}
-													options={
-														cart[
-															mobileItem
-														]
-															?.productCategoryList
-													}
+													options={cart[mobileItem]?.productCategoryList}
 													index={mobileItem}
 													rows={cart}
 													setRows={setRows}
@@ -1374,84 +1021,55 @@ const QuickOrder = () => {
 												/>
 											</Grid>
 										</Grid> */}
-										<Grid
-											item
-											container
-											xs={12}
-											className="flex"
-											style={{ marginBottom: "10px" }}>
+										<Grid item container xs={12} className="flex" style={{ marginBottom: "10px" }}>
 											<Grid
 												item
 												xs={12}
 												style={{
 													paddingLeft: "7%",
 													marginBottom: "5px",
-												}}>
-												<Typography variant="body2">
-													{" "}
-													Quantity
-												</Typography>
+												}}
+											>
+												<Typography variant="body2"> Quantity</Typography>
 											</Grid>
-											<Grid
-												item
-												container
-												xs={12}
-												className="flex">
-												<Quantity
-													debouncedApiCall={
-														debouncedApiCall
-													}
-													rows={cart}
-													setRows={setRows}
-													index={mobileItem}
-												/>
+											<Grid item container xs={12} className="flex">
+												<Quantity debouncedApiCall={debouncedApiCall} rows={cart} setRows={setRows} index={mobileItem} />
 											</Grid>
 										</Grid>
 									</Grid>
 								</Grid>
-								<Grid
-									item
-									xs={2}
-									style={{ position: "absolute", bottom: "15%", right: "0", width: "100%", }}
-									className="flex">
-
+								<Grid item xs={2} style={{ position: "absolute", bottom: "15%", right: "0", width: "100%" }} className="flex">
 									<button
-
 										onClick={() => updatProductFromMobile()}
 										className="addAnItemButtonMobile flex"
-										style={{ position: "relative", textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center" }}>
-										{isMobItemLoading ? <CircularProgress
-											size={24}
-											style={{
-												position: 'absolute',
-												top: '50%',
-												left: '50%',
-												marginTop: -12,
-												marginLeft: -12,
-											}}
-										/> :
-											<Typography
-												variant="h6"
-												style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+										style={{ position: "relative", textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center" }}
+									>
+										{isMobItemLoading ? (
+											<CircularProgress
+												size={24}
+												style={{
+													position: "absolute",
+													top: "50%",
+													left: "50%",
+													marginTop: -12,
+													marginLeft: -12,
+												}}
+											/>
+										) : (
+											<Typography variant="h6" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
 												<ShoppingBasket />
 											</Typography>
-										}
-
+										)}
 									</button>
 								</Grid>
-								<Grid
-									item
-									xs={12}
-									style={{ position: "absolute", bottom: "20px", width: "100%" }}
-									className="flex">
+								<Grid item xs={12} style={{ position: "absolute", bottom: "20px", width: "100%" }} className="flex">
 									<button
 										disabled={isMobItemLoading}
 										onClick={() => updatProductFromMobile(true)}
 										className="addAnItemButtonMobile flex"
-										style={{ textAlign: "center" }}>
-										<Typography
-											variant="h6"
-											style={{ marginRight: "10px" }}>
+										style={{ textAlign: "center" }}
+									>
+										<Typography variant="h6" style={{ marginRight: "10px" }}>
 											Done
 										</Typography>
 									</button>
@@ -1460,173 +1078,79 @@ const QuickOrder = () => {
 						</Grid>
 					)}
 
-					<PopupAlert
-						open={showPopup}
-						message={message}
-						severty={severty}
-						onClose={handleClosePopup}
-					/>
+					<PopupAlert open={showPopup} message={message} severty={severty} onClose={handleClosePopup} />
 				</Grid>
 			) : orderPage == "2" ? (
-				<Grid
-					container
-					xs={12}
-					sx={{ display: { xs: "flex", sm: "flex", md: "none" } }}>
-					<Grid
-						item
-						container
-						style={{ height: "78px" }}>
+				<Grid container xs={12} sx={{ display: { xs: "flex", sm: "flex", md: "none" } }}>
+					<Grid item container style={{ height: "78px" }}>
 						<Navbar />
 					</Grid>
-					<Grid
-						item
-						container
-						xs={12}
-						className="cartMainMobile">
-						<Grid
-							item
-							container
-							xs={12}
-							className="yourcartmain2Mobile flex">
-							<Grid
-								item
-								xs={11}
-								style={{ height: "50px", backgroundColor: "white" }}>
+					<Grid item container xs={12} className="cartMainMobile">
+						<Grid item container xs={12} className="yourcartmain2Mobile flex">
+							<Grid item xs={11} style={{ height: "50px", backgroundColor: "white" }}>
 								<Typography variant="h3">Your Cart</Typography>
 							</Grid>
-							<Grid
-								container
-								xs={12}
-								className="flex cartProductMobile">
+							<Grid container xs={12} className="flex cartProductMobile">
 								{isLoading && (
 									<Backdrop
 										sx={{
 											color: "#fff",
-											zIndex: (theme) =>
-												theme.zIndex.drawer + 1,
+											zIndex: (theme) => theme.zIndex.drawer + 1,
 										}}
-										open={isLoading}>
+										open={isLoading}
+									>
 										<CircularProgress color="inherit" />
 									</Backdrop>
 								)}
 
-								<Grid
-									container
-									item
-									xs={11.5}
-									className="cartScrollSection">
+								<Grid container item xs={11.5} className="cartScrollSection">
 									{cart.map((item, index) => {
-										if (
-											item.LottypeCode.value &&
-											item.ShadeCode.label &&
-											item.LottypeCode.HsCode &&
-											item.OrderQty &&
-											item.selectedYardage.label
-										) {
+										if (item.LottypeCode.value && item.ShadeCode.label && item.LottypeCode.HsCode && item.OrderQty && item.selectedYardage.label) {
 											return (
-												<Grid
-													container
-													className="yourCartRow">
-													<Grid
-														container
-														item
-														xs={8}>
-														<Typography variant="h5">
-															{
-																item
-																	.LottypeCode
-																	.label
-															}
-														</Typography>
-														<Grid
-															item
-															xs={
-																12
-															}>
-															<Typography
-																variant="p1"
-																className="greyFont">
+												<Grid container className="yourCartRow">
+													<Grid container item xs={8}>
+														<Typography variant="h5">{item.LottypeCode.label}</Typography>
+														<Grid item xs={12}>
+															<Typography variant="p1" className="greyFont">
 																Shades:{" "}
 															</Typography>
-															<Typography variant="p1">
-																{
-																	item
-																		.ShadeCode
-																		.label
-																}
-															</Typography>
+															<Typography variant="p1">{item.ShadeCode.label}</Typography>
 														</Grid>
-														<Grid
-															item
-															xs={
-																12
-															}>
-															<Typography
-																variant="p1"
-																className="greyFont">
+														<Grid item xs={12}>
+															<Typography variant="p1" className="greyFont">
 																Yardage:
 															</Typography>
-															<Typography variant="p1">
-																{
-																	item
-																		.selectedYardage
-																		.label
-																}
-															</Typography>
+															<Typography variant="p1">{item.selectedYardage.label}</Typography>
 														</Grid>
 													</Grid>
-													<Grid
-														item
-														container
-														xs={4}>
+													<Grid item container xs={4}>
 														<Grid
 															item
-															xs={
-																11
-															}
+															xs={11}
 															style={{
 																display: "flex",
-																justifyContent:
-																	"end",
-															}}>
+																justifyContent: "end",
+															}}
+														>
 															<Grid
 																item
-																md={
-																	4
-																}
+																md={4}
 																style={{
 																	cursor: "pointer",
 																}}
-																onClick={() =>
-																	deleteExistingRow(
-																		index,
-																	)
-																}>
+																onClick={() => deleteExistingRow(index)}
+															>
 																<DeleteIcon />
 															</Grid>
 														</Grid>
 														<Grid
 															item
-															xs={
-																12
-															}
+															xs={12}
 															style={{
 																marginTop: "10%",
-															}}>
-															<QuantityCheckout
-																debouncedApiCall={
-																	debouncedApiCall
-																}
-																item={
-																	item
-																}
-																rows={
-																	cart
-																}
-																index={
-																	index
-																}
-															/>
+															}}
+														>
+															<QuantityCheckout debouncedApiCall={debouncedApiCall} item={item} rows={cart} index={index} />
 														</Grid>
 													</Grid>
 													{/* <Grid item md={4} style={{ textAlign: "center" }} >{item.OrderQty}x</Grid> */}
@@ -1638,49 +1162,26 @@ const QuickOrder = () => {
 							</Grid>
 						</Grid>
 					</Grid>
-					<Grid
-						item
-						xs={12}
-						className="quickOrderBottomSectionMobile">
-						<Typography
-							onClick={() => navigate("/quickOrder/3")}
-							variant="h6">
+					<Grid item xs={12} className="quickOrderBottomSectionMobile">
+						<Typography onClick={() => navigate("/quickOrder/3")} variant="h6">
 							Next &nbsp;
 						</Typography>
-						<button
-							onClick={() => navigate("/quickOrder/3")}
-							className="nextButtonMobile  flex">
+						<button onClick={() => navigate("/quickOrder/3")} className="nextButtonMobile  flex">
 							<ArrowForwardIcon />
 						</button>
 					</Grid>
 				</Grid>
 			) : (
-				<Grid
-					container
-					xs={12}
-					sx={{ display: { xs: "flex", sm: "flex", md: "none" } }}>
-					<Grid
-						item
-						container
-						style={{ height: "78px" }}>
+				<Grid container xs={12} sx={{ display: { xs: "flex", sm: "flex", md: "none" } }}>
+					<Grid item container style={{ height: "78px" }}>
 						<Navbar />
 					</Grid>
-					<Checkout
-						debouncedApiCall={debouncedApiCall}
-						setStep={setStep}
-						rows={cart}
-						setOrderSuccess={setOrderSuccess}
-						orderSuccess={orderSuccess}
-						shopes={shopes}
-					/>
+					<Checkout debouncedApiCall={debouncedApiCall} setStep={setStep} rows={cart} setOrderSuccess={setOrderSuccess} orderSuccess={orderSuccess} shopes={shopes} />
 				</Grid>
 			)}
 		</>
 	) : (
-		<OrderPlaceCard
-			firstName={firstName}
-			debouncedApiCall={debouncedApiCall}
-		/>
+		<OrderPlaceCard firstName={firstName} debouncedApiCall={debouncedApiCall} />
 	)
 }
 

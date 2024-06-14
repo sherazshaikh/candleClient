@@ -1,13 +1,13 @@
-import { Backdrop, CircularProgress, Grid, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-import Navbar from '../../components/Navbar/Navbar'
-import './home.css';
-import Footer from '../../components/Footer/Footer';
-import { variables } from '../../utils/config';
-import { executeApi } from '../../utils/WithAuth';
-import { useDispatch, useSelector } from 'react-redux';
-import { v4 } from 'uuid';
-import { updateCart } from '../redux/features/cart/cartslice';
+import { Backdrop, CircularProgress, Grid, Typography } from "@mui/material"
+import React, { useEffect, useState } from "react"
+import Navbar from "../../components/Navbar/Navbar"
+import "./home.css"
+import Footer from "../../components/Footer/Footer"
+import { variables } from "../../utils/config"
+import { executeApi } from "../../utils/WithAuth"
+import { useDispatch, useSelector } from "react-redux"
+import { v4 } from "uuid"
+import { updateCart } from "../redux/features/cart/cartslice"
 
 // import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 // import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -15,99 +15,124 @@ import { updateCart } from '../redux/features/cart/cartslice';
 // import VerticalCarousel from '../../components/VerticalCarousel/VerticalCarousel';
 
 const Home = () => {
-  const user = useSelector((state) => state.auth.isAuthenticated);
-  let { baseURL, auth: { token } } = useSelector((state) => state);
-  const dispatch = useDispatch();
-  const [open, setOpen] = React.useState(false);
-  const [images, setImages] = React.useState([]);
-  // const [transitionDirection, setTransitionDirection] = useState('right');
-  // const [currentIndex, setCurrentIndex] = useState(0);
+	const user = useSelector((state) => state.auth.isAuthenticated)
+	let {
+		baseURL,
+		auth: { token },
+	} = useSelector((state) => state)
+	const dispatch = useDispatch()
+	const [open, setOpen] = React.useState(false)
+	const [images, setImages] = React.useState([])
+	const [transitionDirection, setTransitionDirection] = useState("right")
+	const [currentIndex, setCurrentIndex] = useState(0)
 
+	const executeInitails = () => {
+		console.log("user", user)
+		if (user) {
+			setOpen(true)
+			executeApi(baseURL + variables.getCart.url, {}, variables.getCart.method, token, dispatch)
+				.then((data) => {
+					var finalObject = data.data.map((item) => {
+						let jsonData = item
+						let dataArray = jsonData.shadecodelist.split("OBJEND")
+						dataArray.pop()
+						// Map the array elements back into objects
+						let parsedArray = dataArray.map((item) => {
+							let [shadeCode, shadeDesc] = item.split("BTWOBJ")
+							return { shadeCode, shadeDesc }
+						})
+						return {
+							LottypeCode: {
+								label: jsonData.lottypecode.split("BTWOBJ")[0],
+								value: jsonData.lottypecode.split("BTWOBJ")[1],
+								HsCode: jsonData.lottypecode.split("BTWOBJ")[2],
+							},
+							shade: parsedArray,
+							ShadeCode: { label: jsonData.shadecode.split("BTWOBJ")[0], value: jsonData.shadecode.split("BTWOBJ")[1] },
+							yardage: jsonData.yardagelist.split("BTWOBJ"),
+							selectedYardage: {
+								label: jsonData.yardage.split("BTWOBJ")[0],
+								value: jsonData.yardage.split("BTWOBJ")[1],
+								HsCode: jsonData.yardage.split("BTWOBJ")[2],
+							},
+							OrderQty: jsonData.qty,
+							product: {},
+							productCategoryList: [],
+							price: 0,
+							uuid: v4(),
+						}
+					})
 
+					dispatch(updateCart(finalObject))
+					setOpen(false)
+				})
+				.catch((err) => {
+					setOpen(false)
+					console.log(err)
+				})
+		}
+	}
 
-  const executeInitails = () => {
-    console.log("user", user)
-    if (user) {
-      setOpen(true)
-      executeApi(baseURL + variables.getCart.url, {}, variables.getCart.method, token, dispatch)
-        .then((data) => {
-          var finalObject = data.data.map((item) => {
-            let jsonData = item;
-            let dataArray = jsonData.shadecodelist.split('OBJEND');
-            dataArray.pop();
-            // Map the array elements back into objects
-            let parsedArray = dataArray.map(item => {
-              let [shadeCode, shadeDesc] = item.split('BTWOBJ');
-              return { shadeCode, shadeDesc };
-            });
-            return {
-              "LottypeCode": { label: jsonData.lottypecode.split("BTWOBJ")[0], value: jsonData.lottypecode.split("BTWOBJ")[1], HsCode: jsonData.lottypecode.split("BTWOBJ")[2] },
-              "shade": parsedArray,
-              "ShadeCode": { label: jsonData.shadecode.split("BTWOBJ")[0], value: jsonData.shadecode.split("BTWOBJ")[1] },
-              "yardage": jsonData.yardagelist.split("BTWOBJ"),
-              "selectedYardage": { label: jsonData.yardage.split("BTWOBJ")[0], value: jsonData.yardage.split("BTWOBJ")[1], HsCode: jsonData.yardage.split("BTWOBJ")[2] },
-              "OrderQty": jsonData.qty,
-              "product": {},
-              "productCategoryList": [],
-              "price": 0,
-              "uuid": v4()
-            }
-          });
+	useEffect(() => {
+		getImages()
 
-          dispatch(updateCart(finalObject))
-          setOpen(false)
-        })
-        .catch((err) => {
-          setOpen(false);
-          console.log(err)
-        })
-    }
-  }
+		executeInitails()
+	}, [])
 
-  useEffect(async () => {
-    // await fetch('/images.json')
-    //   .then((response) => response.json())
-    //   .then((data) => setImages(data.images));
+	const getImages = async () => {
+		await fetch("/images.json")
+			.then((response) => response.json())
+			.then((data) => {
+				setImages(data.images)
+			})
+	}
 
-    console.log("imaf", images)
+	useEffect(() => {
+		console.log("imaf", images)
+		const interval = setInterval(() => {
+			setTransitionDirection("right")
+			setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1))
+		}, 3000) // Change image every 3 seconds
+		return () => clearInterval(interval) // Cleanup interval on component unmount
+	}, [images])
 
-    executeInitails();
-  }, [])
+	return (
+		<Grid container sx={{ position: "relative" }}>
+			<Navbar />
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setTransitionDirection('right');
-  //     setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
-  //   }, 3000); // Change image every 3 seconds
-  //   return () => clearInterval(interval); // Cleanup interval on component unmount
-  // }, [images]);
+			<Grid
+				container
+				className="heroDiv"
+        sx={{
+          width: '100%',
+          height: '100%',
+          backgroundSize: 'cover',
+          backgroundPosition: '',
+          backgroundImage: `url(${images[currentIndex]})`,
+          transition: 'transform 0.5s ease-in-out',
+          // transform: `translateX(${transitionDirection === 'right' ? '100%' : '-100%'})`,
+          animation: `slide-${transitionDirection} 0.5s forwards`,
+        }}
+			>
+				{/* <div style={{}} /> */}
+				<Grid container className="heroDiv" >
+					<Grid  item container md={7} xs={11} sx={{ marginTop: { xs: "20vh", md: "100px" } }} className="heroDivContent">
+						<Typography variant="h3" sx={{ fontFamily: "Axiforma" }}>
+							Threading Colors into Your World
+						</Typography>
+						<Grid item md={8} xs={11}>
+							<Typography variant="p" style={{ marginTop: "0px", opacity: "0.6" }}>
+								With our state of the art facility we produce 100 product variants and 150 unique colors everyday with precise focus on quality, product safety.
+							</Typography>
+						</Grid>
+					</Grid>
+				</Grid>
+			</Grid>
 
-  return (
-    <Grid container  >
-      <Navbar />
-      <Grid container className='heroDiv'
-       
-      >
-       
-        <Grid item container md={7} xs={11} sx={{ marginTop: { xs: "20vh", md: "100px" } }} className='heroDivContent' >
-          <Typography variant='h3' sx={{ fontFamily: "Axiforma" }} >
-            Threading Colors into Your World
-          </Typography>
-          <Grid item md={8} xs={11} >
-            <Typography variant='p' style={{ marginTop: "0px", opacity: '0.6' }} >
-              With our state of the art facility we produce 100 product variants and 150 unique colors everyday with precise focus on quality, product safety.
-            </Typography>
-          </Grid>
-        </Grid>
-      </Grid>
-
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
-      {/* <Grid container className='productSection' >
+			<Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
+				<CircularProgress color="inherit" />
+			</Backdrop>
+			{/* <Grid container className='productSection' >
         <Grid item container md={12} >
           <Grid item md={1} />
           <Grid item container md={5} className='productSectionContentSection' >
@@ -220,11 +245,11 @@ const Home = () => {
         </Grid>
       </Grid>
       <Grid container className='blogSection' ></Grid> */}
-      <Grid container className='footerSection flex' >
-        <Footer />
-      </Grid>
-    </Grid>
-  )
+			<Grid container className="footerSection flex">
+				<Footer />
+			</Grid>
+		</Grid>
+	)
 }
 
 export default Home

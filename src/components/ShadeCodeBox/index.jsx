@@ -32,9 +32,8 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
 	const categoryLabel = GetCategoryLabl()
 
 	React.useEffect(() => {
-			setInfoLabel(categoryLabel ? shadeLabel : "")
+		setInfoLabel("")
 	}, [categoryLabel])
-
 
     useEffect(() => {
         setInfoLabel(initialLabel?.label)

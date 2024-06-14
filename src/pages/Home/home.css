@@ -1,13 +1,14 @@
 .heroDiv {
-    background-image: url("../../assets/Mask\ Group\ 15.webp");
+    /* background-image: url("../../assets/Mask\ Group\ 15.webp"); */
     height: 100vh;
     width: 100%;
-    background-position: center;
+    /* background-position: center;
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: cover; */
     display: flex;
     justify-content: center;
     font-family: 'Axiforma';
+    
 }
 
 .heroDivContent {
@@ -226,6 +227,25 @@
         background-position: bottom;
         background-size: contain;
         height: 65vh !important;
-        background-color: rgb(243, 243, 243)
+        /* background-color: rgb(243, 243, 243) */
     }
 }
+
+
+/* @keyframes slide-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slide-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  } */

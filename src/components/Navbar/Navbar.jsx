@@ -88,7 +88,7 @@ const Navbar = () => {
 
 
   return (
-    <Grid item container className='navbarMain'  >
+    <Grid item container className='navbarMain' style={{zIndex:10, height:"70px", background:"white", position:"sticky", top:0, left:0,}}  >
       <Grid item md={1} sm={0.5} xs={0} ></Grid>
       <Grid item md={1} sm={2} xs={4} style={{ cursor: "pointer" }} onClick={() => navigate("/")} className='navLogo' ></Grid>
       <Grid item md={3} sm={0.5} xs={user ? "2" : '3'} ></Grid>
