@@ -8,6 +8,7 @@
     display: flex;
     justify-content: center;
     font-family: 'Axiforma';
+    overflow-x: hidden;
     
 }
 
@@ -16,7 +17,7 @@
     text-align: center;
     display: flex;
     justify-content: center;
-    flex-direction: column; 
+    flex-direction: row; 
     align-items: center;
 }
 
@@ -226,13 +227,22 @@
     .heroDiv {
         background-position: bottom;
         background-size: contain;
-        height: 65vh !important;
+        height: 25vh !important;
         /* background-color: rgb(243, 243, 243) */
+    }
+
+    .cursoualContainerClass{
+        height: 20vh !important;
+        object-fit: cover !important;
+        background-position: top;
+    }
+    .heroDivContent{
+        display: none !important;
     }
 }
 
 
-/* @keyframes slide-right {
+  @keyframes slide-right {
     from {
       transform: translateX(100%);
     }
@@ -240,12 +250,7 @@
       transform: translateX(0);
     }
   }
-  
-  @keyframes slide-left {
-    from {
-      transform: translateX(-100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  } */
+
+  .cursoualContainerClass{
+    height: 95vh;
+  }

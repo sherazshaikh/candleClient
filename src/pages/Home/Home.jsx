@@ -1,4 +1,4 @@
-import { Backdrop, CircularProgress, Grid, Typography } from "@mui/material"
+import { Backdrop, CircularProgress, Grid, Typography, Paper } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import Navbar from "../../components/Navbar/Navbar"
 import "./home.css"
@@ -8,6 +8,8 @@ import { executeApi } from "../../utils/WithAuth"
 import { useDispatch, useSelector } from "react-redux"
 import { v4 } from "uuid"
 import { updateCart } from "../redux/features/cart/cartslice"
+import zIndex from "@mui/material/styles/zIndex"
+import Carousel from "react-material-ui-carousel"
 
 // import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 // import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -88,11 +90,9 @@ const Home = () => {
 	}
 
 	useEffect(() => {
-		console.log("imaf", images)
 		const interval = setInterval(() => {
-			setTransitionDirection("right")
 			setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1))
-		}, 3000) // Change image every 3 seconds
+		}, 3000)
 		return () => clearInterval(interval) // Cleanup interval on component unmount
 	}, [images])
 
@@ -103,20 +103,73 @@ const Home = () => {
 			<Grid
 				container
 				className="heroDiv"
-        sx={{
-          width: '100%',
-          height: '100%',
-          backgroundSize: 'cover',
-          backgroundPosition: '',
-          backgroundImage: `url(${images[currentIndex]})`,
-          transition: 'transform 0.5s ease-in-out',
-          // transform: `translateX(${transitionDirection === 'right' ? '100%' : '-100%'})`,
-          animation: `slide-${transitionDirection} 0.5s forwards`,
-        }}
+				sx={{
+					position: "relative",
+					width: "100%",
+					height: "100%",
+				}}
 			>
-				{/* <div style={{}} /> */}
-				<Grid container className="heroDiv" >
-					<Grid  item container md={7} xs={11} sx={{ marginTop: { xs: "20vh", md: "100px" } }} className="heroDivContent">
+				{/* {images.map((image, index) => (
+					<Grid
+						item
+						xs={12}
+						key={index}
+						sx={{
+							position: "absolute",
+							top: 0,
+							left: `${(index - currentIndex) * 100}%`,
+							width: "100%",
+							height: "100%",
+							backgroundSize: "cover",
+							backgroundPosition: "center",
+							backgroundImage: `url(${image})`,
+							transition: "left 0.5s ease-in-out",
+							display: `${Math.abs(index - currentIndex) <= 1 ? "block" : "none"}`, // Show only adjacent images
+						}}
+					>
+						<div
+							style={{
+								position: "relative",
+								width: "100%",
+								height: "100%",
+								backgroundColor: "rgba(0, 0, 0, 0.3)", // Light black overlay
+							}}
+						></div>
+					</Grid>
+				))} */}
+				<Grid item xs={12} sx={{ position: "absolute", top: 0, left: 0, zIndex: 9, width: "100%" }}>
+					<Carousel indicators={true} animation="slide" autoPlay={true} interval={3000} swipe={true} navButtonsAlwaysInvisible={false}>
+						{images.map((image, index) => (
+							<Grid key={index} container justifyContent="center" alignItems="center" sx={{ position: "relative", width: "100%", overflow: "hidden" }}>
+								<Paper
+									className="cursoualContainerClass"
+									sx={{
+										position: "relative",
+										width: "100%",
+										backgroundSize: "cover",
+										backgroundPosition: "center",
+										backgroundRepeat: "no-repeat",
+										backgroundImage: `url(${image})`,
+									}}
+								>
+									{/* <div
+										style={{
+											position: "absolute",
+											top: 0,
+											left: 0,
+											width: "100%",
+											height: "100%",
+											backgroundColor: "rgba(0, 0, 0, 0.3)", // Light black overlay
+										}}
+									></div> */}
+								</Paper>
+							</Grid>
+						))}
+					</Carousel>
+				</Grid>
+
+				<Grid container style={{ zIndex: 10 }} className="heroDiv">
+					<Grid item container md={7} xs={11} sx={{ marginTop: { xs: "20vh", md: "100px" } }} className="heroDivContent">
 						<Typography variant="h3" sx={{ fontFamily: "Axiforma" }}>
 							Threading Colors into Your World
 						</Typography>

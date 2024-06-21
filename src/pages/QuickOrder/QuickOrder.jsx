@@ -1038,41 +1038,43 @@ const QuickOrder = () => {
 										</Grid>
 									</Grid>
 								</Grid>
-								<Grid item xs={2} style={{ position: "absolute", bottom: "15%", right: "0", width: "100%" }} className="flex">
-									<button
-										onClick={() => updatProductFromMobile()}
-										className="addAnItemButtonMobile flex"
-										style={{ position: "relative", textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center" }}
-									>
-										{isMobItemLoading ? (
-											<CircularProgress
-												size={24}
-												style={{
-													position: "absolute",
-													top: "50%",
-													left: "50%",
-													marginTop: -12,
-													marginLeft: -12,
-												}}
-											/>
-										) : (
-											<Typography variant="h6" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-												<ShoppingBasket />
+								<Grid item xs={12} style={{ width: "100%",  position: "absolute", bottom: "5%" }}>
+									<Grid item xs={12} style={{ width: "100%" }} className="flex">
+										<button
+											onClick={() => updatProductFromMobile()}
+											className="addAnItemButtonMobile flex"
+											style={{ position: "relative", textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center" }}
+										>
+											{isMobItemLoading ? (
+												<CircularProgress
+													size={24}
+													style={{
+														position: "absolute",
+														top: "50%",
+														left: "50%",
+														marginTop: -12,
+														marginLeft: -12,
+													}}
+												/>
+											) : (
+												<Typography variant="h6" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+													Add To Cart
+												</Typography>
+											)}
+										</button>
+									</Grid>
+									<Grid item xs={12} style={{width: "100%" }} className="flex">
+										<button
+											disabled={isMobItemLoading}
+											onClick={() => updatProductFromMobile(true)}
+											className="addAnItemButtonMobile flex"
+											style={{ textAlign: "center" }}
+										>
+											<Typography variant="h6" style={{ marginRight: "10px" }}>
+												Done
 											</Typography>
-										)}
-									</button>
-								</Grid>
-								<Grid item xs={12} style={{ position: "absolute", bottom: "20px", width: "100%" }} className="flex">
-									<button
-										disabled={isMobItemLoading}
-										onClick={() => updatProductFromMobile(true)}
-										className="addAnItemButtonMobile flex"
-										style={{ textAlign: "center" }}
-									>
-										<Typography variant="h6" style={{ marginRight: "10px" }}>
-											Done
-										</Typography>
-									</button>
+										</button>
+									</Grid>
 								</Grid>
 							</Grid>
 						</Grid>
