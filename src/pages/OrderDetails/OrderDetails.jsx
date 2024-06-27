@@ -122,7 +122,7 @@ const OrderDetails = () => {
 							sm={6}
 							sx={{ paddingLeft: { xs: '20px', sm: '0px' }, paddingTop: { xs: '10px', sm: '0px' } }}>
 							<Typography variant="h4">
-								<b>Order # {orderId}</b>
+								<b>Order # {order.orderNum}</b>
 							</Typography>
 						</Grid>
 						<Grid

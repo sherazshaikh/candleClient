@@ -1,4 +1,4 @@
-import { Backdrop, CircularProgress, Grid, Typography, Paper } from "@mui/material"
+import { Backdrop, CircularProgress, Grid, Typography, Paper, IconButton } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import Navbar from "../../components/Navbar/Navbar"
 import "./home.css"
@@ -10,6 +10,9 @@ import { v4 } from "uuid"
 import { updateCart } from "../redux/features/cart/cartslice"
 import zIndex from "@mui/material/styles/zIndex"
 import Carousel from "react-material-ui-carousel"
+import { isMobile } from "react-device-detect"
+import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material"
+import { Button } from "antd"
 
 // import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 // import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -24,9 +27,13 @@ const Home = () => {
 	} = useSelector((state) => state)
 	const dispatch = useDispatch()
 	const [open, setOpen] = React.useState(false)
+	const [imagesWeb, setWebImages] = React.useState([])
+	const [imagesMobile, setMobileImages] = React.useState([])
 	const [images, setImages] = React.useState([])
 	const [transitionDirection, setTransitionDirection] = useState("right")
 	const [currentIndex, setCurrentIndex] = useState(0)
+	const [timer, setTimer] = useState(0)
+	const [deviceType, setDeviceType] = useState(isMobile ? "Mobile" : "Desktop")
 
 	const executeInitails = () => {
 		console.log("user", user)
@@ -77,24 +84,44 @@ const Home = () => {
 
 	useEffect(() => {
 		getImages()
-
 		executeInitails()
 	}, [])
 
 	const getImages = async () => {
-		await fetch("/images.json")
+		await fetch("/config.json")
 			.then((response) => response.json())
 			.then((data) => {
-				setImages(data.images)
+				setTimer(data.delay)
 			})
+
+		await fetch("/webImages.json")
+			.then((response) => response.json())
+			.then((data) => {
+				setWebImages(data.images)
+			})
+
+		await fetch("/mobileImages.json")
+			.then((response) => response.json())
+			.then((data) => {
+				setMobileImages(data.images)
+			})
+
+		console.log("ismobile", isMobile)
 	}
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1))
-		}, 3000)
+			setCurrentIndex((prevIndex) => (prevIndex === imagesMobile.length - 1 ? 0 : prevIndex + 1))
+		}, timer)
 		return () => clearInterval(interval) // Cleanup interval on component unmount
-	}, [images])
+	}, [imagesMobile])
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setCurrentIndex((prevIndex) => (prevIndex === imagesWeb.length - 1 ? 0 : prevIndex + 1))
+		}, timer)
+		return () => clearInterval(interval) // Cleanup interval on component unmount
+	}, [imagesWeb])
 
 	return (
 		<Grid container sx={{ position: "relative" }}>
@@ -138,38 +165,65 @@ const Home = () => {
 					</Grid>
 				))} */}
 				<Grid item xs={12} sx={{ position: "absolute", top: 0, left: 0, zIndex: 9, width: "100%" }}>
-					<Carousel indicators={true} animation="slide" autoPlay={true} interval={3000} swipe={true} navButtonsAlwaysInvisible={false}>
-						{images.map((image, index) => (
-							<Grid key={index} container justifyContent="center" alignItems="center" sx={{ position: "relative", width: "100%", overflow: "hidden" }}>
-								<Paper
-									className="cursoualContainerClass"
-									sx={{
-										position: "relative",
-										width: "100%",
-										backgroundSize: "cover",
-										backgroundPosition: "center",
-										backgroundRepeat: "no-repeat",
-										backgroundImage: `url(${image})`,
-									}}
-								>
-									{/* <div
-										style={{
-											position: "absolute",
-											top: 0,
-											left: 0,
-											width: "100%",
-											height: "100%",
-											backgroundColor: "rgba(0, 0, 0, 0.3)", // Light black overlay
-										}}
-									></div> */}
-								</Paper>
-							</Grid>
-						))}
+					<Carousel
+						indicators={true}
+						animation="slide"
+						autoPlay={true}
+						interval={timer}
+						swipe={true}
+						navButtonsAlwaysVisible={false}
+						navButtonsProps={{
+							className: "nav-buttons",
+						}}
+						// NavButton={({ onClick, className, style, next, prev }) => {
+						// 	return (
+						// 		<IconButton onClick={() =>{console.log('Button clicked');}} className={`${className} nav-button`} style={style}>
+						// 			{next && <ArrowForwardIos />}
+						// 			{prev && <ArrowBackIos />}
+						// 		</IconButton>
+						// 	)
+						// }}
+
+						// next={ () => {console.log("next")} }
+						// prev={ () => {console.log("prev")} }
+					>
+						{deviceType === "Mobile"
+							? imagesMobile.map((image, index) => (
+									<Grid key={index} container justifyContent="center" alignItems="center" sx={{ position: "relative", width: "100%", overflow: "hidden" }}>
+										<Paper
+											className="cursoualContainerClass"
+											sx={{
+												position: "relative",
+												width: "100%",
+												backgroundSize: "contain",
+												backgroundPosition: "center",
+												backgroundRepeat: "no-repeat",
+												backgroundImage: `url(${image})`,
+											}}
+										>
+										</Paper>
+									</Grid>
+							  ))
+							: imagesWeb.map((image, index) => (
+									<Grid key={index} container justifyContent="center" alignItems="center" sx={{ position: "relative", width: "100%", overflow: "hidden" }}>
+										<Paper
+											className="cursoualContainerClass"
+											sx={{
+												position: "relative",
+												width: "100%",
+												objectFit: "contain",
+												backgroundPosition: "center",
+												backgroundRepeat: "no-repeat",
+												backgroundImage: `url(${image})`,
+											}}
+										></Paper>
+									</Grid>
+							  ))}
 					</Carousel>
 				</Grid>
 
 				<Grid container style={{ zIndex: 10 }} className="heroDiv">
-					<Grid item container md={7} xs={11} sx={{ marginTop: { xs: "20vh", md: "100px" } }} className="heroDivContent">
+					{/* <Grid item container md={7} xs={11} sx={{ marginTop: { xs: "20vh", md: "100px" } }} className="heroDivContent">
 						<Typography variant="h3" sx={{ fontFamily: "Axiforma" }}>
 							Threading Colors into Your World
 						</Typography>
@@ -178,7 +232,7 @@ const Home = () => {
 								With our state of the art facility we produce 100 product variants and 150 unique colors everyday with precise focus on quality, product safety.
 							</Typography>
 						</Grid>
-					</Grid>
+					</Grid> */}
 				</Grid>
 			</Grid>
 
