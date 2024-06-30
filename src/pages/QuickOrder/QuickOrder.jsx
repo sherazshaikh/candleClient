@@ -762,7 +762,7 @@ const QuickOrder = () => {
 						<Navbar />
 					</Grid>
 					{mobileItem === "NS" ? (
-						<Grid item container xs={12}>
+						<Grid item container  xs={12}>
 							<Grid item container xs={12} style={{ height: "60px" }}>
 								<Grid
 									item
@@ -793,7 +793,7 @@ const QuickOrder = () => {
 								item
 								xs={12}
 								style={{
-									height: "calc(100vh - 60px - 78px - 60px - 53px )",
+									height: "calc(100vh - 60px - 78px - 60px - 53px - 56px )",
 									display: "flex",
 									flexDirection: "rows",
 									alignContent: "flex-start",
@@ -888,9 +888,9 @@ const QuickOrder = () => {
 									Add an Item
 								</button>
 							</Grid>
-							<Grid item xs={12} className="quickOrderBottomSectionMobile">
+							<Grid item xs={12}  className="quickOrderBottomSectionMobile">
 								<Typography onClick={() => moveToNext()} variant="h6">
-									Next &nbsp;
+									Next  &nbsp;
 								</Typography>
 								<button onClick={() => moveToNext()} className="nextButtonMobile  flex">
 									<ArrowForwardIcon />
