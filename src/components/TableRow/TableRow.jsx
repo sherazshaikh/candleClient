@@ -47,7 +47,7 @@ const TableRow = ({ item, formattedDate, baseURL, token, firstName }) => {
     return (
         <Grid item container md={12} sm={12} sx={{ display: { xs: "flex", sm: "flex" }, padding:{xs:"20px", sm:"0px"} }} className='recentOrderRow' onClick={() => navigate(`/orderDetails/${item?.rowuid}`)} >
             <Grid item md={3} sm={3} xs={8} sx={{ display: { xs: "block", sm: "flex" }, padding: { xs: "5px", sm: "0px" }, textAlign:{xs:"left", sm:"center"} }} className='flex' style={{ flexDirection: "column" }}  >
-                <Typography variant='h6'>Order #{item?.rowuid}</Typography>
+                <Typography variant='h6'>Order # {item?.orderNum}</Typography>
                 <Typography variant='body2'>Date: {formattedDate}</Typography>
             </Grid>
             <Grid item md={2.6} sm={2.6} xs={4} sx={{ display: { xs: "block", sm: "flex" }, padding: { xs: "5px", sm: "0px" }, paddingTop:{xs:"10px", sm:"0px"} }} className='flex' >
