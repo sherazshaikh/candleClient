@@ -1038,7 +1038,7 @@ const QuickOrder = () => {
 										</Grid>
 									</Grid>
 								</Grid>
-								<Grid item xs={12} style={{ width: "100%",  position: "absolute", bottom: "5%" }}>
+								<Grid item  xs={12} className="placeOrderSubmitButton">
 									<Grid item xs={12} style={{ width: "100%" }} className="flex">
 										<button
 											onClick={() => updatProductFromMobile()}
@@ -1058,7 +1058,7 @@ const QuickOrder = () => {
 												/>
 											) : (
 												<Typography variant="h6" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-													Add To Cart
+													Add To Cart 
 												</Typography>
 											)}
 										</button>
