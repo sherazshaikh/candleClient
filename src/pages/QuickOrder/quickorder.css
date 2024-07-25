@@ -61,7 +61,7 @@
     padding-top: 10px;
 }
 
-.addItemRowSectionMobile{
+.addItemRowSectionMobile {
     height: calc(100vh - 45px - 78px - 53px - 30px);
     overflow-y: scroll;
     display: block !important;
@@ -101,7 +101,7 @@
     overflow-x: hidden;
 }
 
-.cartProductMobile{
+.cartProductMobile {
     height: calc(100vh - 45px - 78px - 55px - 20px);
     align-content: flex-start;
     background-color: #f4f4f4;
@@ -144,6 +144,7 @@
     border: 1px solid #e46e39;
     font-size: 16px;
 }
+
 .addAnItemButtonMobile {
     width: 90%;
     height: 48px;
@@ -193,6 +194,19 @@
     margin-right: 15px;
 }
 
+@media (max-height: 660px) {
+    .placeOrderSubmitButton {
+        position: relative !important;
+        top: 0 !important;
+    }
+}
+
+.placeOrderSubmitButton {
+    position: absolute  ;
+    bottom: 10% ;
+    width: 100% ;
+}
+
 .quickOrderBottomSection .discountImage {
     background-image: url("../../assets/Group\ 529.webp");
     background-repeat: no-repeat;
@@ -209,7 +223,7 @@
 
 }
 
-.quickOrderCardMobile{
+.quickOrderCardMobile {
     border-bottom: 1px solid grey;
     margin-top: 10px !important;
     padding-bottom: 5px;
