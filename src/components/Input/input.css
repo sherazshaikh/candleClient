@@ -29,6 +29,12 @@
     transform: translateY(-50%);
     left: 10px;
 }
+.custom-input-container .custom-icon-2 {
+    position: absolute;
+    top: 60%;
+    transform: translateY(-50%);
+    right: 10px;
+}
 
 @media only screen and (max-width: 100px) {
 
