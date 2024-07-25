@@ -150,7 +150,7 @@ const SignIn = () => {
 									<button
 										onClick={() => setShowPassword(!showPassword)}
 										className="custom-icon-2"
-										style={{ border: "none", color: "gray", background: "none" }}
+										style={{ border: "none", outline: 'none', color: "gray", background: "none" }}
 									>
 										{!showPassword ? <VisibilityOffOutlinedIcon title='Hide' /> : <VisibilityIcon title="Show" style={{ border: "none" }} />}
 									</button>
