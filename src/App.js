@@ -59,7 +59,7 @@ function App() {
       path: "/signUp",
       element:
         <SignUp />
-    },
+    }, 
     {
       path: "/recentOrders",
       element:
