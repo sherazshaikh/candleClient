@@ -29,6 +29,12 @@
     transform: translateY(-50%);
     left: 10px;
 }
+.custom-input-container .custom-icon-2 {
+    position: absolute;
+    top: 60%;
+    transform: translateY(-50%);
+    right: 10px;
+}
 
 @media only screen and (max-width: 100px) {
 
@@ -58,3 +64,10 @@ option {
     overflow: hidden; /* Hide overflow text */
     text-overflow: ellipsis; /* Add ellipsis for overflow text */
   }
+
+  @media only screen and (max-width: 720px) {
+    .custom-input-container .custom-icon-2 {
+
+        right: -20px;
+    }
+}

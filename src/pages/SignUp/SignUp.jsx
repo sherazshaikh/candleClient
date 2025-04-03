@@ -250,7 +250,7 @@ const SignUp = () => {
                       <Input value={userInfo.UserPassword} type="password" className='width100' setValue={(e) => setUserInfo({ ...userInfo, UserPassword: e })} placeholder="Password" />
                     </Grid>
                     <Grid item md={5} xs={5} >
-                      <Button type='submit' buttonName={"SignUp"} loadingState={loadingState} onClick={()=> null} />
+                      <Button type='submit' buttonName={"Save"} loadingState={loadingState} onClick={()=> null} />
                     </Grid>
                   </Grid>
                   </form>
