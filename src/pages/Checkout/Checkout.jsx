@@ -389,7 +389,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 						{paymentType == 'Cash' ? (
 							<>
 								<PaymentMethod
-									label="Advance"
+									label="Online"
 									selected={paymntMethod}
 									setSeleted={setPaymntMethod}
 								/>
