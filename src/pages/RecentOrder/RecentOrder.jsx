@@ -66,7 +66,7 @@ const RecentOrder = () => {
                                   allOrders.length > 0 ? allOrders.map((item) => {
                                         const inputDate = new Date(item.createdwhenDate);
                                         // Format the date as "DD Month YYYY"
-                                        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                                        const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
                                         const formattedDate = inputDate.toLocaleDateString('en-US', options);
                                         return <TableRow item={item} formattedDate={formattedDate} baseURL={baseURL} token={token} firstName={firstName}/>
                                     })

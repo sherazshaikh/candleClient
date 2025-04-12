@@ -55,6 +55,11 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
+  const routeToOrderList = () => {
+    navigate("/orderList")
+    setAnchorEl(null);
+  }
+
   const navigateToSignUp = () => {
     navigate("/signUp")
     // console.log("userData", userData)
@@ -91,8 +96,8 @@ const Navbar = () => {
     <Grid item container className='navbarMain' style={{zIndex:10, height:"70px", background:"white", position:"sticky", top:0, left:0,}}  >
       <Grid item md={1} sm={0.5} xs={0} ></Grid>
       <Grid item md={1} sm={2} xs={4} style={{ cursor: "pointer" }} onClick={() => navigate("/")} className='navLogo' ></Grid>
-      <Grid item md={3} sm={0.5} xs={user ? "2" : '3'} ></Grid>
-      <Grid item xs={user ? "4" : '3'} sx={{ display: { xs: 'flex', sm: 'none' } }} className='flex'  >
+      <Grid item md={3} sm={0.5} xs={user ? 2 : 3} ></Grid>
+      <Grid item xs={user ? 4 : 3} sx={{ display: { xs: 'flex', sm: 'none' } }} className='flex'  >
         {
           user ?
             <>
@@ -170,6 +175,7 @@ const Navbar = () => {
         <Grid item onClick={() => navigate("/quickOrder/1")} md={4} sm={4} className='navbarButton' >
           <Typography variant='p'>Place an Order</Typography>
         </Grid>
+        
         {
           user ?
             <>
@@ -221,6 +227,9 @@ const Navbar = () => {
                 >
                   <MenuItem onClick={handleClose}>
                     <Avatar style={{ backgroundColor: "#e9520c" }} ><GradingIcon /></Avatar> My Orders
+                  </MenuItem>
+                  <MenuItem onClick={routeToOrderList}>
+                    <Avatar style={{ backgroundColor: "#e9520c" }} ><GradingIcon /></Avatar> Orders List
                   </MenuItem>
                   <MenuItem onClick={handleRenew}>
                     <Avatar style={{ backgroundColor: "#e9520c" }}><KeyIcon /> </Avatar> Reset Password
@@ -279,6 +288,10 @@ const Navbar = () => {
                     <Grid item xs={2} ></Grid>
                     <Grid item xs={10} className='MobileMenuButtons' onClick={() => navigate("/quickorder/1")} >
                       <Typography variant='h6' >Place an Order</Typography>
+                    </Grid>
+                    <Grid item xs={2} ></Grid>
+                    <Grid item xs={10} className='MobileMenuButtons' onClick={() => routeToOrderList()} >
+                      <Typography variant='h6' >Order List</Typography>
                     </Grid>
                     <Grid item xs={2} ></Grid>
                     <Grid item xs={10} className='MobileMenuButtons' onClick={handleRenew} >

@@ -17,6 +17,7 @@ import OrderPlaceCard from "./components/Card/OrderPlaceCard";
 import AlertDialogSlide from "./components/AlertDialogue/AlertDialogue";
 import ResponsiveDialog from "./components/PassDialogue/PassDialogue";
 import ForgetDialogee from "./components/ForgetDialogue/ForgetDialogee";
+import OrderList from "./pages/OrderList"
 
 
 
@@ -79,7 +80,8 @@ function App() {
         <QuickOrder />
       </ProtectedRoute>
     },
-    { path: "/orderSuccess", element: <OrderPlaceCard /> }
+    { path: "/orderSuccess", element: <OrderPlaceCard /> },
+    { path: "/orderList", element: <OrderList user={user} /> }
   ]);
   return (
     <ThemeProvider theme={theme}>
