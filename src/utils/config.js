@@ -66,6 +66,10 @@ export const variables = {
     getAllProduct: {
         url: "/v1/Order/getAllProductCategory",
         method: "GET"
+    },
+    getProductListByParams: {
+        url: "/v1/Order/getOrderListByParams",
+        method: "GET"
     }
     //
 }

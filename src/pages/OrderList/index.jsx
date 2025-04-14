@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import { CircularProgress, Grid } from '@mui/material';
 import Navbar from '../../components/Navbar/Navbar';
 import ProductBox from '../../components/ProductBox';
 import ShadeCodeBox from '../../components/ShadeCodeBox';
@@ -8,16 +8,19 @@ import { useEffect, useState } from 'react';
 import { executeApi } from "../../utils/WithAuth";
 import { AutoComplete, Input } from 'antd';
 import { useMediaQuery } from "@mui/material";
+import PopupAlert from '../../components/PopupAlert/PopupAlert';
+import MuiSearchTable from '../../components/MuiSearchTable'
 
 const OrderList = () => {
     const cardStyle = {
         width: '100%',
-        height: '90%',
+        height: 'auto',
         backgroundColor: '#fff',
         margin: '10px',
         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
         padding: '20px',
         borderRadius: '10px',
+        // overflow: 'hidden'
     };
     const fullWidthStyle = {
         width: '100% !imoportant',
@@ -37,23 +40,19 @@ const OrderList = () => {
     const [allProduct, setAllProduct] = useState([]);
     const [allProductOptions, setAllProductOptions] = useState([]);
     const [allShades, setShades] = useState([]);
+    const [allShadesOptions, setShadesOptions] = useState([]);
+    const [message, setMessage] = useState("To Date Must Be Greater then From Date")
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
     const [productLabel, setProductLabel] = useState(null);
+    const [shadeLabel, setShadeLabel] = useState(null);
+    const [loadingState, setLoadingState] = useState(false);
+    const [showPopup, setShowPopup] = useState(false)
+    const [severty, setSeverty] = useState("error");
+    const [orderData, setOrderData] = useState([]);
 
-    const [rows, setRows] = useState([
-        {
-            LottypeCode: "",
-            shade: [],
-            ShadeCode: "",
-            yardage: [],
-            selectedYardage: "",
-            OrderQty: "",
-            price: "0",
-            product: {},
-            productCategoryList: [],
-        },
-    ])
+
+
     const dispatch = useDispatch();
 
 
@@ -76,7 +75,7 @@ const OrderList = () => {
     // GET SHADES BY PRODUCT CODE
     const setShadesByCode = async (product) => {
         console.log('rows: ', product);
-       
+
 
         executeApi(
             baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${product.id}`,
@@ -92,73 +91,86 @@ const OrderList = () => {
             .catch((error) => console.log(error));
     };
 
-    const getProductDescriptionbyCode = async (shade, i, rows, initial) => {
-        console.log('shade: ', shade, i, rows, initial);
-    }
+    const getProductListByParams = async () => {
+        setShowPopup(false)
+        if (toDate < fromDate) {
+            setShowPopup(true)
+            return
+        }
 
-    const getProductListByParams = async (productCode, shadeCode, fromDate, toDate) => {
-        console.log('productCode: ', productCode, shadeCode, fromDate, toDate);
+        setLoadingState(true)
+        let shadeCode = allShadesOptions?.filter(shd => shd.value == shadeLabel)[0]?.label || ''
+        let productCode = allProductOptions?.filter(prdct => prdct.value == productLabel)[0]?.id || ''
+
         await executeApi(
-            baseURL + variables.getProductListByParams.url,
-            {
-                productCode: productCode,
-                shadeCode: shadeCode,
-                fromDate: fromDate,
-                toDate: toDate,
-            },
+            baseURL + `${variables.getProductListByParams.url}?productCode=${productCode}&shadeCode=${shadeCode}&fromDate=${fromDate || ''}&toDate=${toDate || ''}`,
+            {},
             variables.getProductListByParams.method,
             token,
             dispatch
         )
             .then((data) => {
                 console.log('data: ', data);
-                setAllProduct(data.data);
+                setOrderData(data.data);
             })
             .catch((error) => console.log(error));
+        setLoadingState(false)
     };
 
-    const ShowAllOptions = () => {
-		if (allProduct && allProduct.length > 0) {
-			let abcd = allProduct?.map((option) => {
-				return { label: option.categoryName, value: option.categoryName, id: option.categoryId }
-			})
-			setAllProductOptions(abcd)
-		}
-	}
-	const updateProduct = (value, obj) => {
-        console.log('value: ', value, obj);
-		if (value) {
-			setProductLabel(value)
+    const ShowAllOptions = (isShade) => {
+        if (isShade) {
+            if (allShades && allShades.length > 0) {
+                let abcd = allShades?.map((option) => {
+                    return { label: option.shadeCode, value: option.shadeDesc }
+                })
+                setShadesOptions(abcd)
+            }
+        } else {
+            if (allProduct && allProduct.length > 0) {
+                let abcd = allProduct?.map((option) => {
+                    return { label: option.categoryName, value: option.categoryName, id: option.categoryId }
+                })
+                setAllProductOptions(abcd)
+            }
+        }
+    }
+    const updateProduct = (value, obj, isShade) => {
+        if (value) {
+            if (isShade) {
+                setShadeLabel(value)
+            } else {
+                setProductLabel(value)
+                setShadeLabel('')
+                setShadesByCode(obj)
+            }
+        }
 
-			setShadesByCode(obj)
-		}
-        //else setProductLabel("")
-		// let newArray = [...rows]
+    }
+    const searchProduct = (isShade) => {
 
+        if (isShade) {
+            let filteredShades = allShades.filter((option) => {
+                return option.categoryName.toLowerCase().includes(productLabel.toLowerCase())
+            })
 
-		// newArray[index] = {
-		// 	...rows[index],
-		// 	OrderQty: 0,
-		// 	LottypeCode: { label: "", HsCode: "", value: "" },
-		// 	ShadeCode: { label: "", HsCode: "", value: "" },
-		// 	selectedYardage: { label: "", HsCode: "", value: "" },
-		// 	shade: [],
-		// 	product: obj,
-		// 	// productCategoryList: [],
-		// 	uom: "",
-		// }
-		// setTimeout(() => { setAllProduct(allOptions)}, 300)
-		// dispatch(updateCart(newArray))
-	}
-    const searchProduct = () =>{
-        let filteredProduct = allProduct.filter((option) => {
-            return option.categoryName.toLowerCase().includes(productLabel.toLowerCase())
-        })
+            filteredShades = filteredShades.map((option) => {
+                return { label: option.shadeCode, value: option.shadeDesc }
+            })
+            setShadesOptions(filteredShades)
 
-        filteredProduct = filteredProduct.map((option) => {
-            return { label: option.categoryName, value: option.categoryName, id: option.categoryId }
-        })
-        setAllProductOptions(filteredProduct)
+        } else {
+            let filteredProduct = allProduct.filter((option) => {
+                return option.categoryName.toLowerCase().includes(productLabel.toLowerCase())
+            })
+            filteredProduct = filteredProduct.map((option) => {
+                return { label: option.categoryName, value: option.categoryName, id: option.categoryId }
+            })
+            setAllProductOptions(filteredProduct)
+        }
+    }
+
+    const handleClosePopup = () => {
+        setShowPopup(false)
     }
     // INITIAL API CALL
     useEffect(() => {
@@ -175,18 +187,8 @@ const OrderList = () => {
                     <h2>Order List</h2>
 
                     {/* <div> */}
-                    <Grid container spacing={2} className="addItemRowSection">
+                    <Grid style={{ height: 'auto', overflow: 'hidden' }} container spacing={2} className="">
                         <Grid item md={3} sm={3} >
-                            {/* <ProductBox
-                                    token={token}
-                                    baseURL={baseURL}
-                                    options={allProduct}
-                                    index={0}
-                                    rows={rows}
-                                    setRows={setRows}
-                                    label="Select Product"
-                                    setShadesByCode={setShadesByCode}
-                                /> */}
                             <AutoComplete
                                 options={allProductOptions}
                                 placeholder="Select Product"
@@ -195,7 +197,7 @@ const OrderList = () => {
                                 onSelect={(e, v) => updateProduct(e, v)}
                                 onSearch={(v) => setProductLabel(v)}
                                 onClear={() => updateProduct()}
-                                onFocus={ShowAllOptions}
+                                onFocus={() => ShowAllOptions()}
                                 style={{
                                     width: "90%",
                                     height: "40px",
@@ -206,7 +208,7 @@ const OrderList = () => {
                                 children={
                                     <Input
                                         type="text"
-                                        onInput={searchProduct}
+                                        onInput={() => searchProduct()}
                                         style={{
                                             height: "40px",
                                             boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08);",
@@ -217,44 +219,61 @@ const OrderList = () => {
                                 }
                             />
                         </Grid>
-                        <Grid item md={3} sm={3} >
-                            <ShadeCodeBox
-                                debouncedApiCall={null}
-                                label="Shades"
-                                options={allShades}
-                                rows={rows}
-                                setRows={setRows}
-                                index={1}
-                                getProductDescriptionbyCode={getProductDescriptionbyCode}
+                        <Grid item md={2} sm={2} >
+                            <AutoComplete
+                                key={1}
+                                options={allShadesOptions}
+                                placeholder="Select Shade"
+                                allowClear={true}
+                                value={shadeLabel}
+                                onSelect={(e, v) => updateProduct(e, v, true)}
+                                onSearch={(v) => setShadeLabel(v)}
+                                onClear={() => updateProduct()}
+                                onFocus={() => ShowAllOptions(true)}
+                                style={{
+                                    width: "90%",
+                                    height: "40px",
+                                    boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08);",
+                                    background: isMobile ? "white" : "transparent",
+                                    borderRadius: { xs: "8px" },
+                                }}
+                                children={
+                                    <Input
+                                        type="text"
+                                        onInput={() => searchProduct(true)}
+                                        style={{
+                                            height: "40px",
+                                            boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08);",
+                                            background: isMobile ? "white" : "transparent",
+                                            borderRadius: { xs: "8px" },
+                                        }}
+                                    />
+                                }
                             />
                         </Grid>
-                        <Grid item md={3} sm={3} >
-                            {/* <ShadeCodeBox
-                                    debouncedApiCall={null}
-                                    label="Shades"
-                                    options={allShades}
-                                    rows={rows}
-                                    setRows={setRows}
-                                    index={1}
-                                    getProductDescriptionbyCode={getProductDescriptionbyCode}
-                                /> */}
-                            <input style={{ width: '90%', height: '40px', border: '1px solid #d9d9d9', borderRadius: '6px' }} value={fromDate} onInput={(e) => setFromDate(e.target.value)} type='date' placeholder='From Date' />
+                        <Grid item md={2} sm={2} >
+                            <input style={{ width: '90%', height: '40px', border: '1px solid #d9d9d9', borderRadius: '6px', fontSize:'16px' }}
+                                value={fromDate} onInput={(e) => setFromDate(e.target.value)} type='date' placeholder='From Date' />
                         </Grid>
-                        <Grid item md={3} sm={3} >
-                            {/* <ShadeCodeBox
-                                    debouncedApiCall={null}
-                                    label="Shades"
-                                    options={allShades}
-                                    rows={rows}
-                                    setRows={setRows}
-                                    index={1}
-                                    getProductDescriptionbyCode={getProductDescriptionbyCode}
-                                /> */}
-                            <input style={{ width: '90%', height: '40px', border: '1px solid #d9d9d9', borderRadius: '6px' }} value={toDate} onInput={(e) => setToDate(e.target.value)} type='date' placeholder='To Date' />
+                        <Grid item md={2} sm={2} >
+                            <input style={{ width: '90%', height: '40px', border: '1px solid #d9d9d9', borderRadius: '6px', fontSize:'16px' }}
+                                value={toDate} onInput={(e) => setToDate(e.target.value)} type='date' placeholder='To Date' />
                         </Grid>
 
+                        <Grid item md={3} sm={3}>
+                            <button
+                                
+                                className="checkoutButton flex"
+                                style={loadingState ? { backgroundColor: 'transparent', border: '1px solid #e46e39', margin: 0 } : { margin: 0 }}
+                                onClick={() => getProductListByParams()}>
+                                {!loadingState ? <b> Get Data</b> : <CircularProgress style={{ color: '#e46e39', width: '25px', height: '25px' }} />}
+                            </button>
+                        </Grid>
+                        <Grid  item md={12} sm={12} >
+                            <MuiSearchTable list={orderData}/>
+                        </Grid>
                     </Grid>
-                    {/* </div> */}
+                    <PopupAlert open={showPopup} message={message} severty={severty} onClose={handleClosePopup} />
                 </div>
             </Grid>
         </Grid>
