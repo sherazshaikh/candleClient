@@ -1,7 +1,5 @@
 import { CircularProgress, Grid } from '@mui/material';
 import Navbar from '../../components/Navbar/Navbar';
-import ProductBox from '../../components/ProductBox';
-import ShadeCodeBox from '../../components/ShadeCodeBox';
 import { variables } from '../../utils/config';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
@@ -22,17 +20,14 @@ const OrderList = () => {
         borderRadius: '10px',
         // overflow: 'hidden'
     };
-    const fullWidthStyle = {
-        width: '100% !imoportant',
-    }
 
-    const isMobile = useMediaQuery("(max-width: 600px)")
 
 
 
 
     //code ....... js.......
-    let cart = useSelector((state) => state.cart);
+    const isMobile = useMediaQuery("(max-width: 600px)")
+    // let cart = useSelector((state) => state.cart);
     let {
         baseURL,
         auth: { token },
@@ -78,7 +73,7 @@ const OrderList = () => {
 
 
         executeApi(
-            baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${product.id}`,
+            baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${product?.id}`,
             {},
             variables.shades.method,
             token,
@@ -135,6 +130,7 @@ const OrderList = () => {
         }
     }
     const updateProduct = (value, obj, isShade) => {
+        console.log('value: ', value);
         if (value) {
             if (isShade) {
                 setShadeLabel(value)
@@ -142,6 +138,13 @@ const OrderList = () => {
                 setProductLabel(value)
                 setShadeLabel('')
                 setShadesByCode(obj)
+
+            }
+        } else {
+            if (!isShade) {
+                setShadeLabel('')
+                setShades([])
+                setShadesOptions([])
             }
         }
 
@@ -228,7 +231,7 @@ const OrderList = () => {
                                 value={shadeLabel}
                                 onSelect={(e, v) => updateProduct(e, v, true)}
                                 onSearch={(v) => setShadeLabel(v)}
-                                onClear={() => updateProduct()}
+                                onClear={() => updateProduct(null, null, true)}
                                 onFocus={() => ShowAllOptions(true)}
                                 style={{
                                     width: "90%",
@@ -252,25 +255,25 @@ const OrderList = () => {
                             />
                         </Grid>
                         <Grid item md={2} sm={2} >
-                            <input style={{ width: '90%', height: '40px', border: '1px solid #d9d9d9', borderRadius: '6px', fontSize:'16px' }}
+                            <input style={{ width: '90%', height: '40px', border: '1px solid #d9d9d9', borderRadius: '6px', fontSize: '16px' }}
                                 value={fromDate} onInput={(e) => setFromDate(e.target.value)} type='date' placeholder='From Date' />
                         </Grid>
                         <Grid item md={2} sm={2} >
-                            <input style={{ width: '90%', height: '40px', border: '1px solid #d9d9d9', borderRadius: '6px', fontSize:'16px' }}
+                            <input style={{ width: '90%', height: '40px', border: '1px solid #d9d9d9', borderRadius: '6px', fontSize: '16px' }}
                                 value={toDate} onInput={(e) => setToDate(e.target.value)} type='date' placeholder='To Date' />
                         </Grid>
 
                         <Grid item md={3} sm={3}>
                             <button
-                                
+
                                 className="checkoutButton flex"
                                 style={loadingState ? { backgroundColor: 'transparent', border: '1px solid #e46e39', margin: 0 } : { margin: 0 }}
                                 onClick={() => getProductListByParams()}>
                                 {!loadingState ? <b> Get Data</b> : <CircularProgress style={{ color: '#e46e39', width: '25px', height: '25px' }} />}
                             </button>
                         </Grid>
-                        <Grid  item md={12} sm={12} >
-                            <MuiSearchTable list={orderData}/>
+                        <Grid item md={12} sm={12} >
+                            <MuiSearchTable list={orderData} />
                         </Grid>
                     </Grid>
                     <PopupAlert open={showPopup} message={message} severty={severty} onClose={handleClosePopup} />

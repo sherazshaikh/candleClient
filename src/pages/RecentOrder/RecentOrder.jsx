@@ -24,6 +24,17 @@ const RecentOrder = () => {
             .catch((error) => console.log(error.message))
     }
 
+    const convertToAMPM = (timeStr) => {
+        // Extract hours and minutes from the string
+        const [hoursStr, minutes] = timeStr.split(':');
+        let hours = parseInt(hoursStr);
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        hours = hours % 12 || 12; // Convert 0 to 12
+
+        return `${hours}:${minutes} ${ampm}`;
+    }
+
     useEffect(() => {
         getAllOrders();
     }, [])
@@ -34,12 +45,12 @@ const RecentOrder = () => {
                 <Navbar />
             </Grid>
             <Grid container className="recentOrderHero flex">
-                <Grid item container md={10} sm={11} sx={{display:{xs:"flex", sm:"block"}}} xs={12} className='recentOrderHerMain flex' >
-                    <Grid item md={12} xs={11} sx={{height:{xs:"5%",sm:"15%"   }}} className='recentOrderHerMainHeading' >
-                        <Typography variant='h4' sx={{marginBottom:{md : "20px !important" , xs:"0px"}}}> Recent Orders</Typography>
+                <Grid item container md={10} sm={11} sx={{ display: { xs: "flex", sm: "block" } }} xs={12} className='recentOrderHerMain flex' >
+                    <Grid item md={12} xs={11} sx={{ height: { xs: "5%", sm: "15%" } }} className='recentOrderHerMainHeading' >
+                        <Typography variant='h4' sx={{ marginBottom: { md: "20px !important", xs: "0px" } }}> Recent Orders</Typography>
                     </Grid>
                     <Grid item container md={12} sm={12} xs={12} className='recentOrderHerMainTableSection' >
-                        <Grid item container sx={{display:{xs:'none', sm:"flex"}}} sm={12} md={12} >
+                        <Grid item container sx={{ display: { xs: 'none', sm: "flex" } }} sm={12} md={12} >
                             <Grid item md={3} sm={3} className='greyFont flex'   >
                                 Order
                             </Grid>
@@ -63,15 +74,15 @@ const RecentOrder = () => {
                                         <CircularProgress style={{ color: "#e9520c" }} />
                                     </div>
                                     :
-                                  allOrders.length > 0 ? allOrders.map((item) => {
+                                    allOrders.length > 0 ? allOrders.map((item) => {
                                         const inputDate = new Date(item.createdwhenDate);
                                         // Format the date as "DD Month YYYY"
-                                        const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
-                                        const formattedDate = inputDate.toLocaleDateString('en-US', options);
-                                        return <TableRow item={item} formattedDate={formattedDate} baseURL={baseURL} token={token} firstName={firstName}/>
+                                        const options = { day: 'numeric', month: 'long', year: 'numeric'};
+                                        const formattedDate = inputDate.toLocaleDateString('en-US', options) + " " + convertToAMPM(item.createdwhenTime);
+                                        return <TableRow item={item} formattedDate={formattedDate} baseURL={baseURL} token={token} firstName={firstName} />
                                     })
-                                    : <div className='flex' style={{color:'#e9520c', height:"100%"}} >No Data Found !</div>
-                                }
+                                        : <div className='flex' style={{ color: '#e9520c', height: "100%" }} >No Data Found !</div>
+                            }
                         </Grid>
                     </Grid>
 

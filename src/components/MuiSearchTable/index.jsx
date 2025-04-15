@@ -1,40 +1,59 @@
 import React, { useState } from "react";
 import {
   Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, TextField, IconButton,
-  Dialog, DialogTitle, DialogContent, DialogActions, Button
+  TableHead, TableRow, Paper, TextField,
+  Typography, TableSortLabel
 } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export default function ScrollableTable({ list }) {
   const [searchText, setSearchText] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
+  const [orderDirection, setOrderDirection] = useState("asc"); // asc or desc
 
-  const filteredRows = list?.filter((row) =>
-    row.orderNum?.toString().toLowerCase().includes(searchText.toLowerCase())
-  )
-    ?.map((row) => ({
-      orderNumber: row.orderNum,
-      orderDate: row.orderDate,
-      orderTime: row.orderTime,
-      id: row.rowuid,
-      orderDetails: row.orderDetails
-    }));
+  const [listData, setListData] = useState([]);
 
-  const handleView = (row) => {
-    console.log("row", row)
-    setSelectedRow(row);
-    setOpenDialog(true);
+  const handleSortClick = () => {
+    setOrderDirection((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
-  const handleClose = () => {
-    setOpenDialog(false);
-    setSelectedRow(null);
+  const filteredRows = list?.filter((row) =>
+    row.webOrderNum?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    row.oracleOrderNumber?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    row.orderDateTime?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    row.productCode?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    row.productName?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    row.hsade?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    row.orderQty?.toString().toLowerCase().includes(searchText.toLowerCase())
+  )?.map((row) => ({
+    ...row,
+    id: row.rowuid,
+  }));
+
+  const sortedRows = [...(filteredRows || [])].sort((a, b) => {
+    const aVal = a.webOrderNum || "";
+    const bVal = b.webOrderNum || "";
+
+    if (orderDirection === "asc") {
+      return aVal > bVal ? 1 : -1;
+    } else {
+      return aVal < bVal ? 1 : -1;
+    }
+  });
+
+  const dateFormatter = (date) => {
+    const inputDate = new Date(date);
+    const options = {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true
+    };
+    return inputDate.toLocaleDateString("en-US", options) || "";
   };
 
   return (
-    <Paper sx={{ padding: '0 2px' }}>
+    <Paper sx={{ padding: '0 2px', boxShadow: 'none' }}>
       <TextField
         fullWidth
         label="Search"
@@ -44,34 +63,44 @@ export default function ScrollableTable({ list }) {
         sx={{ marginBottom: 2 }}
       />
 
-      <TableContainer sx={{ maxHeight: 400, overflowY: "auto" }} component={Paper}>
+      <TableContainer sx={{ maxHeight: 400 }} component={Paper}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell><b>ID</b></TableCell>
-              <TableCell><b>Order No.</b></TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active
+                  direction={orderDirection}
+                  onClick={handleSortClick}
+                >
+                  <b>Order No.</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell><b>Oracle Order No.</b></TableCell>
               <TableCell><b>Order Date</b></TableCell>
-              <TableCell><b>Order Time</b></TableCell>
-              <TableCell><b>Actions</b></TableCell>
+              <TableCell><b>Product Code</b></TableCell>
+              <TableCell><b>Product Name</b></TableCell>
+              <TableCell><b>Shade</b></TableCell>
+              <TableCell><b>Order Qty.</b></TableCell>
+              <TableCell><b>Deliver Qty.</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredRows?.map((row) => (
+            {sortedRows?.map((row) => (
               <TableRow key={row.id}>
-                <TableCell>{row.id}</TableCell>
-                <TableCell>{row.orderNumber}</TableCell>
-                <TableCell>{row.orderDate}</TableCell>
-                <TableCell>{row.orderTime}</TableCell>
-                <TableCell>
-                  <IconButton color="primary" onClick={() => handleView(row?.orderDetails)}>
-                    <VisibilityIcon />
-                  </IconButton>
-                </TableCell>
+                <TableCell>{row.webOrderNum}</TableCell>
+                <TableCell>{row.oracleOrderNumber}</TableCell>
+                <TableCell>{dateFormatter(row.orderDateTime)}</TableCell>
+                <TableCell>{row.productCode}</TableCell>
+                <TableCell>{row.productName}</TableCell>
+                <TableCell>{row.shade}</TableCell>
+                <TableCell>{row.orderQty}</TableCell>
+                <TableCell>{row.deliveredQty}</TableCell>
               </TableRow>
             ))}
-            {filteredRows?.length === 0 && (
+            {sortedRows?.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={12} align="center">
                   No matching results.
                 </TableCell>
               </TableRow>
@@ -80,46 +109,9 @@ export default function ScrollableTable({ list }) {
         </Table>
       </TableContainer>
 
-      {/* Dialog Modal */}
-      <Dialog open={openDialog} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Order Details</DialogTitle>
-        <DialogContent dividers>
-          {selectedRow && (
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell><b>Category</b></TableCell>
-                  <TableCell><b>Shade</b></TableCell>
-                  <TableCell><b>HS Code</b></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {
-                  selectedRow?.map((row) => (
-                    <TableRow key={row.rowuid}>
-                      {/* <TableCell><b>Category</b></TableCell> */}
-                      <TableCell>{row.lottypeDesc}</TableCell>
-
-                      {/* <TableCell><b>Shade</b></TableCell> */}
-                      <TableCell>{row.shadeCode}</TableCell>
-
-                      {/* <TableCell><b>HS Code</b></TableCell> */}
-                      <TableCell>{row.hsCode}</TableCell>
-                    </TableRow>
-                  ))
-                }
-
-
-              </TableBody>
-            </Table>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} variant="contained" color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <Typography variant="body2" sx={{ marginTop: 2, textAlign: "right" }}>
+        Total Order: {filteredRows?.length}
+      </Typography>
     </Paper>
   );
 }
