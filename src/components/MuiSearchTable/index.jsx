@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import {
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, TextField,
-  Typography, TableSortLabel
+  Typography, TableSortLabel, useMediaQuery
 } from "@mui/material";
 
 export default function ScrollableTable({ list }) {
   const [searchText, setSearchText] = useState("");
-  const [orderDirection, setOrderDirection] = useState("asc"); // asc or desc
-
-  const [listData, setListData] = useState([]);
+  const [orderDirection, setOrderDirection] = useState("asc");
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   const handleSortClick = () => {
     setOrderDirection((prev) => (prev === "asc" ? "desc" : "asc"));
@@ -43,7 +42,7 @@ export default function ScrollableTable({ list }) {
     const inputDate = new Date(date);
     const options = {
       day: "numeric",
-      month: "long",
+      month: isMobile ? "short" : "long",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
@@ -53,7 +52,7 @@ export default function ScrollableTable({ list }) {
   };
 
   return (
-    <Paper sx={{ padding: '0 2px', boxShadow: 'none' }}>
+    <Paper sx={{ padding: isMobile ? '0' : '0 2px', boxShadow: 'none' }}>
       <TextField
         fullWidth
         label="Search"
@@ -61,47 +60,121 @@ export default function ScrollableTable({ list }) {
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
         sx={{ marginBottom: 2 }}
+        size={isMobile ? "small" : "medium"}
       />
 
-      <TableContainer sx={{ maxHeight: 400 }} component={Paper}>
-        <Table stickyHeader>
+      <TableContainer 
+        sx={{ 
+          maxHeight: 400,
+          overflowX: 'auto',
+          '&::-webkit-scrollbar': {
+            height: '6px'
+          }
+        }} 
+        component={Paper}
+      >
+        <Table stickyHeader size={isMobile ? "small" : "medium"}>
           <TableHead>
             <TableRow>
-              <TableCell>
+              <TableCell sx={{ minWidth: isMobile ? 90 : 120 }}>
                 <TableSortLabel
                   active
                   direction={orderDirection}
                   onClick={handleSortClick}
                 >
-                  <b>Order No.</b>
+                  <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                    {isMobile ? "Order No." : "Order Number"}
+                  </Typography>
                 </TableSortLabel>
               </TableCell>
-              <TableCell><b>Oracle Order No.</b></TableCell>
-              <TableCell><b>Order Date</b></TableCell>
-              <TableCell><b>Product Code</b></TableCell>
-              <TableCell><b>Product Name</b></TableCell>
-              <TableCell><b>Shade</b></TableCell>
-              <TableCell><b>Order Qty.</b></TableCell>
-              <TableCell><b>Deliver Qty.</b></TableCell>
+              <TableCell sx={{ minWidth: isMobile ? 90 : 120 }}>
+                <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                  {isMobile ? "Oracle No." : "Oracle Order No."}
+                </Typography>
+              </TableCell>
+              <TableCell sx={{ minWidth: isMobile ? 120 : 150 }}>
+                <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                  Order Date
+                </Typography>
+              </TableCell>
+              <TableCell sx={{ minWidth: isMobile ? 90 : 120 }}>
+                <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                  {isMobile ? "Prod Code" : "Product Code"}
+                </Typography>
+              </TableCell>
+              <TableCell sx={{ minWidth: isMobile ? 90 : 120 }}>
+                <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                  {isMobile ? "Product" : "Product Name"}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                  Shade
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                  {isMobile ? "Order Qty" : "Order Qty."}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                  {isMobile ? "Deliver Qty" : "Deliver Qty."}
+                </Typography>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {sortedRows?.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell>{row.webOrderNum}</TableCell>
-                <TableCell>{row.oracleOrderNumber}</TableCell>
-                <TableCell>{dateFormatter(row.orderDateTime)}</TableCell>
-                <TableCell>{row.productCode}</TableCell>
-                <TableCell>{row.productName}</TableCell>
-                <TableCell>{row.shade}</TableCell>
-                <TableCell>{row.orderQty}</TableCell>
-                <TableCell>{row.deliveredQty}</TableCell>
+              <TableRow key={row.id} hover>
+                <TableCell>
+                  <Typography variant="body2">
+                    {row.webOrderNum}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2">
+                    {row.oracleOrderNumber}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2">
+                    {dateFormatter(row.orderDateTime)}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2">
+                    {row.productCode}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2">
+                    {row.productName}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2">
+                    {row.shade}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2">
+                    {row.orderQty}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2">
+                    {row.deliveredQty}
+                  </Typography>
+                </TableCell>
               </TableRow>
             ))}
             {sortedRows?.length === 0 && (
               <TableRow>
-                <TableCell colSpan={12} align="center">
-                  No matching results.
+                <TableCell colSpan={8} align="center">
+                  <Typography variant="body2">
+                    No matching results.
+                  </Typography>
                 </TableCell>
               </TableRow>
             )}

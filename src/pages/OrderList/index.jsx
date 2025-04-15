@@ -11,23 +11,18 @@ import MuiSearchTable from '../../components/MuiSearchTable'
 
 const OrderList = () => {
     const cardStyle = {
-        width: '100%',
+        // width: '100%',   
         height: 'auto',
         backgroundColor: '#fff',
-        margin: '10px',
+        margin: '10px 0',
         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
         padding: '20px',
         borderRadius: '10px',
-        // overflow: 'hidden'
     };
 
-
-
-
-
-    //code ....... js.......
-    const isMobile = useMediaQuery("(max-width: 600px)")
-    // let cart = useSelector((state) => state.cart);
+    const isMobile = useMediaQuery("(max-width: 600px)");
+    const isTablet = useMediaQuery("(max-width: 900px)");
+    
     let {
         baseURL,
         auth: { token },
@@ -46,10 +41,7 @@ const OrderList = () => {
     const [severty, setSeverty] = useState("error");
     const [orderData, setOrderData] = useState([]);
 
-
-
     const dispatch = useDispatch();
-
 
     //GET ALL PRODUCT
     const getAllProduct = async () => {
@@ -71,7 +63,6 @@ const OrderList = () => {
     const setShadesByCode = async (product) => {
         console.log('rows: ', product);
 
-
         executeApi(
             baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${product?.id}`,
             {},
@@ -81,7 +72,6 @@ const OrderList = () => {
         )
             .then((data) => {
                 setShades(data.data);
-
             })
             .catch((error) => console.log(error));
     };
@@ -129,6 +119,7 @@ const OrderList = () => {
             }
         }
     }
+
     const updateProduct = (value, obj, isShade) => {
         console.log('value: ', value);
         if (value) {
@@ -138,7 +129,6 @@ const OrderList = () => {
                 setProductLabel(value)
                 setShadeLabel('')
                 setShadesByCode(obj)
-
             }
         } else {
             if (!isShade) {
@@ -147,10 +137,9 @@ const OrderList = () => {
                 setShadesOptions([])
             }
         }
-
     }
-    const searchProduct = (isShade) => {
 
+    const searchProduct = (isShade) => {
         if (isShade) {
             let filteredShades = allShades.filter((option) => {
                 return option.categoryName.toLowerCase().includes(productLabel.toLowerCase())
@@ -160,7 +149,6 @@ const OrderList = () => {
                 return { label: option.shadeCode, value: option.shadeDesc }
             })
             setShadesOptions(filteredShades)
-
         } else {
             let filteredProduct = allProduct.filter((option) => {
                 return option.categoryName.toLowerCase().includes(productLabel.toLowerCase())
@@ -175,23 +163,24 @@ const OrderList = () => {
     const handleClosePopup = () => {
         setShowPopup(false)
     }
+
     // INITIAL API CALL
     useEffect(() => {
         getAllProduct();
     }, []);
 
     return (
-        <Grid container>
-            <Grid item container className="recentOrderNabar">
+        <Grid container style={{ padding: isMobile ? '0 10px' : '0 20px' }}>
+            <Grid item xs={12} className="recentOrderNabar">
                 <Navbar />
             </Grid>
-            <Grid container className="recentOrderHero">
+            <Grid item xs={12} className="recentOrderHero">
                 <div style={cardStyle} className="order-list">
-                    <h2>Order List</h2>
+                    <h2 style={{ fontSize: isMobile ? '1.5rem' : '2rem' }}>Order List</h2>
 
-                    {/* <div> */}
-                    <Grid style={{ height: 'auto', overflow: 'hidden' }} container spacing={2} className="">
-                        <Grid item md={3} sm={3} >
+                    <Grid container spacing={isMobile ? 1 : 2} style={{ marginBottom: '20px' }}>
+                        {/* Product Selector */}
+                        <Grid item xs={12} sm={6} md={3}>
                             <AutoComplete
                                 options={allProductOptions}
                                 placeholder="Select Product"
@@ -202,11 +191,11 @@ const OrderList = () => {
                                 onClear={() => updateProduct()}
                                 onFocus={() => ShowAllOptions()}
                                 style={{
-                                    width: "90%",
+                                    width: "100%",
                                     height: "40px",
-                                    boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08);",
-                                    background: isMobile ? "white" : "transparent",
-                                    borderRadius: { xs: "8px" },
+                                    boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08)",
+                                    background: "white",
+                                    borderRadius: "8px",
                                 }}
                                 children={
                                     <Input
@@ -214,15 +203,17 @@ const OrderList = () => {
                                         onInput={() => searchProduct()}
                                         style={{
                                             height: "40px",
-                                            boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08);",
-                                            background: isMobile ? "white" : "transparent",
-                                            borderRadius: { xs: "8px" },
+                                            boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08)",
+                                            background: "white",
+                                            borderRadius: "8px",
                                         }}
                                     />
                                 }
                             />
                         </Grid>
-                        <Grid item md={2} sm={2} >
+
+                        {/* Shade Selector */}
+                        <Grid item xs={12} sm={6} md={2}>
                             <AutoComplete
                                 key={1}
                                 options={allShadesOptions}
@@ -234,11 +225,11 @@ const OrderList = () => {
                                 onClear={() => updateProduct(null, null, true)}
                                 onFocus={() => ShowAllOptions(true)}
                                 style={{
-                                    width: "90%",
+                                    width: "100%",
                                     height: "40px",
-                                    boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08);",
-                                    background: isMobile ? "white" : "transparent",
-                                    borderRadius: { xs: "8px" },
+                                    boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08)",
+                                    background: "white",
+                                    borderRadius: "8px",
                                 }}
                                 children={
                                     <Input
@@ -246,36 +237,80 @@ const OrderList = () => {
                                         onInput={() => searchProduct(true)}
                                         style={{
                                             height: "40px",
-                                            boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08);",
-                                            background: isMobile ? "white" : "transparent",
-                                            borderRadius: { xs: "8px" },
+                                            boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08)",
+                                            background: "white",
+                                            borderRadius: "8px",
                                         }}
                                     />
                                 }
                             />
                         </Grid>
-                        <Grid item md={2} sm={2} >
-                            <input style={{ width: '90%', height: '40px', border: '1px solid #d9d9d9', borderRadius: '6px', fontSize: '16px' }}
-                                value={fromDate} onInput={(e) => setFromDate(e.target.value)} type='date' placeholder='From Date' />
-                        </Grid>
-                        <Grid item md={2} sm={2} >
-                            <input style={{ width: '90%', height: '40px', border: '1px solid #d9d9d9', borderRadius: '6px', fontSize: '16px' }}
-                                value={toDate} onInput={(e) => setToDate(e.target.value)} type='date' placeholder='To Date' />
+
+                        {/* From Date */}
+                        <Grid item xs={12} sm={5.6} md={2}>
+                            <input 
+                                style={{ 
+                                    width: isMobile ? '95%': '100%', 
+                                    height: '40px', 
+                                    border: '1px solid #d9d9d9', 
+                                    borderRadius: '6px', 
+                                    fontSize: '16px',
+                                    padding: '0 10px',
+                                    boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08)",
+                                }}
+                                value={fromDate} 
+                                onChange={(e) => setFromDate(e.target.value)} 
+                                type='date' 
+                                placeholder='From Date' 
+                            />
                         </Grid>
 
-                        <Grid item md={3} sm={3}>
+                        {/* To Date */}
+                        <Grid item xs={12} sm={5.6} md={2}>
+                            <input 
+                                style={{ 
+                                    width: isMobile ? '95%': '100%', 
+                                    height: '40px', 
+                                    border: '1px solid #d9d9d9', 
+                                    borderRadius: '6px', 
+                                    fontSize: '16px',
+                                    padding: '0 10px',
+                                    boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08)",
+                                    marginLeft: isMobile ? '' : '20px'
+                                }}
+                                value={toDate} 
+                                onChange={(e) => setToDate(e.target.value)} 
+                                type='date' 
+                                placeholder='To Date' 
+                            />
+                        </Grid>
+
+                        {/* Get Data Button */}
+                        <Grid item xs={12} sm={12} md={3} style={{ display: 'flex', justifyContent: isMobile ? 'center' : 'flex-end' }}>
                             <button
-
                                 className="checkoutButton flex"
-                                style={loadingState ? { backgroundColor: 'transparent', border: '1px solid #e46e39', margin: 0 } : { margin: 0 }}
+                                style={{
+                                    width: isMobile ? '100%' : 'auto',
+                                    minWidth: '120px',
+                                    margin: 0,
+                                    ...(loadingState ? { 
+                                        backgroundColor: 'transparent', 
+                                        border: '1px solid #e46e39' 
+                                    } : {})
+                                }}
                                 onClick={() => getProductListByParams()}>
-                                {!loadingState ? <b> Get Data</b> : <CircularProgress style={{ color: '#e46e39', width: '25px', height: '25px' }} />}
+                                {!loadingState ? <b>Get Data</b> : <CircularProgress style={{ color: '#e46e39', width: '25px', height: '25px' }} />}
                             </button>
                         </Grid>
-                        <Grid item md={12} sm={12} >
-                            <MuiSearchTable list={orderData} />
-                        </Grid>
                     </Grid>
+
+                    {/* Table */}
+                    <Grid item xs={12}>
+                        <div style={{ overflowX: 'auto' }}>
+                            <MuiSearchTable list={orderData} />
+                        </div>
+                    </Grid>
+
                     <PopupAlert open={showPopup} message={message} severty={severty} onClose={handleClosePopup} />
                 </div>
             </Grid>
