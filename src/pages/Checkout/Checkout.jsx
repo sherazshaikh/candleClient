@@ -18,6 +18,7 @@ import Quantity from '../../components/Quantity/Quantity'
 import QuantityCheckout from '../../components/Quantity/QuantityCheckout'
 import { Button, Upload, message } from 'antd'
 import { Spa, UploadOutlined } from '@mui/icons-material'
+import CustomSelect from '../../components/CustomSelect'
 
 const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSuccess, shopes }) => {
 	const { userId, paymentType, branchcodeOrcl } = useSelector((state) => state.auth.user)
@@ -352,13 +353,15 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 							item
 							md={4}
 							sx={{ marginTop: { xs: '10px', sm: '0px' } }}>
-							<Input
+							{/* <Input
 								type="text"
 								placeholder="Enter Reciever Name"
 								value={rName}
 								setValue={setRName}
 								border={true}
-							/>
+							/> */}
+							<CustomSelect data={[]} label='Enter Reciever Name' />
+							
 						</Grid>
 					</Grid>
 					<Grid

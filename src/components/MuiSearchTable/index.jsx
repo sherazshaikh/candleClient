@@ -14,14 +14,20 @@ export default function ScrollableTable({ list }) {
     setOrderDirection((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
-  const filteredRows = list?.filter((row) =>
-    row.webOrderNum?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
-    row.oracleOrderNumber?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
-    row.orderDateTime?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
-    row.productCode?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
-    row.productName?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
-    row.hsade?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
-    row.orderQty?.toString().toLowerCase().includes(searchText.toLowerCase())
+  const filteredRows = list?.filter((row) => {
+    for (let key in row) {
+      if (row[key]?.toString().toLowerCase().includes(searchText.toLowerCase()))
+        return row
+    }
+  }
+
+    // row.webOrderNum?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    // row.oracleOrderNumber?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    // row.orderDateTime?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    // row.productCode?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    // row.productName?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    // row.hsade?.toString().toLowerCase().includes(searchText.toLowerCase()) ||
+    // row.orderQty?.toString().toLowerCase().includes(searchText.toLowerCase())
   )?.map((row) => ({
     ...row,
     id: row.rowuid,
@@ -63,14 +69,12 @@ export default function ScrollableTable({ list }) {
         size={isMobile ? "small" : "medium"}
       />
 
-      <TableContainer 
-        sx={{ 
+      <TableContainer
+        sx={{
           maxHeight: 400,
           overflowX: 'auto',
-          '&::-webkit-scrollbar': {
-            height: '6px'
-          }
-        }} 
+         
+        }}
         component={Paper}
       >
         <Table stickyHeader size={isMobile ? "small" : "medium"}>
