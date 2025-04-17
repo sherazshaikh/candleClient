@@ -70,6 +70,14 @@ export const variables = {
     getProductListByParams: {
         url: "/v1/Order/getOrderListByParams",
         method: "GET"
-    }
+    },
+    getReceiverNames: {
+        url: "/v1/Order/getReceiverByUserId",
+        method: "GET"
+    },
+    allShades: {
+        "url": "/v1/Order/GetAllShades",
+        "method": "GET"
+    },
     //
 }

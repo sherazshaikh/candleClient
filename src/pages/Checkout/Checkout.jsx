@@ -40,6 +40,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 	const [paymntMethod, setPaymntMethod] = useState(paymentType)
 	const dispatch = useDispatch()
 	const [fileList, setFileList] = useState([])
+	const [receiverList, setReceiverList] = useState([])
 
 	useEffect(() => {
 		console.log("Checkout", rows)
@@ -252,6 +253,22 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 			.catch((err) => console.log(err))
 	}
 
+	//INITAL MOUNT 
+	useEffect(() => {
+		getAllReveiversName()
+	}, [])
+
+
+	const getAllReveiversName = async () => {
+		await executeApi(baseURL + variables.getReceiverNames.url, [], variables.getReceiverNames.method, token, dispatch)
+			.then((data) => setReceiverList(data.data))
+			.catch((err) => console.log(err))
+	}
+
+	const handleReceiverChange = (receiver) =>{
+		setRName(receiver)
+	}
+
 	return (
 		<Grid container>
 
@@ -360,8 +377,8 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 								setValue={setRName}
 								border={true}
 							/> */}
-							<CustomSelect data={[]} label='Enter Reciever Name' />
-							
+							<CustomSelect data={receiverList} emit={handleReceiverChange} label='Enter Reciever Name' />
+
 						</Grid>
 					</Grid>
 					<Grid
@@ -468,7 +485,7 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 				sx={{ display: { xs: 'none', sm: 'none', md: 'flex' } }}
 				style={{ overflowY: 'scroll' }}
 				className="cartMain">
-			
+
 				<Grid
 					item
 					md={11}

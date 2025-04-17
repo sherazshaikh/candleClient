@@ -5,31 +5,32 @@ import { useState } from "react"
 
 
 
-const CustomSelect = ({data, label}) => {
+const CustomSelect = ({data, label, emit}) => {
     const [value, setValue] = useState('')
     const [options, setOptions] = useState([ ])
 
 
     const updateProduct = (val, obj)=>{
         setValue(val)
+        emit(val)
     }
     const searchProduct = ()=>{
         console.log('a')
     }
     const showAllOptions = ()=>{
-            // if (data && data.length > 0) {
-            //     let abcd = data?.map((option) => {
-            //         return { label: option.shadeCode, value: option.shadeDesc }
-            //     })
-            //     setOptions(abcd)
-            // }
+            if (data && data.length > 0) {
+                let abcd = data?.map((receiverName) => {
+                    return { label: receiverName, value: receiverName }
+                })
+                setOptions(abcd)
+            }
 
           
-            setOptions([
-                { label: "ABC", value: "ABC"},
-                { label: "AFD", value: "AFD"},
-                { label: "DFG", value: "DFG" },
-            ])
+            // setOptions([
+            //     { label: "ABC", value: "ABC"},
+            //     { label: "AFD", value: "AFD"},
+            //     { label: "DFG", value: "DFG" },
+            // ])
         
     }
 

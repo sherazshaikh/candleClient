@@ -22,7 +22,7 @@ const OrderList = () => {
 
     const isMobile = useMediaQuery("(max-width: 600px)");
     const isTablet = useMediaQuery("(max-width: 900px)");
-    
+
     let {
         baseURL,
         auth: { token },
@@ -40,6 +40,7 @@ const OrderList = () => {
     const [showPopup, setShowPopup] = useState(false)
     const [severty, setSeverty] = useState("error");
     const [orderData, setOrderData] = useState([]);
+    const [allShadesList, setAllShadesList] = useState([]);
 
     const dispatch = useDispatch();
 
@@ -53,7 +54,6 @@ const OrderList = () => {
             dispatch
         )
             .then((data) => {
-                console.log('data: ', data);
                 setAllProduct(data.data);
             })
             .catch((error) => console.log(error));
@@ -61,8 +61,6 @@ const OrderList = () => {
 
     // GET SHADES BY PRODUCT CODE
     const setShadesByCode = async (product) => {
-        console.log('rows: ', product);
-
         executeApi(
             baseURL + `/v1/Order/getShadeByCategoryId?categoryId=${product?.id}`,
             {},
@@ -71,11 +69,18 @@ const OrderList = () => {
             dispatch
         )
             .then((data) => {
-                setShades(data.data);
+                // FILTER DUPLICATE SHADES VALUES FROM SHADES
+                const uniqueArray = data?.data?.filter((obj, index, self) =>
+                    index === self.findIndex(o =>
+                        o.shadeDesc === obj.shadeDesc
+                    )
+                );
+                setShades(uniqueArray);
             })
             .catch((error) => console.log(error));
     };
 
+    //GET ORDER LIST BY PARAMS
     const getProductListByParams = async () => {
         setShowPopup(false)
         if (toDate < fromDate) {
@@ -95,16 +100,20 @@ const OrderList = () => {
             dispatch
         )
             .then((data) => {
-                console.log('data: ', data);
                 setOrderData(data.data);
             })
             .catch((error) => console.log(error));
         setLoadingState(false)
     };
 
+    // SHOW OPTIONS FROM DATA
     const ShowAllOptions = (isShade) => {
         if (isShade) {
-            if (allShades && allShades.length > 0) {
+
+            if (!productLabel) {
+                setShades(allShadesList)
+            }
+            if ((allShades && allShades.length > 0)) {
                 let abcd = allShades?.map((option) => {
                     return { label: option.shadeCode, value: option.shadeDesc }
                 })
@@ -120,8 +129,8 @@ const OrderList = () => {
         }
     }
 
+    // HANDLE CHANGE VALUE OR REMOVE
     const updateProduct = (value, obj, isShade) => {
-        console.log('value: ', value);
         if (value) {
             if (isShade) {
                 setShadeLabel(value)
@@ -133,16 +142,18 @@ const OrderList = () => {
         } else {
             if (!isShade) {
                 setShadeLabel('')
-                setShades([])
+                setShades(allShadesList)
                 setShadesOptions([])
             }
         }
     }
 
+
+    //SEARCH FILTER ON ALL DROPDOWN
     const searchProduct = (isShade) => {
         if (isShade) {
             let filteredShades = allShades.filter((option) => {
-                return option.categoryName.toLowerCase().includes(productLabel.toLowerCase())
+                return option.shadeDesc?.toLowerCase().includes(shadeLabel?.toLowerCase())
             })
 
             filteredShades = filteredShades.map((option) => {
@@ -160,13 +171,36 @@ const OrderList = () => {
         }
     }
 
+ // ERROR TOASTER SHOW 
     const handleClosePopup = () => {
         setShowPopup(false)
     }
 
-    // INITIAL API CALL
+    //GET ALL SHADES WITHOUTH PARAMS
+    const getAllShadesCode = async () => {
+        executeApi(
+            baseURL + variables.allShades.url,
+            {},
+            variables.allShades.method,
+            token,
+            dispatch
+        )
+            .then((data) => {
+                 // FILTER DUPLICATE SHADES VALUES FROM SHADES
+                const uniqueArray = data?.data?.filter((obj, index, self) =>
+                    index === self.findIndex(o =>
+                        o.shadeDesc === obj.shadeDesc
+                    )
+                );
+                setAllShadesList(uniqueArray);
+            })
+            .catch((error) => console.log(error));
+    };
+
+    // INITIAL API CALL ON MOUNT COMPONENT
     useEffect(() => {
         getAllProduct();
+        getAllShadesCode()
     }, []);
 
     return (
@@ -248,40 +282,40 @@ const OrderList = () => {
 
                         {/* From Date */}
                         <Grid item xs={12} sm={5.6} md={2}>
-                            <input 
-                                style={{ 
-                                    width: isMobile ? '95%': '100%', 
-                                    height: '40px', 
-                                    border: '1px solid #d9d9d9', 
-                                    borderRadius: '6px', 
+                            <input
+                                style={{
+                                    width: isMobile ? '95%' : '100%',
+                                    height: '40px',
+                                    border: '1px solid #d9d9d9',
+                                    borderRadius: '6px',
                                     fontSize: '16px',
                                     padding: '0 10px',
                                     boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08)",
                                 }}
-                                value={fromDate} 
-                                onChange={(e) => setFromDate(e.target.value)} 
-                                type='date' 
-                                placeholder='From Date' 
+                                value={fromDate}
+                                onChange={(e) => setFromDate(e.target.value)}
+                                type='date'
+                                placeholder='From Date'
                             />
                         </Grid>
 
                         {/* To Date */}
                         <Grid item xs={12} sm={5.6} md={2}>
-                            <input 
-                                style={{ 
-                                    width: isMobile ? '95%': '100%', 
-                                    height: '40px', 
-                                    border: '1px solid #d9d9d9', 
-                                    borderRadius: '6px', 
+                            <input
+                                style={{
+                                    width: isMobile ? '95%' : '100%',
+                                    height: '40px',
+                                    border: '1px solid #d9d9d9',
+                                    borderRadius: '6px',
                                     fontSize: '16px',
                                     padding: '0 10px',
                                     boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08)",
                                     marginLeft: isMobile ? '' : '20px'
                                 }}
-                                value={toDate} 
-                                onChange={(e) => setToDate(e.target.value)} 
-                                type='date' 
-                                placeholder='To Date' 
+                                value={toDate}
+                                onChange={(e) => setToDate(e.target.value)}
+                                type='date'
+                                placeholder='To Date'
                             />
                         </Grid>
 
@@ -293,9 +327,9 @@ const OrderList = () => {
                                     width: isMobile ? '100%' : 'auto',
                                     minWidth: '120px',
                                     margin: 0,
-                                    ...(loadingState ? { 
-                                        backgroundColor: 'transparent', 
-                                        border: '1px solid #e46e39' 
+                                    ...(loadingState ? {
+                                        backgroundColor: 'transparent',
+                                        border: '1px solid #e46e39'
                                     } : {})
                                 }}
                                 onClick={() => getProductListByParams()}>
