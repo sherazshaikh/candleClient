@@ -19,7 +19,7 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
 	}
 
 	const allOptionsList = optionsList?.map((option, ind) => {
-		return { label: option.shadeCode, value: option.shadeDesc, key: ind }
+		return { label: option.shadeCode, value: option.shadeCode, key: ind }
 	})
 
 	const GetInfoLabl = () => {
@@ -50,7 +50,7 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
         })
 
         abcd = abcd?.map((option, ind) => {
-            return { label: option.shadeCode, value: option.shadeDesc, key: ind }
+            return { label: option.shadeCode, value: option.shadeCode, key: ind }
         })
         setDdOption(abcd)
 
@@ -58,12 +58,13 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
 
     useEffect(() => {
         const list = optionsList?.map((opt, i) => {
-            return { label: opt.shadeCode, value: opt.shadeDesc, key: `${index}-${i}` }
+            return { label: opt.shadeCode, value: opt.shadeCode, key: `${index}-${i}` }
         })
         setDdOption(list)
     }, [optionsList])
 
     const updateProduct = (value, e) => {
+        console.log('value: ', value);
         let newArray = [...rows]
         if (value) {
             setInfoLabel(e ? e.label : '')
@@ -91,7 +92,7 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
 		if (options && options.length > 0) {
 			let abcd = options?.map((option, i) => {
 				// categoryId
-				return { label: option.shadeCode, value: option.shadeDesc, key: `${index}-${i}` }
+				return { label: option.shadeCode, value: option.shadeCode, key: `${index}-${i}` }
 			})
 			setDdOption(abcd)
 		}
@@ -117,7 +118,7 @@ function ShadeBox({ debouncedApiCall, label, index, rows, setRows, options = [],
                 }}
                 children={
                     <Input
-                        type="number"
+                        type="text"
                         style={{
                             height: "40px",
                             boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08);",

@@ -181,10 +181,11 @@ const Checkout = ({ debouncedApiCall, setStep, rows, setOrderSuccess, orderSucce
 
 	const placeOrder = () => {
 		setLoadingState(true)
+		let recName = receiverList?.filter((name) => name === rName)
 		let TblorderMaster = {
 			CustomerCode: userId,
 			Ordertype: paymntMethod,
-			RecName: rName,
+			RecName: recName[0] || null,
 			HsCode: '0000',
 			PoAttachment: attachment,
 			orderDetails: [],

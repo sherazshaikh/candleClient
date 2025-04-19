@@ -1,4 +1,4 @@
-import { CircularProgress, Grid } from '@mui/material';
+import { CircularProgress, Grid, TextField } from '@mui/material';
 import Navbar from '../../components/Navbar/Navbar';
 import { variables } from '../../utils/config';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +11,6 @@ import MuiSearchTable from '../../components/MuiSearchTable'
 
 const OrderList = () => {
     const cardStyle = {
-        // width: '100%',   
         height: 'auto',
         backgroundColor: '#fff',
         margin: '10px 0',
@@ -21,7 +20,6 @@ const OrderList = () => {
     };
 
     const isMobile = useMediaQuery("(max-width: 600px)");
-    const isTablet = useMediaQuery("(max-width: 900px)");
 
     let {
         baseURL,
@@ -31,7 +29,6 @@ const OrderList = () => {
     const [allProductOptions, setAllProductOptions] = useState([]);
     const [allShades, setShades] = useState([]);
     const [allShadesOptions, setShadesOptions] = useState([]);
-    const [message, setMessage] = useState("To Date Must Be Greater then From Date")
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
     const [productLabel, setProductLabel] = useState(null);
@@ -41,7 +38,9 @@ const OrderList = () => {
     const [severty, setSeverty] = useState("error");
     const [orderData, setOrderData] = useState([]);
     const [allShadesList, setAllShadesList] = useState([]);
+    const [shadePlaceholder, setShadePlaceholder] = useState("Select Shade");
 
+    const message = "To Date Must Be Greater then From Date"
     const dispatch = useDispatch();
 
     //GET ALL PRODUCT
@@ -70,12 +69,12 @@ const OrderList = () => {
         )
             .then((data) => {
                 // FILTER DUPLICATE SHADES VALUES FROM SHADES
-                const uniqueArray = data?.data?.filter((obj, index, self) =>
-                    index === self.findIndex(o =>
-                        o.shadeDesc === obj.shadeDesc
-                    )
-                );
-                setShades(uniqueArray);
+                // const uniqueArray = data?.data?.filter((obj, index, self) =>
+                //     index === self.findIndex(o =>
+                //         o.shadeCode === obj.shadeCode
+                //     )
+                // );
+                setShades(data.data);
             })
             .catch((error) => console.log(error));
     };
@@ -89,11 +88,11 @@ const OrderList = () => {
         }
 
         setLoadingState(true)
-        let shadeCode = allShadesOptions?.filter(shd => shd.value == shadeLabel)[0]?.label || ''
+        let shadeCode = shadeLabel ? allShadesOptions?.filter(shd => shd.value == shadeLabel)[0]?.label || '' : ""
         let productCode = allProductOptions?.filter(prdct => prdct.value == productLabel)[0]?.id || ''
 
         await executeApi(
-            baseURL + `${variables.getProductListByParams.url}?productCode=${productCode}&shadeCode=${shadeCode}&fromDate=${fromDate || ''}&toDate=${toDate || ''}`,
+            baseURL + `${variables.getProductListByParams.url}?categoryId=${productCode}&shadeCode=${shadeCode}&fromDate=${fromDate || ''}&toDate=${toDate || ''}`,
             {},
             variables.getProductListByParams.method,
             token,
@@ -109,13 +108,13 @@ const OrderList = () => {
     // SHOW OPTIONS FROM DATA
     const ShowAllOptions = (isShade) => {
         if (isShade) {
-
+            let list = productLabel ? allShades : allShadesList
             if (!productLabel) {
                 setShades(allShadesList)
             }
-            if ((allShades && allShades.length > 0)) {
-                let abcd = allShades?.map((option) => {
-                    return { label: option.shadeCode, value: option.shadeDesc }
+            if ((list && list.length > 0)) {
+                let abcd = list?.map((option) => {
+                    return { label: option.shadeCode, value: option.shadeCode }
                 })
                 setShadesOptions(abcd)
             }
@@ -144,7 +143,7 @@ const OrderList = () => {
                 setShadeLabel('')
                 setShades(allShadesList)
                 setShadesOptions([])
-            }
+            } else setShadeLabel('')
         }
     }
 
@@ -153,11 +152,11 @@ const OrderList = () => {
     const searchProduct = (isShade) => {
         if (isShade) {
             let filteredShades = allShades.filter((option) => {
-                return option.shadeDesc?.toLowerCase().includes(shadeLabel?.toLowerCase())
+                return option.shadeCode?.toLowerCase().includes(shadeLabel?.toLowerCase())
             })
 
             filteredShades = filteredShades.map((option) => {
-                return { label: option.shadeCode, value: option.shadeDesc }
+                return { label: option.shadeCode, value: option.shadeCode }
             })
             setShadesOptions(filteredShades)
         } else {
@@ -171,13 +170,14 @@ const OrderList = () => {
         }
     }
 
- // ERROR TOASTER SHOW 
+    // ERROR TOASTER SHOW 
     const handleClosePopup = () => {
         setShowPopup(false)
     }
 
     //GET ALL SHADES WITHOUTH PARAMS
     const getAllShadesCode = async () => {
+        setShadePlaceholder('Loading....')
         executeApi(
             baseURL + variables.allShades.url,
             {},
@@ -186,15 +186,17 @@ const OrderList = () => {
             dispatch
         )
             .then((data) => {
-                 // FILTER DUPLICATE SHADES VALUES FROM SHADES
-                const uniqueArray = data?.data?.filter((obj, index, self) =>
-                    index === self.findIndex(o =>
-                        o.shadeDesc === obj.shadeDesc
-                    )
-                );
-                setAllShadesList(uniqueArray);
+                // FILTER DUPLICATE SHADES VALUES FROM SHADES
+                // const uniqueArray = data?.data?.filter((obj, index, self) =>
+                //     index === self.findIndex(o =>
+                //         o.shadeCode === obj.shadeCode
+                //     )
+                // );
+                setAllShadesList(data.data);
+                setShadePlaceholder('Select Shade')
             })
             .catch((error) => console.log(error));
+
     };
 
     // INITIAL API CALL ON MOUNT COMPONENT
@@ -251,13 +253,14 @@ const OrderList = () => {
                             <AutoComplete
                                 key={1}
                                 options={allShadesOptions}
-                                placeholder="Select Shade"
+                                placeholder={shadePlaceholder}
                                 allowClear={true}
                                 value={shadeLabel}
                                 onSelect={(e, v) => updateProduct(e, v, true)}
                                 onSearch={(v) => setShadeLabel(v)}
                                 onClear={() => updateProduct(null, null, true)}
                                 onFocus={() => ShowAllOptions(true)}
+                                disabled={shadePlaceholder == 'Loading....'}
                                 style={{
                                     width: "100%",
                                     height: "40px",
@@ -269,6 +272,7 @@ const OrderList = () => {
                                     <Input
                                         type="text"
                                         onInput={() => searchProduct(true)}
+
                                         style={{
                                             height: "40px",
                                             boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08)",
@@ -282,7 +286,7 @@ const OrderList = () => {
 
                         {/* From Date */}
                         <Grid item xs={12} sm={5.6} md={2}>
-                            <input
+                            {/* <input
                                 style={{
                                     width: isMobile ? '95%' : '100%',
                                     height: '40px',
@@ -291,31 +295,60 @@ const OrderList = () => {
                                     fontSize: '16px',
                                     padding: '0 10px',
                                     boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08)",
+                                    background: '#fff'
                                 }}
                                 value={fromDate}
                                 onChange={(e) => setFromDate(e.target.value)}
                                 type='date'
                                 placeholder='From Date'
+                            /> */}
+                            <TextField
+                                fullWidth
+                                type="date"
+                                label="From Date"
+                                value={fromDate}
+                                onChange={(e) => setFromDate(e.target.value)}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                InputProps={{
+                                    disableUnderline: true,
+                                    style: {
+                                      background: '#fff',
+                                      borderRadius: '8px',
+                                      height: '40px',
+                                      padding: '0 10px',
+                                      boxShadow: '0 3px 13px 0 rgba(0, 0, 0, 0.08)',
+                                      fontSize: '16px',
+                                      border: 'none',
+                                      outline: "none"
+                                    },
+                                  }}
                             />
                         </Grid>
 
                         {/* To Date */}
                         <Grid item xs={12} sm={5.6} md={2}>
-                            <input
-                                style={{
-                                    width: isMobile ? '95%' : '100%',
-                                    height: '40px',
-                                    border: '1px solid #d9d9d9',
-                                    borderRadius: '6px',
-                                    fontSize: '16px',
-                                    padding: '0 10px',
-                                    boxShadow: "0 3px 13px 0 rgba(0, 0, 0, 0.08)",
-                                    marginLeft: isMobile ? '' : '20px'
-                                }}
+                            <TextField
+                                fullWidth
+                                type="date"
+                                label="To Date"
                                 value={toDate}
                                 onChange={(e) => setToDate(e.target.value)}
-                                type='date'
-                                placeholder='To Date'
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                InputProps={{
+                                    disableUnderline: true,
+                                    style: {
+                                      background: '#fff',
+                                      borderRadius: '8px',
+                                      height: '40px',
+                                      padding: '0 10px',
+                                      boxShadow: '0 3px 13px 0 rgba(0, 0, 0, 0.08)',
+                                      fontSize: '16px',
+                                    },
+                                  }}
                             />
                         </Grid>
 

@@ -389,7 +389,7 @@ const QuickOrder = () => {
 					qty: orderDetail.OrderQty,
 					yardage: Object.values(orderDetail.selectedYardage)?.join("BTWOBJ"),
 					yardagelist: orderDetail.yardage?.join("BTWOBJ"),
-					shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`)?.join("OBJEND"),
+					shadecodelist: orderDetail.shade.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeCode}`)?.join("OBJEND"),
 					uom: orderDetail.uom,
 					productCode: orderDetail?.productCode,
 					categoryCode: Object.values(orderDetail.product)?.join("BTWOBJ"),
@@ -405,7 +405,7 @@ const QuickOrder = () => {
 					qty: orderDetail.OrderQty,
 					yardage: Object.values(orderDetail.selectedYardage)?.join("BTWOBJ"),
 					yardagelist: orderDetail.yardage?.join("BTWOBJ"),
-					shadecodelist: orderDetail.shade?.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeDesc}`)?.join("OBJEND"),
+					shadecodelist: orderDetail.shade?.map((obj) => `${obj.shadeCode}BTWOBJ${obj.shadeCode}`)?.join("OBJEND"),
 					uom: orderDetail.uom,
 					productCode: orderDetail?.productCode,
 					categoryCode: Object.values(orderDetail.product)?.join("BTWOBJ"),
@@ -484,8 +484,8 @@ const QuickOrder = () => {
 						// Map the array elements back into objects
 						let shadeList = []
 						let parsedArray = dataArray.map((item) => {
-							let [shadeCode, shadeDesc] = item.split("BTWOBJ")
-							shadeList.push({ shadeCode: shadeCode, shadeDesc: shadeDesc })
+							let [shadeCode] = item.split("BTWOBJ")
+							shadeList.push({ shadeCode: shadeCode, shadeCode: shadeCode })
 						})
 						console.log("parsedArray", shadeList)
 

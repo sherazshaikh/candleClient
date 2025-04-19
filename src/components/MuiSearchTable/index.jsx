@@ -8,9 +8,11 @@ import {
 export default function ScrollableTable({ list }) {
   const [searchText, setSearchText] = useState("");
   const [orderDirection, setOrderDirection] = useState("asc");
+  const [sortOn, setSortOn] = useState("nmbr");
   const isMobile = useMediaQuery("(max-width:600px)");
 
-  const handleSortClick = () => {
+  const handleSortClick = (sort) => {
+    setSortOn(sort)
     setOrderDirection((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
@@ -34,8 +36,9 @@ export default function ScrollableTable({ list }) {
   }));
 
   const sortedRows = [...(filteredRows || [])].sort((a, b) => {
-    const aVal = a.webOrderNum || "";
-    const bVal = b.webOrderNum || "";
+    let key = sortOn == 'date' ? "orderDateTime" : sortOn == 'nmbr' ? 'webOrderNum' : "productCode"
+    const aVal = a[key] ||  "";
+    const bVal = b[key] ||  "";
 
     if (orderDirection === "asc") {
       return aVal > bVal ? 1 : -1;
@@ -73,7 +76,7 @@ export default function ScrollableTable({ list }) {
         sx={{
           maxHeight: 400,
           overflowX: 'auto',
-         
+
         }}
         component={Paper}
       >
@@ -84,7 +87,7 @@ export default function ScrollableTable({ list }) {
                 <TableSortLabel
                   active
                   direction={orderDirection}
-                  onClick={handleSortClick}
+                  onClick={() => handleSortClick('nmbr')}
                 >
                   <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
                     {isMobile ? "Order No." : "Order Number"}
@@ -97,14 +100,26 @@ export default function ScrollableTable({ list }) {
                 </Typography>
               </TableCell>
               <TableCell sx={{ minWidth: isMobile ? 120 : 150 }}>
-                <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
-                  Order Date
-                </Typography>
+                <TableSortLabel
+                  active
+                  direction={orderDirection}
+                  onClick={() => handleSortClick('date')}
+                >
+                  <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                    Order Date
+                  </Typography>
+                </TableSortLabel>
               </TableCell>
               <TableCell sx={{ minWidth: isMobile ? 90 : 120 }}>
-                <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
-                  {isMobile ? "Prod Code" : "Product Code"}
-                </Typography>
+                <TableSortLabel
+                  active
+                  direction={orderDirection}
+                  onClick={() => handleSortClick('code')}
+                >
+                  <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                    {isMobile ? "Prod Code" : "Product Code"}
+                  </Typography>
+                </TableSortLabel>
               </TableCell>
               <TableCell sx={{ minWidth: isMobile ? 90 : 120 }}>
                 <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
@@ -129,8 +144,8 @@ export default function ScrollableTable({ list }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedRows?.map((row) => (
-              <TableRow key={row.id} hover>
+            {sortedRows?.map((row, i) => (
+              <TableRow key={i} hover>
                 <TableCell>
                   <Typography variant="body2">
                     {row.webOrderNum}
@@ -174,7 +189,7 @@ export default function ScrollableTable({ list }) {
               </TableRow>
             ))}
             {sortedRows?.length === 0 && (
-              <TableRow>
+              <TableRow >
                 <TableCell colSpan={8} align="center">
                   <Typography variant="body2">
                     No matching results.
