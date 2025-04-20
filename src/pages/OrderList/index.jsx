@@ -285,7 +285,7 @@ const OrderList = () => {
                         </Grid>
 
                         {/* From Date */}
-                        <Grid item xs={12} sm={5.6} md={2}>
+                        <Grid item xs={12} sm={6} md={2}>
                             {/* <input
                                 style={{
                                     width: isMobile ? '95%' : '100%',
@@ -305,11 +305,11 @@ const OrderList = () => {
                             <TextField
                                 fullWidth
                                 type="date"
-                                label="From Date"
+                                label={!fromDate && !isMobile && "From Date"}
                                 value={fromDate}
                                 onChange={(e) => setFromDate(e.target.value)}
                                 InputLabelProps={{
-                                    shrink: true,
+                                    shrink:  true,
                                 }}
                                 InputProps={{
                                     disableUnderline: true,
@@ -321,18 +321,18 @@ const OrderList = () => {
                                       boxShadow: '0 3px 13px 0 rgba(0, 0, 0, 0.08)',
                                       fontSize: '16px',
                                       border: 'none',
-                                      outline: "none"
+                                      outline: "none",
                                     },
                                   }}
                             />
                         </Grid>
 
                         {/* To Date */}
-                        <Grid item xs={12} sm={5.6} md={2}>
+                        <Grid item xs={12} sm={6} md={2}>
                             <TextField
                                 fullWidth
                                 type="date"
-                                label="To Date"
+                                label={!toDate && !isMobile && "To Date"}
                                 value={toDate}
                                 onChange={(e) => setToDate(e.target.value)}
                                 InputLabelProps={{
@@ -347,6 +347,7 @@ const OrderList = () => {
                                       padding: '0 10px',
                                       boxShadow: '0 3px 13px 0 rgba(0, 0, 0, 0.08)',
                                       fontSize: '16px',
+                                     
                                     },
                                   }}
                             />

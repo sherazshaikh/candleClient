@@ -39,6 +39,10 @@ const RecentOrder = () => {
         getAllOrders();
     }, [])
 
+    const updateData = () =>{
+        getAllOrders()
+    }
+
     return (
         <Grid container >
             <Grid item container className='recentOrderNabar' >
@@ -50,23 +54,27 @@ const RecentOrder = () => {
                         <Typography variant='h4' sx={{ marginBottom: { md: "20px !important", xs: "0px" } }}> Recent Orders</Typography>
                     </Grid>
                     <Grid item container md={12} sm={12} xs={12} className='recentOrderHerMainTableSection' >
-                        <Grid item container sx={{ display: { xs: 'none', sm: "flex" } }} sm={12} md={12} >
-                            <Grid item md={3} sm={3} className='greyFont flex'   >
-                                Order
-                            </Grid>
-                            <Grid item md={2.5} sm={2.5} className='greyFont flex'  >
-                                Status
-                            </Grid>
-                            <Grid item md={2.5} sm={2.5} className='greyFont flex'   >
-                                Pickup
-                            </Grid>
-                            <Grid item md={2} sm={2} className='greyFont flex' >
-                                PO
-                            </Grid>
-                            <Grid item md={2} sm={2} className='greyFont flex' >
-                                Payment
-                            </Grid>
-                        </Grid>
+                    <Grid item container sx={{ display: { xs: 'none', sm: 'flex' } }} sm={12} md={12}>
+  <Grid item md={2} sm={2} className="greyFont flex">
+    Order
+  </Grid>
+  <Grid item md={2} sm={2} className="greyFont flex">
+    Status
+  </Grid>
+  <Grid item md={2} sm={2} className="greyFont flex">
+    Pickup
+  </Grid>
+  <Grid item md={2} sm={2} className="greyFont flex">
+    PO
+  </Grid>
+  <Grid item md={2} sm={2} className="greyFont flex">
+    Payment
+  </Grid>
+  <Grid item md={2} sm={2} className="greyFont flex">
+    Action
+  </Grid>
+</Grid>
+
                         <Grid item container md={12} sm={12} className='recentOrderHerMainTableListSection' >
                             {
                                 isLoaded ?
@@ -79,7 +87,7 @@ const RecentOrder = () => {
                                         // Format the date as "DD Month YYYY"
                                         const options = { day: 'numeric', month: 'long', year: 'numeric'};
                                         const formattedDate = inputDate.toLocaleDateString('en-US', options) + " " + convertToAMPM(item.createdwhenTime);
-                                        return <TableRow item={item} formattedDate={formattedDate} baseURL={baseURL} token={token} firstName={firstName} />
+                                        return <TableRow updateData={updateData} item={item} formattedDate={formattedDate} baseURL={baseURL} token={token} firstName={firstName} />
                                     })
                                         : <div className='flex' style={{ color: '#e9520c', height: "100%" }} >No Data Found !</div>
                             }
